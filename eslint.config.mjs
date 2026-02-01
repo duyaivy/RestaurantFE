@@ -1,19 +1,31 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import tanstackQuery from "@tanstack/eslint-plugin-query";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
 
+  // ✅ TanStack React Query rules
   {
-rules: {
-"@typescript-eslint/no-explicit-any": "off",
-},
-},
+    plugins: {
+      "@tanstack/query": tanstackQuery,
+    },
+    rules: {
+      ...tanstackQuery.configs.recommended.rules,
+    },
+  },
+
+  // ✅ Custom rules của bạn
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
