@@ -11,6 +11,7 @@ import { log } from 'console'
 import { useLoginMutation } from '@/queries/useAuth'
 import { toast } from '@/components/ui/use-toast'
 import { handleErrorApi } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
   const LoginMutation =useLoginMutation();
@@ -21,6 +22,7 @@ export default function LoginForm() {
       password: ''
     }
   })
+  const router = useRouter()
 
   const onSubmit = async(data: LoginBodyType) => {
     if (LoginMutation.isPending) return
@@ -29,6 +31,7 @@ export default function LoginForm() {
       toast({
         description: result.payload.message
       })
+      router.push('/manage/dashboard')  
     }catch (error: any) {
       handleErrorApi({
         error,
