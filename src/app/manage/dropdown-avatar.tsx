@@ -13,17 +13,14 @@ import Link from 'next/link'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { handleErrorApi } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { useAccountProfile } from '@/queries/useAccout'
+import { useAccountMe } from '@/queries/useAccount'
 
-const account = {
-  name: 'Nguyễn Văn A',
-  avatar: 'https://i.pravatar.cc/150'
-}
+
 export default function DropdownAvatar() {
 
   const logoutMutation= useLogoutMutation()
   const route = useRouter()
-  const {data} = useAccountProfile()
+  const {data} = useAccountMe()
   const account= data?.payload.data
 
   const logout = async () => {
