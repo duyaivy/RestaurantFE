@@ -1,6 +1,7 @@
 
 'use client'
-import { getAccessTokenFromLoacalStorage } from '@/lib/utils'
+import { NAVIGATE } from '@/constants/navigate'
+import { getAccessTokenFromLocalStorage } from '@/lib/utils'
 import Link from 'next/link'
 import { useEffect,useState } from 'react'
 const menuItems = [
@@ -15,7 +16,7 @@ const menuItems = [
   },
   {
     title: 'Đăng nhập',
-    href: '/login',
+    href: NAVIGATE.LOGIN,
     authRequired: false // khi false nghia la chua dang nhap la se hien thi
   },
   {
@@ -26,11 +27,11 @@ const menuItems = [
 ]
 
 export default function NavItems({ className }: { className?: string }) {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, ] = useState<boolean>(Boolean(getAccessTokenFromLocalStorage()));
 
-  useEffect(() => {
-    setIsAuth(Boolean(getAccessTokenFromLoacalStorage()));
-  }, [])
+ 
+   
+ 
   return menuItems.map((item) => {
     if (
       (item.authRequired === false && isAuth) || 
