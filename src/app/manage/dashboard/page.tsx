@@ -7,12 +7,12 @@ export default async function Dashboard() {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value
   let name = ''
-  try{
+  try {
     const res = await accountApiRequest.sMe(accessToken || '')
-     name = res.payload.data.name
+    name = res.payload.data.name
 
-  } catch(error:any){
-    if(error.digest?.includes('NEXT_REDIRECT')){
+  } catch (error: any) {
+    if (error.digest?.includes('NEXT_REDIRECT')) {
       throw error
     }
   }

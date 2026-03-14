@@ -5,11 +5,10 @@ import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton"
 export default async function Home() {
   
-  let dishList: DishListResType["data"] = [] as any;
+  let dishList: DishListResType = [];
   try {
     const result = await dishApiRequest.list();
-    const data = result.payload.data;
-    dishList = data;
+    dishList = result.payload.data;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
   }

@@ -1,7 +1,8 @@
 import { accountApiRequest } from "@/apiRequests/account"
+import { Toast } from "@/components/ui/toast"
 import { useQuery } from "@tanstack/react-query"
 import { useMutation } from "@tanstack/react-query"
-export const useAccountMe =()=>{
+export const useAccountMe = () => {
     return useQuery({
         queryKey: ['account-me'],
         queryFn: accountApiRequest.me
@@ -16,6 +17,10 @@ export const useUpdateMeMutation = () => {
 }
 export const useChangePasswordMutation = () => {
     return useMutation({
-        mutationFn: accountApiRequest.changePassword
+        mutationFn: accountApiRequest.changePassword,
+        onError: () => {
+            console.log("loiooo");
+
+        }
     })
 }

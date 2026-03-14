@@ -5,5 +5,5 @@ export const useUploadMediaMutation = () => {
     return useMutation({
         mutationFn: mediaApiRequest.upload
     })
-    
+
 }

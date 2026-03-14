@@ -18,24 +18,23 @@ import { useAccountMe } from '@/queries/useAccount'
 
 export default function DropdownAvatar() {
 
-  const logoutMutation= useLogoutMutation()
+  const logoutMutation = useLogoutMutation()
   const route = useRouter()
-  const {data} = useAccountMe()
-  const account= data?.payload.data
+  const { data } = useAccountMe()
+  const account = data?.payload.data
 
   const logout = async () => {
-    if(logoutMutation.isPending) return
+    if (logoutMutation.isPending) return
 
-    try{
-    await logoutMutation.mutateAsync()
-    route.push('/')
-       
+    try {
+      await logoutMutation.mutateAsync()
+      route.push('/')
+
     }
-    catch (error:any) {
-      
-      handleErrorApi({
-        error,  
+    catch (error: any) {
 
+      handleErrorApi({
+        error,
       })
     }
   }

@@ -1,11 +1,19 @@
 import http from "@/lib/http";
-import { CreateTableBodyType, TableListResType, TableResType, UpdateTableBodyType } from "@/schemaValidations/table.schema";
+import { SuccessResponse } from "@/constants/type";
+import {
+  CreateTableBodyType,
+  TableListResType,
+  TableResType,
+  UpdateTableBodyType
+} from "@/schemaValidations/table.schema";
 
 const tableApiRequest = {
-    list :() => http.get<TableListResType>('tables'),
-    add :(body: CreateTableBodyType) => http.post<TableResType>('tables', body),
-    getTable:(id: number) => http.get<TableResType>(`tables/${id}`),
-    updateTable: (id: number, body: UpdateTableBodyType) => http.put<TableResType>(`tables/${id}`, body),
-    deleteTable: (id: number) => http.delete<TableResType>(`tables/${id}`)
+  list: () => http.get<SuccessResponse<TableListResType>>('tables'),
+  add: (body: CreateTableBodyType) => http.post<SuccessResponse<TableResType>>('tables', body),
+  getTable: (id: number) => http.get<SuccessResponse<TableResType>>(`tables/${id}`),
+  updateTable: (id: number, body: UpdateTableBodyType) =>
+    http.put<SuccessResponse<TableResType>>(`tables/${id}`, body),
+  deleteTable: (id: number) => http.delete<SuccessResponse<TableResType>>(`tables/${id}`)
 }
+
 export default tableApiRequest;

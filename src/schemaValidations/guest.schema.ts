@@ -13,19 +13,16 @@ export const GuestLoginBody = z
 export type GuestLoginBodyType = z.TypeOf<typeof GuestLoginBody>
 
 export const GuestLoginRes = z.object({
-  data: z.object({
-    accessToken: z.string(),
-    refreshToken: z.string(),
-    guest: z.object({
-      id: z.number(),
-      name: z.string(),
-      role: z.enum([Role.Guest]),
-      tableNumber: z.number().nullable(),
-      createdAt: z.date(),
-      updatedAt: z.date()
-    })
-  }),
-  message: z.string()
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  guest: z.object({
+    id: z.number(),
+    name: z.string(),
+    role: z.enum([Role.Guest]),
+    tableNumber: z.number().nullable(),
+    createdAt: z.date(),
+    updatedAt: z.date()
+  })
 })
 
 export type GuestLoginResType = z.TypeOf<typeof GuestLoginRes>
@@ -39,10 +36,7 @@ export const GuestCreateOrdersBody = z.array(
 
 export type GuestCreateOrdersBodyType = z.TypeOf<typeof GuestCreateOrdersBody>
 
-export const GuestCreateOrdersRes = z.object({
-  message: z.string(),
-  data: z.array(OrderSchema)
-})
+export const GuestCreateOrdersRes = z.array(OrderSchema)
 
 export type GuestCreateOrdersResType = z.TypeOf<typeof GuestCreateOrdersRes>
 

@@ -17,9 +17,9 @@ export default function ChangePasswordForm() {
   const form = useForm<ChangePasswordBodyType>({
     resolver: zodResolver(ChangePasswordBody),
     defaultValues: {
-      oldPassword: '',
-      password: '',
-      confirmPassword: ''
+      old_password: '',
+      new_password: '',
+      confirm_password: ''
     }
   })
   const onSubmit = async (values: ChangePasswordBodyType) => {
@@ -27,15 +27,16 @@ export default function ChangePasswordForm() {
     try {
       const res = await changePasswordMutation.mutateAsync(values)
       toast({
-        description: res.payload.message
+        description: res.payload.message,
       })
       form.reset()
-      
+
     } catch (error) {
-       handleErrorApi({
-              error,
-              setError: form.setError
-            })
+      // console.log('Validation errors:', error)
+      handleErrorApi({
+        error,
+        setError: form.setError
+      })
 
     }
   }
@@ -46,8 +47,8 @@ export default function ChangePasswordForm() {
   return (
     <Form {...form}>
       <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8'
-      onReset={reset}
-      onSubmit={form.handleSubmit(onSubmit)}>
+        onReset={reset}
+        onSubmit={form.handleSubmit(onSubmit)}>
         <Card className='overflow-hidden' x-chunk='dashboard-07-chunk-4'>
           <CardHeader>
             <CardTitle>Đổi mật khẩu</CardTitle>
@@ -57,12 +58,12 @@ export default function ChangePasswordForm() {
             <div className='grid gap-6'>
               <FormField
                 control={form.control}
-                name='oldPassword'
+                name='old_password'
                 render={({ field }) => (
                   <FormItem>
                     <div className='grid gap-3'>
-                      <Label htmlFor='oldPassword'>Mật khẩu cũ</Label>
-                      <Input autoComplete='current-password' id='oldPassword' type='password' className='w-full' {...field} />
+                      <Label htmlFor='old_password'>Mật khẩu cũ</Label>
+                      <Input autoComplete='current-password' id='old_password' type='password' className='w-full' {...field} />
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -70,12 +71,12 @@ export default function ChangePasswordForm() {
               />
               <FormField
                 control={form.control}
-                name='password'
+                name='new_password'
                 render={({ field }) => (
                   <FormItem>
                     <div className='grid gap-3'>
-                      <Label htmlFor='password'>Mật khẩu mới</Label>
-                      <Input autoComplete='new-password' id='password' type='password' className='w-full' {...field} />
+                      <Label htmlFor='new_password'>Mật khẩu mới</Label>
+                      <Input autoComplete='new-password' id='new_password' type='password' className='w-full' {...field} />
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -83,12 +84,12 @@ export default function ChangePasswordForm() {
               />
               <FormField
                 control={form.control}
-                name='confirmPassword'
+                name='confirm_password'
                 render={({ field }) => (
                   <FormItem>
                     <div className='grid gap-3'>
-                      <Label htmlFor='confirmPassword'>Nhập lại mật khẩu mới</Label>
-                      <Input autoComplete='new-password' id='confirmPassword' type='password' className='w-full' {...field} />
+                      <Label htmlFor='confirm_password'>Nhập lại mật khẩu mới</Label>
+                      <Input autoComplete='new-password' id='confirm_password' type='password' className='w-full' {...field} />
                       <FormMessage />
                     </div>
                   </FormItem>
