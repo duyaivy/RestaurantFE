@@ -67,7 +67,7 @@ export default function ProductDetailPage() {
       })
     }
 
-    router.push('/store/cart')
+    router.push('/guest/cart')
   }
 
   return (

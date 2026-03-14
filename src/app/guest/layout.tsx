@@ -1,6 +1,8 @@
 'use client'
 
+import { UserProvider } from '@/context/UserContext'
 import { CartProvider } from '@/context/CartContext'
+import { OrderProvider } from '@/context/OrderContext'
 
 export default function GuestLayout({
   children,
@@ -8,8 +10,12 @@ export default function GuestLayout({
   children: React.ReactNode
 }) {
   return (
-    <CartProvider>
-      {children}
-    </CartProvider>
+    <UserProvider>
+      <CartProvider>
+        <OrderProvider>
+          {children}
+        </OrderProvider>
+      </CartProvider>
+    </UserProvider>
   )
 }
