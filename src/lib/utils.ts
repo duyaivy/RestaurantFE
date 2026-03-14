@@ -3,7 +3,11 @@ import { UseFormSetError } from "react-hook-form"
 import { twMerge } from "tailwind-merge"
 import { EntityError } from "./http"
 import { toast } from "@/components/ui/use-toast"
-
+import authApiRequest from "@/apiRequests/auth"
+import jwt from "jsonwebtoken"
+import { DishStatus, OrderStatus, Role, TableStatus } from '@/constants/type'
+import envConfig from "@/config"
+import { TokenPayload } from "@/types/jwt.types"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -37,11 +41,94 @@ export const handleErrorApi = ({
 }
 
 const isBrowser = typeof window !== 'undefined';
-export const getAccessTokenFromLoacalStorage = () => {
+export const getAccessTokenFromLocalStorage = () => {
   return isBrowser ? localStorage.getItem('accessToken') : null;
 }
   
-export const getRefreshTokenFromLoacalStorage = () => {
+export const getRefreshTokenFromLocalStorage = () => {
   return isBrowser ? localStorage.getItem('refreshToken') : null;
 }
-  
+
+export const setAccessTokenToLoacalStorage = (value: string) => {
+  if (isBrowser) {
+    localStorage.setItem('accessToken', value)
+  }
+}
+export const removeTokensFromLocalStorage = () => {
+  isBrowser && localStorage.removeItem('accessToken')
+  isBrowser && localStorage.removeItem('refreshToken')
+}
+
+export const setRefreshTokenToLoacalStorage = (value: string) => {
+  if (isBrowser) {
+    localStorage.setItem('refreshToken', value)
+  }
+}
+ export const checkAndRefreshToken = async (param?:{
+    onError?:() => void
+    onSuccess?:() => void
+  }) => {
+      const refreshToken = getRefreshTokenFromLocalStorage();
+      const accessToken = getAccessTokenFromLocalStorage();
+
+      if (!refreshToken || !accessToken) return;
+      const decodeAccessToken = decodeToken(accessToken) 
+      const decodeRefreshToken = decodeToken(refreshToken)
+      // thời điểm hiện tại
+      const now = Math.round(new Date().getTime() / 1000); // doi ra giay la lam tron
+      // th refresh hết hạn thì không xử lý nữa
+      if (decodeRefreshToken.exp <= now) return;
+
+      // ví dự access của chúng ta còn lại là 10s
+      // thì mình sẽ kiểm tra cón 1/3 thời gian (3s) thì mình sẽ cho refresh
+
+      if (
+        decodeAccessToken.exp - now <
+        (decodeAccessToken.exp - decodeAccessToken.iat) / 3
+      ) {
+        try {
+          const res = await authApiRequest.refreshToken();
+          setAccessTokenToLoacalStorage(res.payload.data.accessToken);
+          setRefreshTokenToLoacalStorage(res.payload.data.refreshToken);
+            param?.onSuccess && param.onSuccess()
+         
+        } catch (error) {
+          param?.onError && param.onError()
+        
+        }
+      }
+    };
+
+export const formatCurrency = (number: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(number)
+}
+
+export const getVietnameseTableStatus = (status: (typeof TableStatus)[keyof typeof TableStatus]) => {
+  switch (status) {
+    case TableStatus.Available:
+      return 'Có sẵn'
+    case TableStatus.Reserved:
+      return 'Đã đặt'
+    default:
+      return 'Ẩn'
+  }
+}
+export const getVietnameseDishStatus = (status: (typeof DishStatus)[keyof typeof DishStatus]) => {
+  switch (status) {
+    case DishStatus.Available:
+      return 'Có sẵn'
+    case DishStatus.Unavailable:
+      return 'Không có sẵn'
+    default:
+      return 'Ẩn'
+  }
+}
+export const getTableLink = ({ token, tableNumber }: { token: string; tableNumber: number }) => {
+  return envConfig.NEXT_PUBLIC_URL + '/tables/' + tableNumber + '?token=' + token
+}
+export  const decodeToken =(token: string)=>{
+ return jwt.decode(token) as  TokenPayload
+}
