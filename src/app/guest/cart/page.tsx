@@ -30,7 +30,7 @@ export default function CartPage() {
           </div>
           <h2 className="text-lg font-semibold text-white mb-2 tracking-wide">Giỏ hàng trống</h2>
           <p className="text-white/40 text-sm mb-8">Bạn chưa thêm sản phẩm nào</p>
-          <Link href="/store/products">
+          <Link href="/guest/menu">
             <button className="bg-amber-500 hover:bg-amber-400 active:scale-95 transition-all text-black font-bold text-sm px-8 py-3.5 rounded-2xl tracking-wide shadow-[0_4px_20px_rgba(245,158,11,0.35)]">
               Quay lại mua hàng
             </button>
@@ -58,7 +58,7 @@ export default function CartPage() {
     })
     placeOrder()
     clearCart()
-    setTimeout(() => router.push('/store/order-confirmation'), 500)
+    setTimeout(() => router.push('/guest/order-confirmation'), 500)
   }
 
   return (
