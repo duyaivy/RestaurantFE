@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef } from "react";
 import { DishCard } from "@/components/DishCard";
 import { ChatbotWidget } from "@/components/ChatbotWidget";
-import { useDishListQuery } from "@/queries/useDish";
+import { useDishListQuery } from "@/hooks/queries/useDish";
 import { Search, MessageCircle, X, ChevronDown } from "lucide-react";
 
 const chatbotQuestions = [
@@ -48,9 +48,8 @@ export default function MenusPage() {
       {/* SEARCH BAR */}
       <div className="sticky top-16 z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
         <div
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/[0.03] border transition-colors duration-300 ${
-            searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
-          }`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/[0.03] border transition-colors duration-300 ${searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
+            }`}
         >
           <Search size={14} className="text-yellow-600 shrink-0" strokeWidth={1.5} />
           <input
@@ -112,9 +111,8 @@ export default function MenusPage() {
           </div>
           <ChevronDown
             size={14}
-            className={`text-yellow-600 transition-transform duration-300 ${
-              chatbotOpen ? "rotate-180" : "rotate-0"
-            }`}
+            className={`text-yellow-600 transition-transform duration-300 ${chatbotOpen ? "rotate-180" : "rotate-0"
+              }`}
             strokeWidth={1.5}
           />
         </button>

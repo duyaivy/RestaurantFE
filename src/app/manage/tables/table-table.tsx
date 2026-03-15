@@ -49,10 +49,10 @@ import AutoPagination from "@/components/auto-pagination";
 import { TableListResType } from "@/schemaValidations/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
-import { useTableListQuery } from "@/queries/useTable";
+import { useTableListQuery } from "@/hooks/queries/useTable";
 import QRCodeTable from "@/components/qrcode-table";
 
-type TableItem = TableListResType["data"][0];
+type TableItem = TableListResType[0];
 
 const TableTableContext = createContext<{
   setTableIdEdit: (value: number) => void;
@@ -60,10 +60,10 @@ const TableTableContext = createContext<{
   tableDelete: TableItem | null;
   setTableDelete: (value: TableItem | null) => void;
 }>({
-  setTableIdEdit: (value: number | undefined) => {},
+  setTableIdEdit: (value: number | undefined) => { },
   tableIdEdit: undefined,
   tableDelete: null,
-  setTableDelete: (value: TableItem | null) => {},
+  setTableDelete: (value: TableItem | null) => { },
 });
 
 export const columns: ColumnDef<TableItem>[] = [
@@ -94,11 +94,10 @@ export const columns: ColumnDef<TableItem>[] = [
     cell: ({ row }) => (
       <div>
         <QRCodeTable
-        token={row.getValue('token')}
-        tableNumber={row.getValue('number')}
+          token={row.getValue('token')}
+          tableNumber={row.getValue('number')}
+        />
 
-         /> 
-        
       </div>
     ),
   },
@@ -118,12 +117,12 @@ export const columns: ColumnDef<TableItem>[] = [
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Hành động</span>
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={openEditTable}>Sửa</DropdownMenuItem>
             <DropdownMenuItem onClick={openDeleteTable}>Xóa</DropdownMenuItem>
@@ -170,16 +169,18 @@ function AlertDialogDeleteTable({
   );
 }
 // Số lượng item trên 1 trang
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 export default function TableTable() {
   const searchParam = useSearchParams();
   const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
   const pageIndex = page - 1;
+
+  const tableListQuery = useTableListQuery();
+  const data = tableListQuery.data?.payload.data ?? [];
+
   // const params = Object.fromEntries(searchParam.entries())
   const [tableIdEdit, setTableIdEdit] = useState<number | undefined>();
   const [tableDelete, setTableDelete] = useState<TableItem | null>(null);
-  const tableListQuery = useTableListQuery();
-  const data = tableListQuery.data?.payload.data ?? [];
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -254,9 +255,9 @@ export default function TableTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -286,7 +287,7 @@ export default function TableTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    Không có dữ liệu
                   </TableCell>
                 </TableRow>
               )}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { useGetDishQuery } from "@/queries/useDish";
+import { useGetDishQuery } from "@/hooks/queries/useDish";
 import { ShoppingCart, Check } from "lucide-react";
 
 export default function ProductDetailPage() {

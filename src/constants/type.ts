@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const TokenType = {
   ForgotPasswordToken: "ForgotPasswordToken",
   AccessToken: "AccessToken",
@@ -39,18 +41,32 @@ export const TableStatusValues = [
 
 export const OrderStatus = {
   Pending: "PENDING",
-  Processing: "PROCESSING",
-  Rejected: "REJECTED",
-  Delivered: "DELIVERED",
-  Paid: "PAID",
+  Preparing: "PREPARING",
+  Served: "SERVED",
+  Cancelled: "CANCELLED",
+  Completed: "COMPLETED",
 } as const;
 
 export const OrderStatusValues = [
   OrderStatus.Pending,
-  OrderStatus.Processing,
-  OrderStatus.Rejected,
-  OrderStatus.Delivered,
-  OrderStatus.Paid,
+  OrderStatus.Preparing,
+  OrderStatus.Served,
+  OrderStatus.Cancelled,
+  OrderStatus.Completed,
+] as const;
+
+export const OrderItemStatus = {
+  Ordered: "ORDERED",
+  Cooking: "COOKING",
+  Served: "SERVED",
+  Cancelled: "CANCELLED",
+} as const;
+
+export const OrderItemStatusValues = [
+  OrderItemStatus.Ordered,
+  OrderItemStatus.Cooking,
+  OrderItemStatus.Served,
+  OrderItemStatus.Cancelled,
 ] as const;
 
 export const ManagerRoom = "manager" as const;
@@ -66,3 +82,16 @@ export type FailureResponse = {
   message: string;
   data?: unknown;
 };
+
+export type PaginationResponse<T> = {
+  count: number;
+  current: number;
+  results: T[];
+}
+
+
+export const LanguageSchema = z.object({
+  en: z.string(),
+  vi: z.string()
+})
+export type Language = z.infer<typeof LanguageSchema>

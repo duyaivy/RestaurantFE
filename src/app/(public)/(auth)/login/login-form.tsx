@@ -7,13 +7,13 @@ import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLoginMutation } from '@/queries/useAuth'
+import { useLoginMutation } from '@/hooks/queries/useAuth'
 import { toast } from '@/components/ui/use-toast'
 import { handleErrorApi } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
-  const LoginMutation =useLoginMutation();
+  const LoginMutation = useLoginMutation();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -23,23 +23,23 @@ export default function LoginForm() {
   })
   const router = useRouter()
 
-  const onSubmit = async(data: LoginBodyType) => {
+  const onSubmit = async (data: LoginBodyType) => {
     if (LoginMutation.isPending) return
-    try{
+    try {
       const result = await LoginMutation.mutateAsync(data);
-      console.log({result});
-      
+      console.log({ result });
+
       toast({
         description: result.payload.message
       })
-      router.push('/manage/dashboard')  
-    }catch (error: any) {
+      router.push('/manage/dashboard')
+    } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError
       })
     }
-    
+
   }
 
   return (
@@ -51,9 +51,9 @@ export default function LoginForm() {
       <CardContent>
         <Form {...form}>
           <form className='space-y-2 max-w-[600px] flex-shrink-0 w-full'
-           noValidate onSubmit={form.handleSubmit(onSubmit, err =>{
-            console.warn(err);
-           })}>
+            noValidate onSubmit={form.handleSubmit(onSubmit, err => {
+              console.warn(err);
+            })}>
             <div className='grid gap-4'>
               <FormField
                 control={form.control}

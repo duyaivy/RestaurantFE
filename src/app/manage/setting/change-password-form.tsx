@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { ChangePasswordBody, ChangePasswordBodyType } from '@/schemaValidations/account.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { useChangePasswordMutation } from '@/queries/useAccount'
+import { useChangePasswordMutation } from '@/hooks/queries/useAccount'
 import { toast } from '@/components/ui/use-toast'
 import { handleErrorApi } from '@/lib/utils'
 
@@ -32,7 +32,6 @@ export default function ChangePasswordForm() {
       form.reset()
 
     } catch (error) {
-      // console.log('Validation errors:', error)
       handleErrorApi({
         error,
         setError: form.setError
@@ -52,7 +51,6 @@ export default function ChangePasswordForm() {
         <Card className='overflow-hidden' x-chunk='dashboard-07-chunk-4'>
           <CardHeader>
             <CardTitle>Đổi mật khẩu</CardTitle>
-            {/* <CardDescription>Lipsum dolor sit amet, consectetur adipiscing elit</CardDescription> */}
           </CardHeader>
           <CardContent>
             <div className='grid gap-6'>

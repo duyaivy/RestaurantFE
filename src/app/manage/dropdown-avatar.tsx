@@ -10,10 +10,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { useLogoutMutation } from '@/queries/useAuth'
+import { useLogoutMutation } from '@/hooks/queries/useAuth'
 import { handleErrorApi } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { useAccountMe } from '@/queries/useAccount'
+import { useAccountMe } from '@/hooks/queries/useAccount'
 
 
 export default function DropdownAvatar() {

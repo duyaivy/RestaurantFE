@@ -1,21 +1,4 @@
-// import type { NextConfig } from "next";
 
-// const nextConfig: NextConfig = {
-//   images: {
-//     remotePatterns:[
-//       {
-//         protocol: 'http',
-//         hostname: 'localhost',
-       
-//         port: '4000',
-//         pathname: '/**',
-//       }
-//     ]
-//   /* config options here */
-//   },
-// };
-
-// export default nextConfig;
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -32,9 +15,14 @@ const nextConfig: NextConfig = {
         hostname: "via.placeholder.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
-  },  
-  // trailingSlash: true,
+  },
+  trailingSlash: true,
 };
 
 export default nextConfig;

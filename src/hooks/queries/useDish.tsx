@@ -1,11 +1,15 @@
 import dishApiRequest from '@/apiRequests/dish'
 import { UpdateDishBodyType } from '@/schemaValidations/dish.schema'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { QueryDishConfig } from '@/hooks/common/useDishQueryConfig'
+import { DishListConfig } from '@/constants/interface'
 
-export const useDishListQuery = () => {
+export const useDishListQuery = (queryConfig: QueryDishConfig) => {
   return useQuery({
-    queryKey: ['dishes'],
-    queryFn: dishApiRequest.list
+    queryKey: ['dishes', queryConfig],
+    queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
+    placeholderData: keepPreviousData,
+    // select: (data) => data.payload.data.results
   })
 }
 

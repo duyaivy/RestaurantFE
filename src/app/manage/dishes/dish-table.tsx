@@ -38,13 +38,14 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { formatCurrency, getVietnameseDishStatus } from '@/lib/utils'
-import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
+import { useDishQueryConfig } from '@/hooks/common/useDishQueryConfig'
 import { DishListResType } from '@/schemaValidations/dish.schema'
 import EditDish from '@/app/manage/dishes/edit-dish'
 import AddDish from '@/app/manage/dishes/add-dish'
+import { useDishListQuery } from '@/hooks/queries/useDish'
 
-type DishItem = DishListResType['data'][0]
+type DishItem = DishListResType[0]
 
 const DishTableContext = createContext<{
   setDishIdEdit: (value: number) => void
@@ -52,10 +53,10 @@ const DishTableContext = createContext<{
   dishDelete: DishItem | null
   setDishDelete: (value: DishItem | null) => void
 }>({
-  setDishIdEdit: (value: number | undefined) => {},
+  setDishIdEdit: (value: number | undefined) => { },
   dishIdEdit: undefined,
   dishDelete: null,
-  setDishDelete: (value: DishItem | null) => {}
+  setDishDelete: (value: DishItem | null) => { }
 })
 
 export const columns: ColumnDef<DishItem>[] = [
@@ -70,7 +71,7 @@ export const columns: ColumnDef<DishItem>[] = [
       <div>
         <Avatar className='aspect-square w-[100px] h-[100px] rounded-md object-cover'>
           <AvatarImage src={row.getValue('image')} />
-          <AvatarFallback className='rounded-none'>{row.original.name}</AvatarFallback>
+          <AvatarFallback className='rounded-none'>{row.original.name.vi}</AvatarFallback>
         </Avatar>
       </div>
     )
@@ -78,7 +79,7 @@ export const columns: ColumnDef<DishItem>[] = [
   {
     accessorKey: 'name',
     header: 'Tên',
-    cell: ({ row }) => <div className='capitalize'>{row.getValue('name')}</div>
+    cell: ({ row }) => <div className='capitalize'>{row.original.name.vi}</div>
   },
   {
     accessorKey: 'price',
@@ -89,7 +90,7 @@ export const columns: ColumnDef<DishItem>[] = [
     accessorKey: 'description',
     header: 'Mô tả',
     cell: ({ row }) => (
-      <div dangerouslySetInnerHTML={{ __html: row.getValue('description') }} className='whitespace-pre-line' />
+      <div dangerouslySetInnerHTML={{ __html: row.original.description.vi }} className='whitespace-pre-line' />
     )
   },
   {
@@ -149,7 +150,7 @@ function AlertDialogDeleteDish({
         <AlertDialogHeader>
           <AlertDialogTitle>Xóa món ăn?</AlertDialogTitle>
           <AlertDialogDescription>
-            Món <span className='bg-foreground text-primary-foreground rounded px-1'>{dishDelete?.name}</span> sẽ bị xóa
+            Món <span className='bg-foreground text-primary-foreground rounded px-1'>{dishDelete?.name?.vi}</span> sẽ bị xóa
             vĩnh viễn
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -161,23 +162,21 @@ function AlertDialogDeleteDish({
     </AlertDialog>
   )
 }
-// Số lượng item trên 1 trang
-const PAGE_SIZE = 10
 export default function DishTable() {
-  const searchParam = useSearchParams()
-  const page = searchParam.get('page') ? Number(searchParam.get('page')) : 1
+  const queryConfig = useDishQueryConfig()
+  const PAGE_SIZE = Number(queryConfig.limit) || 10
+  const page = Number(queryConfig.page) || 1
   const pageIndex = page - 1
+
+  const dishListQuery = useDishListQuery(queryConfig)
+  const data = dishListQuery.data?.payload.data.results || []
+
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>()
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null)
-  const data: any[] = []
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [pagination, setPagination] = useState({
-    pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-    pageSize: PAGE_SIZE //default page size
-  })
 
   const table = useReactTable({
     data,
@@ -190,23 +189,18 @@ export default function DishTable() {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination
+      pagination: {
+        pageIndex,
+        pageSize: PAGE_SIZE
+      }
     }
   })
-
-  useEffect(() => {
-    table.setPagination({
-      pageIndex,
-      pageSize: PAGE_SIZE
-    })
-  }, [table, pageIndex])
 
   return (
     <DishTableContext.Provider value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}>

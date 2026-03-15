@@ -10,12 +10,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useAccountMe } from '@/queries/useAccount'
-import { useUpdateMeMutation } from '@/queries/useAccount'
+import { useAccountMe } from '@/hooks/queries/useAccount'
+import { useUpdateMeMutation } from '@/hooks/queries/useAccount'
 
 import { handleErrorApi } from '@/lib/utils'
 import { toast } from '@/components/ui/use-toast'
-import { useUploadMediaMutation } from '@/queries/UseMedia'
+import { useUploadMediaMutation } from '@/hooks/queries/UseMedia'
 export default function UpdateProfileForm() {
   const [file, setFile] = useState<File | null>(null)
   const avaterInputRef = useRef<HTMLInputElement>(null)
