@@ -31,7 +31,7 @@ export default function EditEmployee({
   const [file, setFile] = useState<File | null>(null)
   const avatarInputRef = useRef<HTMLInputElement | null>(null)
   const form = useForm<UpdateEmployeeAccountBodyType>({
-    resolver: zodResolver(UpdateEmployeeAccountBody),
+    resolver: zodResolver(UpdateEmployeeAccountBody) as any,
     defaultValues: {
       name: '',
       email: '',

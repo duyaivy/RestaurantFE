@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  // chuưa đăng nhâpk thì không vào privatePaths
+  // chưa đăng nhâpk thì không vào privatePaths
   if (privatePaths.some((path) => pathname.startsWith(path)) && !refreshToken) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -25,9 +25,9 @@ export function middleware(request: NextRequest) {
     !accessToken &&
     refreshToken
   ) {
-    const url = new URL('/refresh-token', request.url);
-    url.searchParams.set('refreshToken', refreshToken);
-    url.searchParams.set('redirect', pathname);
+    const url = new URL("/refresh-token", request.url);
+    url.searchParams.set("refreshToken", refreshToken);
+    url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
   return NextResponse.next();

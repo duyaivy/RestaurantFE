@@ -10,17 +10,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useAccountMe } from '@/queries/useAccount'
-import { useUpdateMeMutation } from '@/queries/useAccount'
-import { useUploadMediaMutation } from '@/queries/useMedia'
+import { useAccountMe } from '@/hooks/queries/useAccount'
+import { useUpdateMeMutation } from '@/hooks/queries/useAccount'
+
 import { handleErrorApi } from '@/lib/utils'
 import { toast } from '@/components/ui/use-toast'
+import { useUploadMediaMutation } from '@/hooks/queries/UseMedia'
 export default function UpdateProfileForm() {
   const [file, setFile] = useState<File | null>(null)
   const avaterInputRef = useRef<HTMLInputElement>(null)
-  const {data, refetch} = useAccountMe()
+  const { data, refetch } = useAccountMe()
   const updateMeMutation = useUpdateMeMutation()
-  const uploadMediaMutation= useUploadMediaMutation()
+  const uploadMediaMutation = useUploadMediaMutation()
 
   const form = useForm<UpdateMeBodyType>({
     resolver: zodResolver(UpdateMeBody),
@@ -31,20 +32,20 @@ export default function UpdateProfileForm() {
   })
 
 
-  const avatar= form.watch('avatar')
-  const name= form.watch('name') 
+  const avatar = form.watch('avatar')
+  const name = form.watch('name')
 
   useEffect(() => {
-    if(data) {
-      const {name, avatar} = data.payload.data
+    if (data) {
+      const { name, avatar } = data.payload.data
       form.reset({
-      name,
-      avatar: avatar ?? ''
-    })
-  }
-}, [form, data])
-  const previewAvatar = useMemo(() =>   {
-    if(file){
+        name,
+        avatar: avatar ?? ''
+      })
+    }
+  }, [form, data])
+  const previewAvatar = useMemo(() => {
+    if (file) {
       return URL.createObjectURL(file)
     }
     return avatar
@@ -52,21 +53,21 @@ export default function UpdateProfileForm() {
 
   const reset = () => {
     form.reset()
-    setFile (null)
+    setFile(null)
   }
   const onSubmit = async (values: UpdateMeBodyType) => {
     if (updateMeMutation.isPending) return
     try {
       let body = values
-      if(file){
+      if (file) {
         const formData = new FormData()
         formData.append('file', file)
         const uploadImageResult = await uploadMediaMutation.mutateAsync(formData)
-        const imageUrl= uploadImageResult.payload.data
+        const imageUrl = uploadImageResult.payload.data
         body = {
           ...values,
           avatar: imageUrl
-            }
+        }
       }
       const result = await updateMeMutation.mutateAsync(body)
       toast({
@@ -85,9 +86,9 @@ export default function UpdateProfileForm() {
   }
   return (
     <Form {...form}>
-      <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' 
-      onReset={reset}
-      onSubmit={form.handleSubmit(onSubmit)}
+      <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8'
+        onReset={reset}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <Card x-chunk='dashboard-07-chunk-0'>
           <CardHeader>
@@ -107,13 +108,14 @@ export default function UpdateProfileForm() {
                         <AvatarFallback className='rounded-none'>{name}</AvatarFallback>
                       </Avatar>
                       <input type='file' accept='image/*' className='hidden' ref={avaterInputRef}
-                      onChange ={
-                        (e) => { const file = e.target.files?.[0];
-                          if(file){
-                            setFile (file)
-                            field.onChange('http://localhost:3000/' + field.name) // just to trigger form change
-                          }
-                       } }/>
+                        onChange={
+                          (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setFile(file)
+                              field.onChange('http://localhost:3000/' + field.name) // just to trigger form change
+                            }
+                          }} />
                       <button
                         className='flex aspect-square w-[100px] items-center justify-center rounded-md border border-dashed'
                         type='button'

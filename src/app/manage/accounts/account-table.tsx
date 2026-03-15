@@ -44,7 +44,7 @@ import {
 import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
 
-type AccountItem = AccountListResType['data'][0]
+type AccountItem = AccountListResType[0]
 
 const AccountTableContext = createContext<{
   setEmployeeIdEdit: (value: number) => void
@@ -52,10 +52,10 @@ const AccountTableContext = createContext<{
   employeeDelete: AccountItem | null
   setEmployeeDelete: (value: AccountItem | null) => void
 }>({
-  setEmployeeIdEdit: (value: number | undefined) => {},
+  setEmployeeIdEdit: (value: number | undefined) => { },
   employeeIdEdit: undefined,
   employeeDelete: null,
-  setEmployeeDelete: (value: AccountItem | null) => {}
+  setEmployeeDelete: (value: AccountItem | null) => { }
 })
 
 export const columns: ColumnDef<AccountType>[] = [
@@ -207,7 +207,7 @@ export default function AccountTable() {
   return (
     <AccountTableContext.Provider value={{ employeeIdEdit, setEmployeeIdEdit, employeeDelete, setEmployeeDelete }}>
       <div className='w-full'>
-        <EditEmployee id={employeeIdEdit} setId={setEmployeeIdEdit} onSubmitSuccess={() => {}} />
+        <EditEmployee id={employeeIdEdit} setId={setEmployeeIdEdit} onSubmitSuccess={() => { }} />
         <AlertDialogDeleteAccount employeeDelete={employeeDelete} setEmployeeDelete={setEmployeeDelete} />
         <div className='flex items-center py-4'>
           <Input

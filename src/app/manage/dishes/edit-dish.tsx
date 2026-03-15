@@ -12,11 +12,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Upload } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { toast } from '@/components/ui/use-toast'
 import { getVietnameseDishStatus, handleErrorApi } from '@/lib/utils'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { UpdateDishBody, UpdateDishBodyType } from '@/schemaValidations/dish.schema'
@@ -35,7 +34,7 @@ export default function EditDish({
   const [file, setFile] = useState<File | null>(null)
   const imageInputRef = useRef<HTMLInputElement | null>(null)
   const form = useForm<UpdateDishBodyType>({
-    resolver: zodResolver(UpdateDishBody),
+    resolver: zodResolver(UpdateDishBody) as any,
     defaultValues: {
       name: '',
       description: '',
