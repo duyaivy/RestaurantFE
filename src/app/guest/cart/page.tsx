@@ -82,7 +82,7 @@ export default function CartPage() {
 
             {/* TOP: image + info + delete + qty */}
             <div className="flex gap-3 p-3.5 items-start">
-              <div className="relative w-[68px] h-[68px] rounded-[14px] overflow-hidden shrink-0">
+              <div className="relative w-17 h-17 rounded-[14px] overflow-hidden shrink-0">
                 <NextImage src={item.image} alt={item.name} fill sizes="68px" className="object-cover" />
               </div>
 
@@ -96,38 +96,40 @@ export default function CartPage() {
               </div>
 
               <div className="flex flex-col items-end gap-2.5 shrink-0">
+                {/* Trash — w-8 h-8 */}
                 <button
                   onClick={() => removeItem(item.id)}
                   className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-red-500/10 transition-colors group"
                 >
-                  <Trash2 className="w-5 h-5 text-white/30 group-hover:text-red-400 transition-colors" strokeWidth={1.5} />
+                  <Trash2 className="w-4 h-4 text-white/30 group-hover:text-red-400 transition-colors" strokeWidth={1.5} />
                 </button>
+                {/* − qty + — cùng w-8 h-8 với thùng rác */}
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                    className="w-[30px] h-[30px] rounded-[10px] bg-white/[0.06] border border-white/[0.08] flex items-center justify-center hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-center hover:opacity-60 transition-opacity"
                   >
-                    <Minus className="w-3 h-3 text-white/60" strokeWidth={2} />
+                    <Minus className="w-4 h-4 text-white/50" strokeWidth={2} />
                   </button>
-                  <span className="text-[15px] font-bold text-white tabular-nums w-5 text-center">{item.quantity}</span>
+                  <span className="text-[14px] font-bold text-white tabular-nums w-5 text-center">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="w-[30px] h-[30px] rounded-[10px] bg-amber-500 hover:bg-amber-400 flex items-center justify-center transition-colors"
+                    className="flex items-center justify-center hover:opacity-60 transition-opacity"
                   >
-                    <Plus className="w-3 h-3 text-black" strokeWidth={2.5} />
+                    <Plus className="w-4 h-4 text-amber-400" strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
             </div>
 
             {/* DIVIDER */}
-            <div className="h-px bg-white/[0.05]" />
+            <div className="h-px bg-white/5" />
 
             {/* BOTTOM ROW: note trigger (right) */}
             {editingNoteId !== item.id && (
               <div className="flex items-center justify-between px-3.5 py-1.5">
                 {item.note ? (
-                  <p className="text-[10px] text-amber-400/60 italic truncate flex-1 mr-3">"{item.note}"</p>
+                  <p className="text-[10px] text-amber-400/60 italic truncate flex-1 mr-3">{item.note}</p>
                 ) : (
                   <span />
                 )}
@@ -143,7 +145,7 @@ export default function CartPage() {
 
             {/* NOTE EDITOR — inside card */}
             {editingNoteId === item.id && (
-              <div className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/[0.15] bg-amber-500/[0.03]">
+              <div className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/15 bg-amber-500/3">
                 <textarea
                   autoFocus
                   value={editingNoteValue}
@@ -183,7 +185,7 @@ export default function CartPage() {
             <span className="text-green-400/70">Miễn phí</span>
           </div>
 
-          <div className="h-px bg-white/[0.06] mb-4" />
+          <div className="h-px bg-white/6 mb-4" />
 
           <div className="flex justify-between items-center mb-4">
             <span className="text-[13px] text-white font-medium">Tổng cộng</span>
@@ -196,7 +198,7 @@ export default function CartPage() {
           <div className="flex gap-2.5">
             <button
               onClick={() => setShowStaffCall(true)}
-              className="flex-1 h-12 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.07] text-white/50 text-[12px] font-medium flex items-center justify-center gap-2 transition-all"
+              className="flex-1 h-12 rounded-2xl border border-white/8 bg-white/4 hover:bg-white/[0.07] text-white/50 text-[12px] font-medium flex items-center justify-center gap-2 transition-all"
             >
               <MessageSquare className="w-3.5 h-3.5" strokeWidth={1.5} />
               Gọi nhân viên
@@ -222,7 +224,7 @@ export default function CartPage() {
 
       {/* STAFF CALL DIALOG */}
       <Dialog open={showStaffCall} onOpenChange={setShowStaffCall}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-[24px] bg-[#161412] border border-white/[0.08] p-6">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-[#161412] border border-white/8 p-6">
           {!isSubmitted ? (
             <div className="space-y-5">
               <div className="text-center">
@@ -236,13 +238,13 @@ export default function CartPage() {
                 value={staffRequest}
                 onChange={(e) => setStaffRequest(e.target.value)}
                 placeholder="Ví dụ: Cần thêm nước lạnh, muốn gặp nhân viên..."
-                className="w-full px-3.5 py-3 rounded-2xl bg-black/30 border border-white/[0.08] text-white placeholder:text-white/25 text-[13px] resize-none outline-none focus:border-amber-500/30 transition-colors"
+                className="w-full px-3.5 py-3 rounded-2xl bg-black/30 border border-white/8 text-white placeholder:text-white/25 text-[13px] resize-none outline-none focus:border-amber-500/30 transition-colors"
                 rows={3}
               />
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowStaffCall(false)}
-                  className="flex-1 h-11 rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-white/[0.07] transition-all"
+                  className="flex-1 h-11 rounded-2xl border border-white/8 bg-white/4 text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-white/[0.07] transition-all"
                 >
                   <X className="w-3.5 h-3.5" strokeWidth={2} /> Huỷ
                 </button>

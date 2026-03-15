@@ -136,7 +136,7 @@ export default function OrderConfirmationPage() {
                   value={editingNoteValue}
                   onChange={(e) => setEditingNoteValue(e.target.value)}
                   placeholder="Ghi chú cho món này..."
-                  rows={2}
+                  rows={1}
                   className="flex-1 bg-[#0f0e0c] border border-[#2e2820] rounded-xl px-3 py-2 text-[12px] text-white placeholder:text-white/40 outline-none focus:border-amber-500/40 resize-none"
                 />
 

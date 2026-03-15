@@ -62,7 +62,7 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-[#0a0908] pb-40">
 
       {/* Hero Image */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
+      <div className="relative w-full aspect-4/3 overflow-hidden">
         <Image
           src={product.image}
           alt={product.name}
@@ -70,7 +70,7 @@ export default function ProductDetailPage() {
           height={300}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908] via-[#0a0908]/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#0a0908] via-[#0a0908]/20 to-transparent" />
 
         <button
           onClick={() => router.back()}
@@ -96,14 +96,14 @@ export default function ProductDetailPage() {
             <span className="text-sm font-normal text-white/30 ml-1">₫</span>
           </p>
           <div className="mt-4 flex items-center gap-2">
-            <div className="h-px flex-1 bg-white/[0.06]" />
+            <div className="h-px flex-1 bg-white/6" />
             <div className="w-1 h-1 rounded-full bg-amber-500/50" />
-            <div className="h-px flex-1 bg-white/[0.06]" />
+            <div className="h-px flex-1 bg-white/6" />
           </div>
         </div>
 
         {/* Description */}
-        <div className="bg-[#161412] rounded-2xl p-4 border border-white/[0.06]">
+        <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
           <p className="text-[10px] tracking-widest uppercase text-white/30 mb-2">Mô tả</p>
           <p className="text-white/70 text-[13px] leading-relaxed">
             {product.description}
@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Note */}
-        <div className="bg-[#161412] rounded-2xl p-4 border border-white/[0.06]">
+        <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
           <label className="text-[10px] tracking-widest uppercase text-white/30 mb-2 block">
             Ghi chú
           </label>
@@ -120,18 +120,18 @@ export default function ProductDetailPage() {
             onChange={(e) => setNote(e.target.value)}
             placeholder="Ví dụ: không cay, ít muối..."
             rows={3}
-            className="w-full bg-black/30 text-white/80 text-[13px] placeholder:text-white/20 rounded-xl px-3 py-2.5 resize-none border border-white/[0.08] focus:outline-none focus:border-amber-500/30 transition-colors"
+            className="w-full bg-black/30 text-white/80 text-[13px] placeholder:text-white/20 rounded-xl px-3 py-2.5 resize-none border border-white/8 focus:outline-none focus:border-amber-500/30 transition-colors"
           />
         </div>
 
         {/* Quantity + Subtotal */}
-        <div className="bg-[#161412] rounded-2xl p-4 border border-white/[0.06]">
+        <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
           <p className="text-[10px] tracking-widest uppercase text-white/30 mb-3">Số lượng</p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 rounded-xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center text-white/50 hover:border-amber-500/30 hover:text-amber-400 transition-colors"
+                className="w-10 h-10 rounded-xl border border-white/8 bg-white/4 flex items-center justify-center text-white/50 hover:border-amber-500/30 hover:text-amber-400 transition-colors"
               >
                 <Minus className="w-4 h-4" />
               </button>
@@ -159,7 +159,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Bottom Action Bar — fixed above nav */}
-      <div className="fixed bottom-[64px] left-0 right-0 z-30 bg-[#0a0908]/95 backdrop-blur-md border-t border-white/[0.06] px-5 py-4">
+      <div className="fixed bottom-16 left-0 right-0 z-30 bg-[#0a0908]/95 backdrop-blur-md border-t border-white/[0.06] px-5 py-4">
         <div className="max-w-sm mx-auto">
           <button
             onClick={handleAddToCart}
