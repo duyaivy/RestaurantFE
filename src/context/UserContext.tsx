@@ -11,10 +11,18 @@ export interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [guestName, setGuestName] = useState<string>('')
+  const [guestName, setGuestName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('guestName') || ''
+    }
+    return ''
+  })
 
   const handleSetGuestName = useCallback((name: string) => {
     setGuestName(name)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guestName', name)
+    }
   }, [])
 
   const isLoggedIn = guestName.length > 0
