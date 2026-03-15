@@ -1,8 +1,8 @@
-" use client";
+"use client";
 
 import {
   checkAndRefreshToken,
-  
+
 } from "@/lib/utils";
 import { usePathname, redirect } from "next/navigation";
 import { useEffect } from "react";

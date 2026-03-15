@@ -45,7 +45,7 @@ export default function ProductDetailPage() {
     for (let i = 0; i < quantity; i++) {
       addItem({
         id: product.id,
-        name: product.name,
+        name: product.name.vi,
         price: product.price,
         image: product.image,
         note: note || undefined,
@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
     for (let i = 0; i < quantity; i++) {
       addItem({
         id: product.id,
-        name: product.name,
+        name: product.name.vi,
         price: product.price,
         image: product.image,
         note: note || undefined,
@@ -78,13 +78,13 @@ export default function ProductDetailPage() {
           <div className="w-32 h-32 bg-secondary rounded-xl overflow-hidden">
             <img
               src={product.image}
-              alt={product.name}
+              alt={product.name.vi}
               className="w-full h-full object-cover"
             />
           </div>
 
           <div className="flex-1">
-            <h1 className="text-lg font-bold mb-2">{product.name}</h1>
+            <h1 className="text-lg font-bold mb-2">{product.name.vi}</h1>
 
             <p className="text-xl font-bold text-primary">
               {product.price.toLocaleString()} VND
@@ -97,7 +97,7 @@ export default function ProductDetailPage() {
       <div className="p-4 max-w-screen-sm mx-auto space-y-4">
         <div className="bg-card rounded-xl p-4 border">
           <h3 className="font-semibold mb-2">Mô tả</h3>
-          <p>{product.description}</p>
+          <p>{product.description.vi}</p>
         </div>
 
         <div className="bg-card rounded-xl p-4 border">

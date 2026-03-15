@@ -9,7 +9,7 @@ export const useDishListQuery = (queryConfig: QueryDishConfig) => {
     queryKey: ['dishes', queryConfig],
     queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
     placeholderData: keepPreviousData,
-    // select: (data) => data.payload.data.results
+
   })
 }
 

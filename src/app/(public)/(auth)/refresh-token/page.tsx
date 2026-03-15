@@ -4,12 +4,12 @@ import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
 } from "@/lib/utils";
-import { useLogoutMutation } from "@/hooks/queries/useAuth";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, Suspense } from "react";
+import { Loader2Icon } from "lucide-react";
 
-export default function RefreshTokenPage() {
+function RefreshTokenComponent() {
   const route = useRouter();
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get('refreshToken');
@@ -26,5 +26,20 @@ export default function RefreshTokenPage() {
       });
     }
   }, [route, refreshTokenFromUrl, redirectPathname]);
-  return <div>Refresh token</div>;
+  return <div>
+    <Loader2Icon className='animate-spin size-5' />
+    Refresh token</div>;
+}
+
+export default function RefreshTokenPage() {
+  return (
+    <Suspense fallback={
+      <div>
+        <Loader2Icon className='animate-spin size-5' />
+        Refresh token
+      </div>
+    }>
+      <RefreshTokenComponent />
+    </Suspense>
+  );
 }

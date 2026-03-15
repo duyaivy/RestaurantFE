@@ -1,11 +1,11 @@
 'use client'
 import { getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
 import { useLogoutMutation } from '@/hooks/queries/useAuth'
-import { get } from 'http'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, Suspense } from 'react'
+import { Loader2Icon } from 'lucide-react'
 
-export default function LogoutPage() {
+function LogoutComponent() {
   const { mutateAsync } = useLogoutMutation()
   const route = useRouter()
   const searchParams = useSearchParams()
@@ -27,5 +27,15 @@ export default function LogoutPage() {
   }, [mutateAsync, route, refreshTokenFromUrl, accessTokenFromUrl])
   return (
     <div>LogoutPage</div>
+  )
+}
+
+export default function LogoutPage() {
+  return (
+    <Suspense fallback={<div>
+      <Loader2Icon className='animate-spin size-5' />
+      Logout</div>}>
+      <LogoutComponent />
+    </Suspense>
   )
 }
