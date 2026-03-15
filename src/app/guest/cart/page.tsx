@@ -17,7 +17,7 @@ export default function CartPage() {
   const [showStaffCall, setShowStaffCall] = useState(false)
   const [staffRequest, setStaffRequest] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null)
   const [editingNoteValue, setEditingNoteValue] = useState('')
   const [isOrdering, setIsOrdering] = useState(false)
 
@@ -53,7 +53,7 @@ export default function CartPage() {
     setIsOrdering(true)
     items.forEach((item) => {
       for (let i = 0; i < item.quantity; i++) {
-        addItem({ id: item.id, name: item.name, price: item.price, image: item.image, note: item.note })
+        addItem({ id: item.id.toString(), name: item.name, price: item.price, image: item.image, note: item.note })
       }
     })
     placeOrder()
@@ -65,7 +65,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-[#0a0908] pb-40">
 
       {/* HEADER */}
-      <div className="sticky top-16 z-20 bg-[#0a0908]/95 backdrop-blur-md border-b border-white/5 px-5 py-4">
+      <div className="z-20 bg-[#0a0908]/95 backdrop-blur-md border-b border-white/5 px-5 py-4">
         <div className="max-w-sm mx-auto flex items-center justify-between">
           <h1 className="text-[17px] font-semibold text-white tracking-wide">Giỏ hàng</h1>
           <span className="text-[10px] text-amber-500/70 tracking-[0.35em] uppercase font-medium">

@@ -47,7 +47,7 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-30 bg-[#0a0908]/95 backdrop-blur-md border-b border-white/[0.06]">
         <div className="flex items-center justify-center max-w-screen-sm mx-auto h-14 px-4">
           <h1 className="text-[15px] font-semibold text-white tracking-wide">
-            Đặt Món Online
+            Bigboy Restaurant
           </h1>
         </div>
       </header>
@@ -79,9 +79,8 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
 
                 <div className="relative z-10">
                   <Icon
-                    className={`w-5 h-5 transition-colors ${
-                      isActive ? 'text-amber-400' : 'text-white/30'
-                    }`}
+                    className={`w-5 h-5 transition-colors ${isActive ? 'text-amber-400' : 'text-white/30'
+                      }`}
                     strokeWidth={isActive ? 2 : 1.5}
                   />
                   {item.badge !== undefined && item.badge > 0 && (
@@ -92,9 +91,8 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
                 </div>
 
                 <span
-                  className={`text-[10px] font-medium z-10 transition-colors ${
-                    isActive ? 'text-amber-400' : 'text-white/30'
-                  }`}
+                  className={`text-[10px] font-medium z-10 transition-colors ${isActive ? 'text-amber-400' : 'text-white/30'
+                    }`}
                 >
                   {item.label}
                 </span>

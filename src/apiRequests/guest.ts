@@ -16,7 +16,7 @@ const guestApiRequest = {
   }> | null,
 
   sLogin: (body: GuestLoginBodyType) =>
-    http.post<SuccessResponse<GuestLoginResType>>("guest/auth/login", body),
+    http.post<SuccessResponse<GuestLoginResType>>("guests/login/", body),
 
   login: (body: GuestLoginBodyType) =>
     http.post<SuccessResponse<GuestLoginResType>>("/api/guest/auth/login", body, {
@@ -29,7 +29,7 @@ const guestApiRequest = {
     },
   ) =>
     http.post(
-      "guest/auth/logout",
+      "guests/logout/",
       {
         refreshToken: body.refreshToken,
       },
@@ -39,11 +39,11 @@ const guestApiRequest = {
         },
       },
     ),
-  logout: () => http.post("/api/guest/auth/logout", null, { baseUrl: "" }),
+  logout: () => http.post("/api/guest/logout", null, { baseUrl: "" }),
 
   sRefreshToken: (body: RefreshTokenBodyType) =>
     http.post<SuccessResponse<RefreshTokenResType>>(
-      "guest/auth/refresh-token",
+      "guests/refresh-token/",
       body,
     ),
   async refreshToken() {
@@ -51,7 +51,7 @@ const guestApiRequest = {
       return this.requestTokenRequest;
     }
     this.requestTokenRequest = http.post<SuccessResponse<RefreshTokenResType>>(
-      "/api/guest/auth/refresh-token",
+      "/api/guest/refresh-token",
       null,
       { baseUrl: "" },
     );

@@ -125,7 +125,7 @@ export default function MenusPage() {
       </div>
 
       {/* SEARCH BAR */}
-      <div className="sticky top-16 z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
+      <div className="z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
         <div
           className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/3 border transition-colors duration-300 ${searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
             }`}
