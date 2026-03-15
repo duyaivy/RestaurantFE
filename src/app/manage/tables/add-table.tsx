@@ -8,21 +8,31 @@ import { PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { getVietnameseTableStatus } from '@/lib/utils'
+import { getVietnameseTableStatus, handleErrorApi } from '@/lib/utils'
 import { CreateTableBody, CreateTableBodyType } from '@/schemaValidations/table.schema'
 import { TableStatus, TableStatusValues } from '@/constants/type'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useAddTableMutation } from '@/hooks/queries/useTable'
 
 export default function AddTable() {
   const [open, setOpen] = useState(false)
-  const form = useForm<CreateTableBodyType>({
-    resolver: zodResolver(CreateTableBody),
+  const { mutateAsync: addTable, isPending } = useAddTableMutation()
+  const form = useForm<CreateTableBodyType, any, CreateTableBodyType>({
+    resolver: zodResolver(CreateTableBody) as any,
     defaultValues: {
       number: 0,
       capacity: 2,
       status: TableStatus.Hidden
     }
   })
+  const onSubmit = async (data: CreateTableBodyType) => {
+    try {
+      await addTable(data)
+      setOpen(false)
+    } catch (error) {
+      handleErrorApi({ error, setError: form.setError })
+    }
+  }
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
@@ -36,7 +46,7 @@ export default function AddTable() {
           <DialogTitle>Thêm bàn</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-table-form'>
+          <form noValidate onSubmit={form.handleSubmit(onSubmit)} className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-table-form'>
             <div className='grid gap-4 py-4'>
               <FormField
                 control={form.control}
@@ -101,7 +111,7 @@ export default function AddTable() {
           </form>
         </Form>
         <DialogFooter>
-          <Button type='submit' form='add-table-form'>
+          <Button isLoading={isPending} type='submit' form='add-table-form'>
             Thêm
           </Button>
         </DialogFooter>

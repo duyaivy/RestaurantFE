@@ -1,29 +1,30 @@
-'use client'
+"use client";
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
-import { useGetDishQuery } from '@/queries/useDish'
+
 import { ShoppingCart, Check, ChevronLeft, Minus, Plus } from 'lucide-react'
 import Image from 'next/image'
+import { useGetDishQuery } from '@/hooks/queries/useDish';
 
 export default function ProductDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const { addItem } = useCart()
+  const params = useParams();
+  const router = useRouter();
+  const { addItem } = useCart();
 
-  const dishId = Number(params.id)
+  const dishId = Number(params.id);
 
   const { data, isLoading } = useGetDishQuery({
     id: dishId,
-    enabled: !!dishId
-  })
+    enabled: !!dishId,
+  });
 
-  const product = data?.payload.data
+  const product = data?.payload.data;
 
-  const [quantity, setQuantity] = useState(1)
-  const [note, setNote] = useState('')
-  const [isAdded, setIsAdded] = useState(false)
+  const [quantity, setQuantity] = useState(1);
+  const [note, setNote] = useState("");
+  const [isAdded, setIsAdded] = useState(false);
 
   if (isLoading) {
     return (
@@ -33,7 +34,7 @@ export default function ProductDetailPage() {
           <p className="text-amber-400/60 text-[10px] tracking-widest uppercase">Đang tải...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!product) {
@@ -41,18 +42,18 @@ export default function ProductDetailPage() {
       <div className="min-h-screen flex items-center justify-center bg-[#0a0908]">
         <p className="text-white/30 text-sm tracking-widest uppercase">Không tìm thấy sản phẩm</p>
       </div>
-    )
+    );
   }
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
       addItem({
         id: product.id,
-        name: product.name,
+        name: product.name.vi,
         price: product.price,
         image: product.image,
-        note: note || undefined
-      })
+        note: note || undefined,
+      });
     }
     setIsAdded(true)
     setTimeout(() => setIsAdded(false), 2000)
@@ -65,7 +66,7 @@ export default function ProductDetailPage() {
       <div className="relative w-full aspect-4/3 overflow-hidden">
         <Image
           src={product.image}
-          alt={product.name}
+          alt={product.name.vi}
           width={400}
           height={300}
           className="w-full h-full object-cover"
@@ -89,7 +90,7 @@ export default function ProductDetailPage() {
             Thực đơn
           </span>
           <h1 className="mt-1 text-[22px] font-semibold text-white leading-snug">
-            {product.name}
+            {product.name.vi}
           </h1>
           <p className="text-[24px] font-bold text-amber-400 mt-2 tabular-nums">
             {product.price.toLocaleString('vi-VN')}
@@ -106,7 +107,7 @@ export default function ProductDetailPage() {
         <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
           <p className="text-[10px] tracking-widest uppercase text-white/30 mb-2">Mô tả</p>
           <p className="text-white/70 text-[13px] leading-relaxed">
-            {product.description}
+            {product.description.vi}
           </p>
         </div>
 
@@ -155,7 +156,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Bottom Action Bar — fixed above nav */}
@@ -163,11 +163,10 @@ export default function ProductDetailPage() {
         <div className="max-w-sm mx-auto">
           <button
             onClick={handleAddToCart}
-            className={`w-full h-13 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[15px] font-bold transition-all duration-300 active:scale-[0.98] ${
-              isAdded
-                ? 'bg-green-500/15 border border-green-500/30 text-green-400'
-                : 'bg-amber-500 hover:bg-amber-400 text-black shadow-[0_4px_20px_rgba(245,158,11,0.35)]'
-            }`}
+            className={`w-full h-13 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[15px] font-bold transition-all duration-300 active:scale-[0.98] ${isAdded
+              ? 'bg-green-500/15 border border-green-500/30 text-green-400'
+              : 'bg-amber-500 hover:bg-amber-400 text-black shadow-[0_4px_20px_rgba(245,158,11,0.35)]'
+              }`}
           >
             {isAdded ? (
               <>
@@ -180,10 +179,9 @@ export default function ProductDetailPage() {
                 Thêm vào giỏ hàng
               </>
             )}
-          </button>
-        </div>
-      </div>
-
-    </div>
-  )
+          </button >
+        </div >
+      </div >
+    </div >
+  );
 }

@@ -166,12 +166,14 @@
     font-size: 16px;
   }
 
-  /* Touch-friendly */
+  /* 
+
   button {
     min-height: 44px;
     min-width: 44px;
   }
 
+  */
   [role="dialog"] {
     @apply rounded-2xl;
   }
@@ -181,13 +183,16 @@
     width: 4px;
     height: 4px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #2e2821;
     border-radius: 999px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #e07832;
   }

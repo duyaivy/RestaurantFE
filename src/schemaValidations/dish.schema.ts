@@ -1,4 +1,4 @@
-import { DishStatusValues } from '@/constants/type'
+import { DishStatusValues, LanguageSchema } from '@/constants/type'
 import z from 'zod'
 
 export const CreateDishBody = z.object({
@@ -6,33 +6,30 @@ export const CreateDishBody = z.object({
   price: z.coerce.number().positive(),
   description: z.string().max(10000),
   image: z.string().url(),
-  status: z.enum(DishStatusValues).optional()
+  status: z.enum(DishStatusValues).optional(),
+  category_id: z.number()
 })
+
 
 export type CreateDishBodyType = z.TypeOf<typeof CreateDishBody>
 
 export const DishSchema = z.object({
   id: z.number(),
-  name: z.string(),
+  name: LanguageSchema,
   price: z.coerce.number(),
-  description: z.string(),
+  description: LanguageSchema,
   image: z.string(),
   status: z.enum(DishStatusValues),
-  createdAt: z.date(),
-  updatedAt: z.date()
+  created_at: z.date(),
+  updated_at: z.date(),
+  category_id: z.number()
 })
 
-export const DishRes = z.object({
-  data: DishSchema,
-  message: z.string()
-})
+export const DishRes = DishSchema
 
 export type DishResType = z.TypeOf<typeof DishRes>
 
-export const DishListRes = z.object({
-  data: z.array(DishSchema),
-  message: z.string()
-})
+export const DishListRes = z.array(DishSchema)
 
 export type DishListResType = z.TypeOf<typeof DishListRes>
 

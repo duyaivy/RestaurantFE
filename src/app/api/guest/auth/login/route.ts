@@ -12,20 +12,26 @@ export async function POST(request: Request) {
 
         const {payload} = await guestApiRequest.sLogin(body)
         const {accessToken, refreshToken} = payload.data
-        const decodeAccessToken = jwt.decode(accessToken) as {exp: number}
-        const decodeRefreshToken = jwt.decode(refreshToken) as {exp: number}
+                const decodeAccessToken = jwt.decode(accessToken) as { exp?: number } | null
+                const decodeRefreshToken = jwt.decode(refreshToken) as { exp?: number } | null
+                if (!decodeAccessToken?.exp || !decodeRefreshToken?.exp) {
+                    return Response.json(
+                        { message: "Token không hợp lệ hoặc thiếu exp" },
+                        { status: 500 },
+                    )
+                }
         cookieStore.set('accessToken', accessToken,{
             path: '/',
             httpOnly: true,
             secure: true,
-            expires: decodeAccessToken.exp * 1000,
+                        expires: new Date(decodeAccessToken.exp * 1000),
             sameSite: 'lax',
         } )
         cookieStore.set('refreshToken', refreshToken,{
             path: '/',
             httpOnly: true,
             secure: true,
-            expires: decodeRefreshToken.exp * 1000,
+                        expires: new Date(decodeRefreshToken.exp * 1000),
             sameSite: 'lax',
         } )
         return Response.json(payload)

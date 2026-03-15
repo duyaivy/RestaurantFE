@@ -13,7 +13,7 @@ import { TableStatus, TableStatusValues } from '@/constants/type'
 import { Switch } from '@/components/ui/switch'
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { useGetTableQuery, useUpdateTableMutation } from '@/queries/useTable'
+import { useGetTableQuery, useUpdateTableMutation } from '@/hooks/queries/useTable'
 import { toast } from '@/components/ui/use-toast'
 import QRCodeTable from '@/components/qrcode-table'
 
@@ -28,7 +28,7 @@ export default function EditTable({
 }) {
   const updateTableMutation = useUpdateTableMutation()
   const form = useForm<UpdateTableBodyType>({
-    resolver: zodResolver(UpdateTableBody),
+    resolver: zodResolver(UpdateTableBody) as any,
     defaultValues: {
       capacity: 2,
       status: TableStatus.Hidden,
@@ -36,26 +36,25 @@ export default function EditTable({
     }
   })
   const { data } = useGetTableQuery({ enabled: Boolean(id), id: id as number })
-   useEffect(() => {
+  useEffect(() => {
     if (data) {
-      const { capacity, status  } = data.payload.data
+      const { capacity, status } = data.payload.data
       form.reset(
         {
           capacity,
           status,
           changeToken: form.getValues('changeToken')
-      })
+        })
     }
   }, [data, form])
 
-   const onSubmit = async (values: UpdateTableBodyType) => {
-    if (updateTableMutation.isPending) return
+  const onSubmit = async (values: UpdateTableBodyType) => {
     try {
       const body: UpdateTableBodyType & { id: number } = {
         id: id as number,
         ...values
       }
-      
+
       const result = await updateTableMutation.mutateAsync(body)
       toast({
         description: result.payload.message
@@ -71,7 +70,6 @@ export default function EditTable({
   }
   const reset = () => {
     setId(undefined)
-
   }
 
 
@@ -80,7 +78,7 @@ export default function EditTable({
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-         reset()
+          reset()
         }
       }}
     >
@@ -96,14 +94,14 @@ export default function EditTable({
         </DialogHeader>
         <Form {...form}>
           <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8'
-          onSubmit={form.handleSubmit(onSubmit,console.log)}
-           id='edit-table-form'>
+            onSubmit={form.handleSubmit(onSubmit, console.log)}
+            id='edit-table-form'>
             <div className='grid gap-4 py-4'>
               <FormItem>
                 <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
                   <Label htmlFor='name'>Số hiệu bàn</Label>
                   <div className='col-span-3 w-full space-y-2'>
-                    <Input id='number' type='number' className='w-full' value={data?.payload.data.number ??0} readOnly />
+                    <Input id='number' type='number' className='w-full' value={data?.payload.data.number ?? 0} readOnly />
                     <FormMessage />
                   </div>
                 </div>
@@ -174,16 +172,16 @@ export default function EditTable({
                 <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
                   <Label>QR Code</Label>
                   <div className='col-span-3 w-full space-y-2'></div>
-                 {data && <QRCodeTable
-                  token={data.payload.data.token}
-                  tableNumber= {data.payload.data.number}/>}
+                  {data && <QRCodeTable
+                    token={data.payload.data.token}
+                    tableNumber={data.payload.data.number} />}
                 </div>
               </FormItem>
               <FormItem>
                 <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
                   <Label>URL gọi món</Label>
                   <div className='col-span-3 w-full space-y-2'>
-                    {data &&<Link
+                    {data && <Link
                       href={getTableLink({
                         token: data.payload.data.token,
                         tableNumber: data.payload.data.number
@@ -203,7 +201,7 @@ export default function EditTable({
           </form>
         </Form>
         <DialogFooter>
-          <Button type='submit' form='edit-table-form'>
+          <Button isLoading={updateTableMutation.isPending} type='submit' form='edit-table-form'>
             Lưu
           </Button>
         </DialogFooter>

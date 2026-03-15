@@ -1,21 +1,25 @@
 import http from "@/lib/http";
+import { SuccessResponse } from "@/constants/type";
 import {
-  
   LogoutBodyType,
   RefreshTokenBodyType,
   RefreshTokenResType,
 } from "@/schemaValidations/auth.schema";
-import { GuestLoginBodyType, GuestLoginResType } from "@/schemaValidations/guest.schema";
+import {
+  GuestLoginBodyType,
+  GuestLoginResType,
+} from "@/schemaValidations/guest.schema";
 const guestApiRequest = {
   requestTokenRequest: null as Promise<{
     status: number;
-    payload: RefreshTokenResType;
+    payload: SuccessResponse<RefreshTokenResType>;
   }> | null,
 
-  sLogin: (body: GuestLoginBodyType) => http.post<GuestLoginResType>("guest/auth/login", body),
+  sLogin: (body: GuestLoginBodyType) =>
+    http.post<SuccessResponse<GuestLoginResType>>("guest/auth/login", body),
 
   login: (body: GuestLoginBodyType) =>
-    http.post<GuestLoginResType>("/api/guest/auth/login", body, {
+    http.post<SuccessResponse<GuestLoginResType>>("/api/guest/auth/login", body, {
       baseUrl: "",
     }),
 
@@ -38,12 +42,15 @@ const guestApiRequest = {
   logout: () => http.post("/api/guest/auth/logout", null, { baseUrl: "" }),
 
   sRefreshToken: (body: RefreshTokenBodyType) =>
-    http.post<RefreshTokenResType>("guest/auth/refresh-token", body),
+    http.post<SuccessResponse<RefreshTokenResType>>(
+      "guest/auth/refresh-token",
+      body,
+    ),
   async refreshToken() {
     if (this.requestTokenRequest) {
       return this.requestTokenRequest;
     }
-    this.requestTokenRequest = http.post<RefreshTokenResType>(
+    this.requestTokenRequest = http.post<SuccessResponse<RefreshTokenResType>>(
       "/api/guest/auth/refresh-token",
       null,
       { baseUrl: "" },

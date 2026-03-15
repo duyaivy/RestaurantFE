@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { DishCard } from "@/components/DishCard";
 import { ChatbotWidget } from "@/components/ChatbotWidget";
-import { useDishListQuery } from "@/queries/useDish";
+import { useDishListQuery } from "@/hooks/queries/useDish";
 import { Search, MessageCircle, X, ChevronDown } from "lucide-react";
 import NextImage from "next/image";
 
@@ -15,16 +15,16 @@ const chatbotQuestions = [
 ];
 
 const CATEGORIES = [
-  { id: "all",        label: "Tất cả",      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop" },
-  { id: "rice",       label: "Cơm",         image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=120&h=120&fit=crop" },
-  { id: "noodle",     label: "Mì & Bún",    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=120&h=120&fit=crop" },
-  { id: "meat",       label: "Thịt",        image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=120&h=120&fit=crop" },
-  { id: "seafood",    label: "Hải sản",     image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=120&h=120&fit=crop" },
-  { id: "vegetarian", label: "Chay",        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=120&h=120&fit=crop" },
-  { id: "drink",      label: "Đồ uống",     image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=120&h=120&fit=crop" },
-  { id: "dessert",    label: "Tráng miệng", image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=120&h=120&fit=crop" },
-  { id: "bread",      label: "Bánh",        image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=120&h=120&fit=crop" },
-  { id: "special",    label: "Đặc biệt",    image: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=120&h=120&fit=crop" },
+  { id: "all", label: "Tất cả", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop" },
+  { id: "rice", label: "Cơm", image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=120&h=120&fit=crop" },
+  { id: "noodle", label: "Mì & Bún", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=120&h=120&fit=crop" },
+  { id: "meat", label: "Thịt", image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=120&h=120&fit=crop" },
+  { id: "seafood", label: "Hải sản", image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=120&h=120&fit=crop" },
+  { id: "vegetarian", label: "Chay", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=120&h=120&fit=crop" },
+  { id: "drink", label: "Đồ uống", image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=120&h=120&fit=crop" },
+  { id: "dessert", label: "Tráng miệng", image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=120&h=120&fit=crop" },
+  { id: "bread", label: "Bánh", image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=120&h=120&fit=crop" },
+  { id: "special", label: "Đặc biệt", image: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=120&h=120&fit=crop" },
 ];
 
 const BANNERS = [
@@ -61,8 +61,12 @@ const BANNERS = [
 const SHOW_DEFAULT = 5;
 
 export default function MenusPage() {
-  const dishQuery = useDishListQuery();
-  const dishes = dishQuery.data?.payload.data ?? [];
+  const dishQuery = useDishListQuery({
+    page: "1",
+    limit: "10",
+  });
+  const dishes = dishQuery.data?.payload.data.results || []
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -78,7 +82,7 @@ export default function MenusPage() {
 
   const filteredDishes = useMemo(() => {
     return dishes.filter((d) => {
-      const matchSearch = !searchQuery || d.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchSearch = !searchQuery || d.name?.vi?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchCategory = activeCategory === "all" || (d as any).category === activeCategory;
       return matchSearch && matchCategory;
     });
@@ -120,14 +124,13 @@ export default function MenusPage() {
         <div className="h-px w-full bg-linear-to-r from-transparent via-amber-900/40 to-transparent" />
       </div>
 
-      {/* ── SEARCH BAR ── */}
-      <div className="z-20 px-4 py-3">
-        <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all duration-300 ${
-          searchFocused
-            ? "bg-[#1c1a16] border-amber-500/50 shadow-[0_0_20px_rgba(201,160,48,0.08)]"
-            : "bg-[#161410] border-[#2c2820]"
-        }`}>
-          <Search size={14} strokeWidth={1.5} className={`shrink-0 transition-colors duration-300 ${searchFocused ? "text-amber-500" : "text-neutral-600"}`} />
+      {/* SEARCH BAR */}
+      <div className="sticky top-16 z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
+        <div
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/3 border transition-colors duration-300 ${searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
+            }`}
+        >
+          <Search size={14} className="text-yellow-600 shrink-0" strokeWidth={1.5} />
           <input
             ref={inputRef}
             type="text"
@@ -217,9 +220,8 @@ export default function MenusPage() {
                 onClick={() => setActiveCategory(cat.id)}
                 className="flex flex-col items-center gap-2 active:scale-95 transition-transform duration-150"
               >
-                <div className={`relative w-full aspect-square rounded-full overflow-hidden border-2 transition-all duration-200 ${
-                  isActive ? "border-amber-400 shadow-[0_3px_14px_rgba(201,160,48,0.4)]" : "border-transparent"
-                }`}>
+                <div className={`relative w-full aspect-square rounded-full overflow-hidden border-2 transition-all duration-200 ${isActive ? "border-amber-400 shadow-[0_3px_14px_rgba(201,160,48,0.4)]" : "border-transparent"
+                  }`}>
                   <NextImage
                     src={cat.image}
                     alt={cat.label}
@@ -229,9 +231,8 @@ export default function MenusPage() {
                     unoptimized
                   />
                 </div>
-                <span className={`text-[10px] font-medium text-center leading-tight transition-colors duration-200 ${
-                  isActive ? "text-amber-400" : "text-neutral-500"
-                }`}>
+                <span className={`text-[10px] font-medium text-center leading-tight transition-colors duration-200 ${isActive ? "text-amber-400" : "text-neutral-500"
+                  }`}>
                   {cat.label}
                 </span>
               </button>
@@ -253,7 +254,7 @@ export default function MenusPage() {
       <div className="px-4 flex flex-col gap-4">
         {filteredDishes.length > 0 ? (
           filteredDishes.map((dish) => (
-            <DishCard key={dish.id} {...dish} />
+            <DishCard key={dish.id} {...dish} name={dish.name?.vi} description={dish.description?.vi} />
           ))
         ) : (
           <div className="text-center py-20 px-8">
@@ -285,14 +286,12 @@ export default function MenusPage() {
 
         <button
           onClick={() => setChatbotOpen((v) => !v)}
-          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300 ${
-            chatbotOpen ? "border-amber-600/40 bg-amber-950/20" : "border-[#2e2a22] bg-[#161410] hover:border-[#4a4030]"
-          }`}
+          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300 ${chatbotOpen ? "border-amber-600/40 bg-amber-950/20" : "border-[#2e2a22] bg-[#161410] hover:border-[#4a4030]"
+            }`}
         >
           <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-              chatbotOpen ? "bg-amber-500/20 border border-amber-600/30" : "bg-[#1c1a16] border border-[#2e2a22]"
-            }`}>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors duration-300 ${chatbotOpen ? "bg-amber-500/20 border border-amber-600/30" : "bg-[#1c1a16] border border-[#2e2a22]"
+              }`}>
               <MessageCircle size={14} className="text-amber-500" strokeWidth={1.5} />
             </div>
             <div className="text-left">
@@ -300,7 +299,12 @@ export default function MenusPage() {
               <p className="text-neutral-600 text-[11px] tracking-wider mt-0.5">Hỏi AI trợ lý</p>
             </div>
           </div>
-          <ChevronDown size={15} strokeWidth={1.5} className={`text-amber-600/60 transition-transform duration-300 ${chatbotOpen ? "rotate-180" : ""}`} />
+          <ChevronDown
+            size={14}
+            className={`text-yellow-600 transition-transform duration-300 ${chatbotOpen ? "rotate-180" : "rotate-0"
+              }`}
+            strokeWidth={1.5}
+          />
         </button>
 
         {chatbotOpen && (
@@ -308,8 +312,11 @@ export default function MenusPage() {
             {chatbotQuestions.map((question, i) => (
               <button
                 key={question}
-                onClick={() => { setSelectedChatbot(question); setChatbotOpen(false); }}
-                className="group w-full text-left px-5 py-3.5 hover:bg-amber-950/20 transition-all duration-200 flex items-center justify-between"
+                onClick={() => {
+                  setSelectedChatbot(question);
+                  setChatbotOpen(false);
+                }}
+                className="group w-full text-left px-4 py-3 rounded-lg border border-yellow-900/20 bg-white/2 hover:bg-yellow-900/10 hover:border-yellow-600/50 hover:pl-5 transition-all duration-300 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-amber-700/40 text-[10px] font-mono">{String(i + 1).padStart(2, "0")}</span>
