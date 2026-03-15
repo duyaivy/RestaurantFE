@@ -86,7 +86,7 @@ export default function OrderConfirmationPage() {
             <div className="flex gap-3 p-3">
 
               <div className="relative w-20 h-20 rounded-[14px] overflow-hidden shrink-0">
-                <NextImage src={item.image} alt={item.name} fill className="object-cover" />
+                <NextImage src={item.image} alt={item.name} sizes="80px" fill className="object-cover" />
               </div>
 
               <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
