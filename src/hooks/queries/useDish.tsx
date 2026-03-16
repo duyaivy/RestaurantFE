@@ -1,68 +1,66 @@
-import dishApiRequest from '@/apiRequests/dish'
-import { UpdateDishBodyType } from '@/schemaValidations/dish.schema'
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { QueryDishConfig } from '@/hooks/common/useDishQueryConfig'
-import { DishListConfig } from '@/constants/interface'
+import dishApiRequest from "@/apiRequests/dish";
+import { UpdateDishBodyType } from "@/schemaValidations/dish.schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryDishConfig } from "@/hooks/common/useDishQueryConfig";
+import { DishListConfig } from "@/constants/interface";
 
 export const useDishListQuery = (queryConfig: QueryDishConfig) => {
   return useQuery({
-    queryKey: ['dishes', queryConfig],
+    queryKey: ["dishes", queryConfig],
     queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
-    placeholderData: keepPreviousData,
-
-  })
-}
+  });
+};
 
 export const useGetDishQuery = ({
   id,
-  enabled
+  enabled,
 }: {
-  id: number
-  enabled: boolean
+  id: number;
+  enabled: boolean;
 }) => {
   return useQuery({
-    queryKey: ['dishes', id],
+    queryKey: ["dishes", id],
     queryFn: () => dishApiRequest.getDish(id),
-    enabled
-  })
-}
+    enabled,
+  });
+};
 
 export const useAddDishMutation = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: dishApiRequest.add,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['dishes']
-      })
-    }
-  })
-}
+        queryKey: ["dishes"],
+      });
+    },
+  });
+};
 
 export const useUpdateDishMutation = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, ...body }: UpdateDishBodyType & { id: number }) =>
       dishApiRequest.updateDish(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['dishes'],
-        exact: true
-      })
-    }
-  })
-}
+        queryKey: ["dishes"],
+        exact: true,
+      });
+    },
+  });
+};
 
 export const useDeleteDishMutation = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: dishApiRequest.deleteDish,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['dishes']
-      })
-    }
-  })
-}
+        queryKey: ["dishes"],
+      });
+    },
+  });
+};

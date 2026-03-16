@@ -1,59 +1,67 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useCart } from '@/context/CartContext'
-import { Plus, Minus } from 'lucide-react'
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
+import { Plus, Minus } from "lucide-react";
+import Image from "next/image";
 
 interface DishCardProps {
-  id: number
-  name: string
-  price: number
-  image: string
-  description?: string
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description?: string;
 }
 
-export function DishCard({ id, name, price, image, description }: DishCardProps) {
-  const { items, addItem, updateQuantity } = useCart()
+export function DishCard({
+  id,
+  name,
+  price,
+  image,
+  description,
+}: DishCardProps) {
+  const { items, addItem, updateQuantity } = useCart();
 
-  const cartItem = items.find((item) => item.id === id)
-  const quantity = cartItem?.quantity || 0
+  const cartItem = items.find((item) => item.id === id);
+  const quantity = cartItem?.quantity || 0;
 
   const handleAdd = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    addItem({ id, name, price, image })
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id, name, price, image });
+  };
 
   const handleDecrease = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (quantity > 0) updateQuantity(id, quantity - 1)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    if (quantity > 0) updateQuantity(id, quantity - 1);
+  };
 
   const handleIncrease = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    addItem({ id, name, price, image })
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id, name, price, image });
+  };
 
   return (
     <Link href={`/guest/menu/${id}`}>
       <div
-        className={`group flex items-center gap-[14px] rounded-[20px] p-[10px] border cursor-pointer transition-all duration-200 shadow-[0_2px_16px_rgba(0,0,0,0.4)] ${
+        className={`group flex items-center gap-3.5 rounded-[20px] p-2.5 border cursor-pointer transition-all duration-200 shadow-[0_2px_16px_rgba(0,0,0,0.4)] ${
           quantity > 0
-            ? 'bg-[#1e1b12] border-[#c9a03055]'
-            : 'bg-[#1c1a16] border-[#343028] hover:bg-[#222018] hover:border-[#4a4030]'
+            ? "bg-[#1e1b12] border-[#c9a03055]"
+            : "bg-[#1c1a16] border-[#343028] hover:bg-[#222018] hover:border-[#4a4030]"
         }`}
       >
         {/* Thumbnail */}
-        <div className="relative w-[86px] h-[86px] rounded-[14px] overflow-hidden flex-shrink-0">
-          <img
+        <div className="relative w-21.5 h-21.5 rounded-[14px] overflow-hidden shrink-0">
+          <Image
+            fill
             src={image}
             alt={name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.07]"
           />
           {quantity > 0 && (
-            <div className="absolute top-[6px] left-[6px] w-5 h-5 rounded-full bg-[#c9a030] flex items-center justify-center">
+            <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-[#c9a030] flex items-center justify-center">
               <span className="text-[11px] font-bold text-[#0f0e0c] leading-none">
                 {quantity}
               </span>
@@ -80,8 +88,10 @@ export function DishCard({ id, name, price, image, description }: DishCardProps)
             <div className="flex items-center gap-[7px]">
               <div className="w-4 h-[1.5px] rounded-full bg-[#c9a030] flex-shrink-0" />
               <p className="text-[15px] font-bold text-[#c9a030] tracking-wide">
-                {price.toLocaleString('vi-VN')}
-                <span className="text-[11px] font-normal text-[#5c5040] ml-[2px]">₫</span>
+                {price.toLocaleString("vi-VN")}
+                <span className="text-[11px] font-normal text-[#5c5040] ml-[2px]">
+                  ₫
+                </span>
               </p>
             </div>
 
@@ -91,7 +101,10 @@ export function DishCard({ id, name, price, image, description }: DishCardProps)
                 onClick={handleAdd}
                 className="w-[18px] h-[18px] rounded-[5px] bg-[#c9a030] flex items-center justify-center shadow-[0_2px_8px_rgba(201,160,48,0.3)] hover:bg-[#ddb83a] active:scale-90 transition-all duration-150"
               >
-                <Plus className="w-[8px] h-[8px] text-[#0f0e0c]" strokeWidth={3} />
+                <Plus
+                  className="w-[8px] h-[8px] text-[#0f0e0c]"
+                  strokeWidth={3}
+                />
               </button>
             ) : (
               <div className="flex items-center gap-[5px]">
@@ -99,7 +112,10 @@ export function DishCard({ id, name, price, image, description }: DishCardProps)
                   onClick={handleDecrease}
                   className="w-[18px] h-[18px] rounded-[5px] border border-[#3a3428] flex items-center justify-center hover:border-[#c9a03060] active:scale-90 transition-all duration-150"
                 >
-                  <Minus className="w-[8px] h-[8px] text-[#a08040]" strokeWidth={2.5} />
+                  <Minus
+                    className="w-[8px] h-[8px] text-[#a08040]"
+                    strokeWidth={2.5}
+                  />
                 </button>
 
                 <span className="text-[12px] font-bold text-[#f2ece0] w-[14px] text-center leading-none tabular-nums">
@@ -110,7 +126,10 @@ export function DishCard({ id, name, price, image, description }: DishCardProps)
                   onClick={handleIncrease}
                   className="w-[22px] h-[22px] rounded-[6px] bg-[#c9a030] flex items-center justify-center hover:bg-[#ddb83a] active:scale-90 transition-all duration-150"
                 >
-                  <Plus className="w-[9px] h-[9px] text-[#0f0e0c]" strokeWidth={3} />
+                  <Plus
+                    className="w-[9px] h-[9px] text-[#0f0e0c]"
+                    strokeWidth={3}
+                  />
                 </button>
               </div>
             )}
@@ -118,5 +137,5 @@ export function DishCard({ id, name, price, image, description }: DishCardProps)
         </div>
       </div>
     </Link>
-  )
+  );
 }
