@@ -14,12 +14,9 @@ interface Props {
 }
 
 const Categories = ({ onChangeQueryParam }: Props) => {
-  const [catExpanded, setCatExpanded] = useState(false);
   const { category_id } = useDishQueryConfig();
   const { categories, isLoading } = useCategoryStore();
-  const visibleCategories = catExpanded
-    ? categories
-    : categories?.slice(0, SHOW_DEFAULT);
+
   const activeCategory = Number(category_id);
 
   const handleActiveCategory = (id: number) => {
@@ -44,27 +41,21 @@ const Categories = ({ onChangeQueryParam }: Props) => {
         <h2 className="text-white text-base font-semibold tracking-wide">
           Danh mục
         </h2>
-        <button
-          onClick={() => setCatExpanded((v) => !v)}
-          className="text-amber-500 text-xs tracking-wide hover:text-amber-400 transition-colors"
-        >
-          {catExpanded ? "Thu gọn" : "Xem tất cả"}
-        </button>
       </div>
 
-      <div className="grid grid-cols-5 gap-x-1 gap-y-3">
+      <div className="flex  gap-x-1 gap-y-3  overflow-x-auto">
         {isLoading ? (
-          <div className="col-span-5">
+          <div className="w-full">
             <CategoryGridSkeleton count={5} />
           </div>
         ) : (
-          visibleCategories?.map((cat) => {
+          categories?.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => handleActiveCategory(cat.id)}
-                className="flex flex-col items-center gap-2 active:scale-95 transition-transform duration-150"
+                className="shrink-0 basis-1/5 flex flex-col items-center gap-2 active:scale-95 transition-transform duration-150"
               >
                 <div
                   className={`relative w-full aspect-square rounded-full overflow-hidden border-2 transition-all duration-200 ${

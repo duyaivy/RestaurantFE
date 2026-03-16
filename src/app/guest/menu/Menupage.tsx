@@ -51,7 +51,7 @@ export default function MenusPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0f0e0c] pb-32">
+    <div className="min-h-screen bg-[#0f0e0c] pb-32 pt-16">
       <Header />
       <div className="z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
         <div
@@ -94,9 +94,7 @@ export default function MenusPage() {
           )}
         </div>
       </div>
-
       <PromoBanner />
-
       <Categories onChangeQueryParam={createSearchUrl} />
       <LabelFood length={dishes.length} />
       <DishListGuest dishes={dishes} isLoading={isLoading} />

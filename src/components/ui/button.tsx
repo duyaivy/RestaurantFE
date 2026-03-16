@@ -51,6 +51,7 @@ function Button({
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
     isLoading?: boolean
+    
   }) {
   const Comp = asChild ? Slot.Root : "button"
 

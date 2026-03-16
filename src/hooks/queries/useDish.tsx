@@ -8,6 +8,7 @@ export const useDishListQuery = (queryConfig: QueryDishConfig) => {
   return useQuery({
     queryKey: ["dishes", queryConfig],
     queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
+    staleTime: 1000 * 60 * 60,
   });
 };
 
@@ -22,6 +23,7 @@ export const useGetDishQuery = ({
     queryKey: ["dishes", id],
     queryFn: () => dishApiRequest.getDish(id),
     enabled,
+    staleTime: 1000 * 60 * 60,
   });
 };
 

@@ -61,8 +61,8 @@ export function DishCard({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.07]"
           />
           {quantity > 0 && (
-            <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-[#c9a030] flex items-center justify-center">
-              <span className="text-[11px] font-bold text-[#0f0e0c] leading-none">
+            <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-[#937c3a] flex items-center justify-center">
+              <span className="text-[11px] font-bold text-[#f6f6f6] leading-none ">
                 {quantity}
               </span>
             </div>
@@ -70,14 +70,14 @@ export function DishCard({
         </div>
 
         {/* Info + Cart control */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between h-[86px]">
+        <div className="flex-1 min-w-0 flex flex-col justify-between h-21.5">
           {/* Top: name + desc */}
-          <div className="flex flex-col gap-[3px]">
+          <div className="flex flex-col gap-0.75">
             <p className="text-[14px] font-semibold text-[#f2ece0] leading-snug truncate">
               {name}
             </p>
             {description && (
-              <p className="text-[12px] text-[#5c5040] leading-snug truncate">
+              <p className="text-[12px] text-[#5c5040] leading-snug line-clamp-2">
                 {description}
               </p>
             )}
@@ -85,11 +85,11 @@ export function DishCard({
 
           {/* Bottom: price + cart control */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[7px]">
-              <div className="w-4 h-[1.5px] rounded-full bg-[#c9a030] flex-shrink-0" />
+            <div className="flex items-center gap-1.75">
+              <div className="w-2 h-[1.5px] rounded-full bg-[#c9a030] shrink-0" />
               <p className="text-[15px] font-bold text-[#c9a030] tracking-wide">
                 {price.toLocaleString("vi-VN")}
-                <span className="text-[11px] font-normal text-[#5c5040] ml-[2px]">
+                <span className="text-[11px] font-normal text-[#5c5040] ml-0.5">
                   ₫
                 </span>
               </p>
