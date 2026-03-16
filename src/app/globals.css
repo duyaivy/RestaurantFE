@@ -155,6 +155,14 @@
   }
 } */
 
+
+
+
+
+/* 
+
+
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -204,49 +212,45 @@
 :root {
   --radius: 0.75rem;
 
-  /* Nền ấm, sâu — không phải đen lạnh */
   --background: #141210;
   --foreground: #f2ede8;
 
-  /* Card nổi lên một chút so với nền */
+
   --card: #1e1a17;
   --card-foreground: #f2ede8;
 
   --popover: #1e1a17;
   --popover-foreground: #f2ede8;
 
-  /* Primary: cam ấm, đậm hơn chút để sang */
+  
   --primary: #e07832;
   --primary-foreground: #ffffff;
 
-  /* Secondary: nền của input, badge... */
+
   --secondary: #252018;
   --secondary-foreground: #f2ede8;
 
-  /* Muted */
+
   --muted: #2e2821;
   --muted-foreground: #8a8078;
 
-  /* Accent = primary */
   --accent: #e07832;
   --accent-foreground: #ffffff;
 
   --destructive: #e05252;
   --destructive-foreground: #ffffff;
 
-  /* Border tinh tế, không quá nổi */
+ 
   --border: #2e2821;
   --input: #252018;
   --ring: #e07832;
 
-  /* Charts — dải cam */
   --chart-1: #e07832;
   --chart-2: #f59342;
   --chart-3: #c45e1a;
   --chart-4: #fbb06e;
   --chart-5: #fdd4a8;
 
-  /* Sidebar */
   --sidebar: #100f0d;
   --sidebar-foreground: #f2ede8;
   --sidebar-primary: #e07832;
@@ -257,8 +261,7 @@
   --sidebar-ring: #e07832;
 }
 
-/* App này dark-only nên không cần .dark riêng,
-   nhưng giữ lại để tương thích nếu cần */
+
 .dark {
   --background: #141210;
   --foreground: #f2ede8;
@@ -301,7 +304,7 @@
 
   body {
     @apply bg-background text-foreground;
-    /* Chống màn hình trắng nháy khi load */
+    
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -310,7 +313,7 @@
     scroll-behavior: smooth;
   }
 
-  /* Chống zoom khi focus input trên iOS */
+  
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -320,19 +323,18 @@
     font-size: 16px;
   }
 
-  /* 
+  
 
   button {
     min-height: 44px;
     min-width: 44px;
   }
 
-  */
+ 
   [role="dialog"] {
     @apply rounded-2xl;
   }
 
-  /* Scrollbar tối, nhỏ gọn */
   ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -351,9 +353,220 @@
     background: #e07832;
   }
 
-  /* Selection màu cam */
   ::selection {
     background: #e0783240;
     color: #f2ede8;
+  }
+}  */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: #141210;
+  --foreground: #f0ebe4;
+
+  --card: #1c1916;
+  --card-foreground: #f0ebe4;
+
+  --popover: #1c1916;
+  --popover-foreground: #f0ebe4;
+
+  --primary: #e07832;
+  --primary-foreground: #ffffff;
+
+  --secondary: #242018;
+  --secondary-foreground: #f0ebe4;
+
+  --muted: #2c2620;
+  --muted-foreground: #8a7e72;
+
+  --accent: #e07832;
+  --accent-foreground: #ffffff;
+
+  --destructive: #e05252;
+  --destructive-foreground: #ffffff;
+
+  --border: #2c2620;
+  --input: #242018;
+  --ring: #e07832;
+
+  --chart-1: #e07832;
+  --chart-2: #f59342;
+  --chart-3: #c45e1a;
+  --chart-4: #fbb06e;
+  --chart-5: #fdd4a8;
+
+  --sidebar: #0f0e0c;
+  --sidebar-foreground: #f0ebe4;
+  --sidebar-primary: #e07832;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e07832;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2c2620;
+  --sidebar-ring: #e07832;
+}
+
+.dark {
+  --background: #141210;
+  --foreground: #f0ebe4;
+  --card: #1c1916;
+  --card-foreground: #f0ebe4;
+  --popover: #1c1916;
+  --popover-foreground: #f0ebe4;
+  --primary: #e07832;
+  --primary-foreground: #ffffff;
+  --secondary: #242018;
+  --secondary-foreground: #f0ebe4;
+  --muted: #2c2620;
+  --muted-foreground: #8a7e72;
+  --accent: #e07832;
+  --accent-foreground: #ffffff;
+  --destructive: #e05252;
+  --destructive-foreground: #ffffff;
+  --border: #2c2620;
+  --input: #242018;
+  --ring: #e07832;
+  --chart-1: #e07832;
+  --chart-2: #f59342;
+  --chart-3: #c45e1a;
+  --chart-4: #fbb06e;
+  --chart-5: #fdd4a8;
+  --sidebar: #0f0e0c;
+  --sidebar-foreground: #f0ebe4;
+  --sidebar-primary: #e07832;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e07832;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2c2620;
+  --sidebar-ring: #e07832;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.01em;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Heading dùng serif cho sang */
+  h1, h2 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* Chống zoom iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  /* Touch-friendly */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  [role="dialog"] {
+    @apply rounded-2xl;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2c2620;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e07832;
+  }
+
+  /* Selection */
+  ::selection {
+    background: #e0783235;
+    color: #f0ebe4;
+  }
+
+  /* Smooth transitions toàn app */
+  *, *::before, *::after {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
