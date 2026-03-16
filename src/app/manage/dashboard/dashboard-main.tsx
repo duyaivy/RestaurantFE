@@ -6,6 +6,13 @@ import { formatCurrency } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
+const fakeStats = {
+  revenue: 48_750_000,
+  guests: 312,
+  orders: 187,
+  tables: 8
+}
+
 export default function DashboardMain() {
   const resetDateFilter = () => {}
 
@@ -24,93 +31,68 @@ export default function DashboardMain() {
           Reset
         </Button>
       </div>
+
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+        {/* Tổng doanh thu */}
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Tổng doanh thu</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' className='h-4 w-4 text-muted-foreground'>
               <path d='M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>0</div>
+            <div className='text-2xl font-bold'>{formatCurrency(fakeStats.revenue)}</div>
+            <p className='text-xs text-muted-foreground'>+12.5% so với tháng trước</p>
           </CardContent>
         </Card>
+
+        {/* Khách */}
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Khách</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' className='h-4 w-4 text-muted-foreground'>
               <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
               <circle cx='9' cy='7' r='4' />
               <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>0</div>
-            <p className='text-xs text-muted-foreground'>Gọi món</p>
+            <div className='text-2xl font-bold'>{fakeStats.guests}</div>
+            <p className='text-xs text-muted-foreground'>Gọi món hôm nay</p>
           </CardContent>
         </Card>
+
+        {/* Đơn hàng */}
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Đơn hàng</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' className='h-4 w-4 text-muted-foreground'>
               <rect width='20' height='14' x='2' y='5' rx='2' />
               <path d='M2 10h20' />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>0</div>
+            <div className='text-2xl font-bold'>{fakeStats.orders}</div>
             <p className='text-xs text-muted-foreground'>Đã thanh toán</p>
           </CardContent>
         </Card>
+
+        {/* Bàn đang phục vụ */}
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium'>Bàn đang phục vụ</CardTitle>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='h-4 w-4 text-muted-foreground'
-            >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' className='h-4 w-4 text-muted-foreground'>
               <path d='M22 12h-4l-3 9L9 3l-3 9H2' />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>0</div>
+            <div className='text-2xl font-bold'>{fakeStats.tables}</div>
+            <p className='text-xs text-muted-foreground'>/ 12 bàn tổng</p>
           </CardContent>
         </Card>
       </div>
+
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-7'>
         <div className='lg:col-span-4'>
           <RevenueLineChart />

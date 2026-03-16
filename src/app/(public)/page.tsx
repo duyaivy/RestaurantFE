@@ -19,6 +19,8 @@ export default async function Home() {
   } catch (error) {}
 
   return (
+    
+
     <div className="w-full bg-neutral-950 text-white">
 
       {/* HERO */}

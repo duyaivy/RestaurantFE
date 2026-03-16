@@ -188,13 +188,13 @@ const request = async <Response>(
   if (isClient) {
     // strip trailing slash để tránh mismatch: 'api/auth/login/' vs 'api/auth/login'
     const normalizeUrl = normalizePath(url).replace(/\/$/, '');
-    if (normalizeUrl === "api/auth/login") {
+    if (normalizeUrl === "api/auth/login" || normalizeUrl === "api/guest/auth/login") {
       const { accessToken, refreshToken } = (
         payload as SuccessResponse<LoginResType>
       ).data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-    } else if (normalizeUrl === "api/auth/logout") {
+    } else if (normalizeUrl === "api/auth/logout" || normalizeUrl === "api/guest/logout") {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     }
