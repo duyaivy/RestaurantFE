@@ -4,6 +4,7 @@ import { useCategoryQuery } from "@/hooks/queries/useCategory";
 import MenusPage from "./Menupage";
 import useCategoryStore from "@/hooks/stores/useCategoryStore";
 import { useEffect } from "react";
+import { Suspense } from "react";
 
 export default function Page() {
   const { data, isLoading } = useCategoryQuery();
@@ -14,5 +15,9 @@ export default function Page() {
       setCategories(data.payload.data);
     }
   }, [data, isLoading, setCategories, setIsLoading]);
-  return <MenusPage />;
+  return (
+    <Suspense fallback={null}>
+      <MenusPage />
+    </Suspense>
+  );
 }

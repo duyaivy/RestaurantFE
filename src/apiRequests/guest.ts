@@ -9,6 +9,8 @@ import {
   GuestLoginBodyType,
   GuestLoginResType,
 } from "@/schemaValidations/guest.schema";
+
+const GUEST_URL = "/guests";
 const guestApiRequest = {
   requestTokenRequest: null as Promise<{
     status: number;
@@ -16,12 +18,16 @@ const guestApiRequest = {
   }> | null,
 
   sLogin: (body: GuestLoginBodyType) =>
-    http.post<SuccessResponse<GuestLoginResType>>("guests/login/", body),
+    http.post<SuccessResponse<GuestLoginResType>>(`${GUEST_URL}/login/`, body),
 
   login: (body: GuestLoginBodyType) =>
-    http.post<SuccessResponse<GuestLoginResType>>("/api/guest/auth/login", body, {
-      baseUrl: "",
-    }),
+    http.post<SuccessResponse<GuestLoginResType>>(
+      "/api/guest/auth/login",
+      body,
+      {
+        baseUrl: "",
+      },
+    ),
 
   sLogout: (
     body: LogoutBodyType & {
@@ -29,7 +35,7 @@ const guestApiRequest = {
     },
   ) =>
     http.post(
-      "guests/logout/",
+      `${GUEST_URL}/logout/`,
       {
         refreshToken: body.refreshToken,
       },
@@ -43,7 +49,7 @@ const guestApiRequest = {
 
   sRefreshToken: (body: RefreshTokenBodyType) =>
     http.post<SuccessResponse<RefreshTokenResType>>(
-      "guests/refresh-token/",
+      `${GUEST_URL}/refresh-token/`,
       body,
     ),
   async refreshToken() {
@@ -58,6 +64,11 @@ const guestApiRequest = {
     const result = await this.requestTokenRequest;
     this.requestTokenRequest = null;
     return result;
+  },
+  messageEmployee: (message: string) => {
+    return http.post<SuccessResponse<null>>(`${GUEST_URL}/message/`, {
+      message,
+    });
   },
 };
 

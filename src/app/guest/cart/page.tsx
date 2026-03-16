@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import NextImage from "next/image";
 import { Button } from "@/components/ui/button";
+import { useCreateOrderMutation } from "@/hooks/queries/useOrder";
+import { toast } from "@/components/ui/use-toast";
+import { useMessageEmployeeMutation } from "@/hooks/queries/useGuest";
 
 export default function CartPage() {
   const {
@@ -29,9 +32,13 @@ export default function CartPage() {
     itemCount,
     clearCart,
   } = useCart();
-  const { addItem, placeOrder } = useOrder();
+  const { placeOrder, addItem } = useOrder();
   const router = useRouter();
 
+  const { mutateAsync: createOrder, isPending: isCreatingOrder } =
+    useCreateOrderMutation();
+  const { mutateAsync: createMessageToEmployee, isPending: isSendingMessage } =
+    useMessageEmployeeMutation();
   const [showStaffCall, setShowStaffCall] = useState(false);
   const [staffRequest, setStaffRequest] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -62,31 +69,63 @@ export default function CartPage() {
     );
   }
 
-  const handleStaffSubmit = () => {
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setShowStaffCall(false);
-      setStaffRequest("");
-      setIsSubmitted(false);
-    }, 1500);
+  const handleStaffSubmit = async () => {
+    try {
+      const message = staffRequest.trim() || "Khách hàng cần hỗ trợ";
+      // Gọi API gửi message đến nhân viên
+      await createMessageToEmployee(message);
+
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setShowStaffCall(false);
+        setStaffRequest("");
+        setIsSubmitted(false);
+      }, 1500);
+    } catch {
+      toast({
+        title: "Gọi nhân viên thất bại",
+        description: "Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handlePlaceOrder = () => {
-    setIsOrdering(true);
-    items.forEach((item) => {
-      for (let i = 0; i < item.quantity; i++) {
-        addItem({
-          id: item.id.toString(),
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          note: item.note,
-        });
-      }
-    });
-    placeOrder();
-    clearCart();
-    setTimeout(() => router.push("/guest/order-confirmation"), 500);
+  const handlePlaceOrder = async () => {
+    try {
+      setIsOrdering(true);
+
+      const dataApi = items.map((item) => ({
+        dish_id: item.id,
+        quantity: item.quantity,
+        note: item.note || "",
+      }));
+      const { payload } = await createOrder({ items: dataApi });
+      const orderId = payload.data.id;
+      localStorage.setItem("order_id", orderId.toString());
+      items.forEach((item) => {
+        for (let i = 0; i < item.quantity; i++) {
+          addItem({
+            id: item.id.toString(),
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            note: item.note,
+          });
+        }
+      });
+      placeOrder();
+      clearCart();
+      router.push("/guest/order-confirmation");
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast({
+        title: "Đặt món thất bại",
+        description: "Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOrdering(false);
+    }
   };
 
   return (
@@ -104,7 +143,7 @@ export default function CartPage() {
       </div>
 
       {/* CART ITEMS */}
-      <div className="px-4 pt-5 max-w-sm mx-auto flex flex-col gap-2">
+      <div className="px-4 pt-5 pb-16 max-w-sm mx-auto flex flex-col gap-2">
         {items.map((item) => (
           <div
             key={item.id}
@@ -273,10 +312,10 @@ export default function CartPage() {
             </button>
             <Button
               onClick={handlePlaceOrder}
-              disabled={isOrdering}
+              isLoading={isCreatingOrder || isOrdering}
               className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-black text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_20px_rgba(245,158,11,0.35)]"
             >
-              {isOrdering ? (
+              {isOrdering || isCreatingOrder ? (
                 <p className="flex items-center gap-2 text-white">Đang xử lý</p>
               ) : (
                 <p className="flex items-center gap-2 text-white">
@@ -310,24 +349,24 @@ export default function CartPage() {
               <textarea
                 value={staffRequest}
                 onChange={(e) => setStaffRequest(e.target.value)}
-                placeholder="Ví dụ: Cần thêm nước lạnh, muốn gặp nhân viên..."
+                placeholder="Ví dụ: Cần thêm nước lạnh, gọi thanh toán..."
                 className="w-full px-3.5 py-3 rounded-2xl bg-black/30 border border-white/8 text-white placeholder:text-white/25 text-[13px] resize-none outline-none focus:border-amber-500/30 transition-colors"
                 rows={3}
               />
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={() => setShowStaffCall(false)}
                   className="flex-1 h-11 rounded-2xl border border-white/8 bg-white/4 text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-white/[0.07] transition-all"
                 >
                   <X className="w-3.5 h-3.5" strokeWidth={2} /> Huỷ
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleStaffSubmit}
-                  disabled={!staffRequest.trim()}
-                  className="flex-1 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all"
+                  isLoading={isSendingMessage}
+                  className="flex-1 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all"
                 >
                   <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Gửi
-                </button>
+                </Button>
               </div>
             </div>
           ) : (
