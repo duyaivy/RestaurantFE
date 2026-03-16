@@ -1,13 +1,11 @@
-import authApiRequest from "@/apiRequests/auth"
 import guestApiRequest from "@/apiRequests/guest"
 import { useMutation } from "@tanstack/react-query"
 
-export const useLoginMutation = () => {
- 
+export const useGuestLoginMutation = () => {
   return useMutation({
     mutationFn: guestApiRequest.login
-  
-})}
+  })
+}
 
 
 export const useLogoutMutation = () => {

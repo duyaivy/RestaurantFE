@@ -1,68 +1,96 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GuestLoginBody, GuestLoginBodyType } from '@/schemaValidations/guest.schema'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { bgGuestLogin } from 'public'
+import { useGuestLoginMutation } from '@/hooks/queries/useGuest'
+import { Button } from '@/components/ui/button'
+import { toast } from '@/components/ui/use-toast'
 
 export default function GuestLoginForm() {
   const router = useRouter()
+  const params = useParams<{ number: string }>()
+  const searchParams = useSearchParams()
+  const { mutateAsync: guestLogin, isPending: isGuestLoginPending } = useGuestLoginMutation()
 
   const form = useForm<GuestLoginBodyType>({
     resolver: zodResolver(GuestLoginBody),
     defaultValues: {
       name: '',
-      token: '',
-      tableNumber: 1
+      tableToken: searchParams.get('token') || '',
+      tableNumber: Number(params.number)
     }
   })
 
-  const onSubmit = (data: GuestLoginBodyType) => {
-    console.log('Fake login success')
+  const onSubmit = async (data: GuestLoginBodyType) => {
+    try {
+      console.log({ data })
 
-    localStorage.setItem('accessToken', 'fake-token')
-
-    router.push('/guest/menu')
+      const result = await guestLogin(data)
+      localStorage.setItem('accessToken', result.payload.data.accessToken)
+      toast({
+        title: 'Đăng nhập thành công',
+        description: result.payload.message,
+      })
+      router.push('/guest/menu')
+    } catch (error: any) {
+      toast({
+        title: 'Đăng nhập thất bại',
+        description: error.message,
+        variant: 'destructive'
+      })
+    }
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="text-5xl mb-4">🍜</div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Đặt Món Online
-          </h1>
-          <p className="text-foreground/60 text-sm">
-            Nhập tên để bắt đầu đặt món
-          </p>
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${bgGuestLogin.src})`
+        }}
+      />
+      <div className="absolute inset-0 bg-[rgba(6,4,2,0.62)]" />
+
+      <div className="absolute top-16 left-0 right-0 flex flex-col items-center gap-2 z-10">
+        <h1 className="text-[26px] font-extralight text-white tracking-[0.3em] uppercase">
+          Fine Dining
+        </h1>
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-px bg-amber-500/60" />
+          <div className="w-1 h-1 rounded-full bg-amber-500" />
+          <div className="w-5 h-px bg-amber-500/60" />
         </div>
+        <p className="text-[10px] text-white/40 tracking-[0.3em] uppercase">Phục vụ tận tâm</p>
+      </div>
 
-        {/* Form */}
+      <div className="relative z-10 w-full max-w-[327px] mx-auto bg-[rgba(12,8,3,0.1)] backdrop-blur-sm border border-amber-500/20 rounded-3xl px-6 py-7">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
+          <form
+            onSubmit={form.handleSubmit(
+              onSubmit,
+              (errors) => console.log('Validation errors:', errors)
+            )}
+            className="space-y-3"
+            noValidate
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <label className="block text-foreground font-medium mb-2 text-sm">
-                    Tên của bạn
+                  <label className="block text-[10px] text-white/30 tracking-[0.25em] uppercase mb-2">
+                    Vui lòng nhập tên của quý khách
                   </label>
-
-                  <Input
+                  <input
                     {...field}
-                    placeholder="Nhập tên"
-                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground rounded-lg py-3 px-4"
+                    placeholder="Tên của bạn..."
                     autoFocus
+                    className="w-full bg-white/6 border border-white/10 rounded-xl px-4 py-[14px] text-[15px] text-[#f2ece0] placeholder:text-white/20 outline-none focus:border-amber-500/50 focus:bg-white/9 transition-all"
                   />
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -70,20 +98,17 @@ export default function GuestLoginForm() {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 font-semibold rounded-lg text-base"
+              isLoading={isGuestLoginPending}
+              className="text-white w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] transition-all duration-150 rounded-xl py-[15px] text-[15px] font-bold tracking-wide shadow-[0_4px_22px_rgba(201,160,48,0.32)]"
             >
-              Vào cửa hàng
+              Vào cửa hàng →
             </Button>
           </form>
         </Form>
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-foreground/50 text-xs">
-            © 2024 Cửa hàng đặt món. Tất cả quyền được bảo lưu.
-          </p>
-        </div>
-
+        <p className="text-center mt-4 text-[11px] text-white/15">
+          © 2025 Fine Dining
+        </p>
       </div>
     </div>
   )

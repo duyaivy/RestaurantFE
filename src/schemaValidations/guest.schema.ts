@@ -6,7 +6,7 @@ export const GuestLoginBody = z
   .object({
     name: z.string().min(2).max(50),
     tableNumber: z.number(),
-    token: z.string()
+    tableToken: z.string()
   })
   .strict()
 

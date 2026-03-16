@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 interface ChatbotWidgetProps {
   question: string
@@ -31,31 +31,32 @@ export function ChatbotWidget({ question, onClose }: ChatbotWidgetProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-full max-w-sm bg-card border border-border rounded-2xl p-6">
-        <div className="space-y-4">
-          {/* Question */}
-          <div className="bg-secondary rounded-lg p-3">
-            <h3 className="text-sm font-semibold text-foreground mb-1">Câu hỏi</h3>
-            <p className="text-sm text-foreground">{question}</p>
-          </div>
+        <DialogContent className="w-full max-w-sm bg-card border border-border rounded-2xl p-6">
+          <DialogTitle className="sr-only">Chatbot trả lời câu hỏi</DialogTitle>
+          <div className="space-y-4">
+            {/* Question */}
+            <div className="bg-secondary rounded-lg p-3">
+              <h3 className="text-sm font-semibold text-foreground mb-1">Câu hỏi</h3>
+              <p className="text-sm text-foreground">{question}</p>
+            </div>
 
-          {/* Answer */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-foreground">Trả lời</h4>
-            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
-              {answer}
-            </p>
-          </div>
+            {/* Answer */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground">Trả lời</h4>
+              <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
+                {answer}
+              </p>
+            </div>
 
-          {/* Close Button */}
-          <button
-            onClick={handleClose}
-            className="w-full px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors text-sm"
-          >
-            Đóng
-          </button>
-        </div>
-      </DialogContent>
+            {/* Close Button */}
+            <button
+              onClick={handleClose}
+              className="w-full px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors text-sm"
+            >
+              Đóng
+            </button>
+          </div>
+        </DialogContent>
     </Dialog>
   )
 }
