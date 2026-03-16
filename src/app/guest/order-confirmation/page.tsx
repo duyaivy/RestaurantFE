@@ -24,7 +24,7 @@ export default function OrderConfirmationPage() {
 
   if (itemCount === 0) {
     return (
-      <div className="h-full pt-14 bg-[#0f0e0c] flex flex-col items-center justify-center p-8">
+      <div className="h-full pt-14  bg-[#0f0e0c] flex flex-col items-center justify-center p-8">
         <div className="text-center">
           <div className="w-20 h-20 rounded-3xl bg-[#171512] border border-[#252118] flex items-center justify-center mx-auto mb-6">
             <ClipboardList
@@ -84,7 +84,7 @@ export default function OrderConfirmationPage() {
         </div>
       </div>
 
-      <div className="px-4 pt-4 max-w-sm mx-auto flex flex-col gap-3">
+      <div className="px-4 pt-4 pb-20 max-w-sm mx-auto flex flex-col gap-3">
         {/* ORDER ITEMS */}
         {items.map((item) => (
           <div
