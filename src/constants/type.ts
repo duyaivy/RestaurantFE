@@ -87,11 +87,21 @@ export type PaginationResponse<T> = {
   count: number;
   current: number;
   results: T[];
-}
-
+};
 
 export const LanguageSchema = z.object({
   en: z.string(),
-  vi: z.string()
-})
-export type Language = z.infer<typeof LanguageSchema>
+  vi: z.string(),
+});
+export type Language = z.infer<typeof LanguageSchema>;
+
+export const PAYMENT_METHOD = {
+  CASH: "CASH",
+  QR_CODE: "QR_CODE",
+} as const;
+export const PAYMENT_METHOD_VALUES = [
+  PAYMENT_METHOD.CASH,
+  PAYMENT_METHOD.QR_CODE,
+] as const;
+
+export type PaymentMethod = typeof PAYMENT_METHOD_VALUES[number];

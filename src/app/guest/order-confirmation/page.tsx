@@ -32,8 +32,7 @@ export default function OrderConfirmationPage() {
 
   if (itemCount === 0) {
     return (
-      <div className="h-full pt-14 flex flex-col items-center justify-center p-8" style={PAGE_STYLE}>
-        <style>{`.order-card{background-color:#171512!important}.order-page{background-color:#0f0e0c!important}`}</style>
+      <div className="h-full pt-14  bg-[#0f0e0c] flex flex-col items-center justify-center p-8">
         <div className="text-center">
           <div className="order-card w-20 h-20 rounded-3xl border border-[#252118] flex items-center justify-center mx-auto mb-6" style={CARD_STYLE}>
             <ClipboardList className="w-8 h-8 text-white/60" strokeWidth={1.5} />
@@ -88,17 +87,23 @@ export default function OrderConfirmationPage() {
           </div>
         </div>
 
-        <div className="px-4 pt-4 max-w-sm mx-auto flex flex-col gap-3">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="order-card rounded-[20px] border border-[#252118] overflow-hidden"
-              style={CARD_STYLE}
-            >
-              <div className="flex gap-3 p-3">
-                <div className="relative w-20 h-20 rounded-[14px] overflow-hidden shrink-0">
-                  <NextImage src={item.image} alt={item.name} sizes="80px" fill className="object-cover" />
-                </div>
+      <div className="px-4 pt-4 pb-20 max-w-sm mx-auto flex flex-col gap-3">
+        {/* ORDER ITEMS */}
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="bg-[#171512] rounded-[20px] border border-[#252118] overflow-hidden"
+          >
+            <div className="flex gap-3 p-3">
+              <div className="relative w-20 h-20 rounded-[14px] overflow-hidden shrink-0">
+                <NextImage
+                  src={item.image}
+                  alt={item.name}
+                  sizes="80px"
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <p className="text-[15px] font-semibold text-white leading-snug truncate">{item.name}</p>

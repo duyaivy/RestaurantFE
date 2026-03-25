@@ -1,19 +1,27 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowLeft, Check, Banknote, QrCode } from 'lucide-react'
-import { useOrder } from '@/context/OrderContext'
+import { useState } from "react";
 
-type PaymentMethod = 'vnpay' | 'cash' | null
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Check, Banknote, QrCode } from "lucide-react";
+import { useOrder } from "@/context/OrderContext";
+import { Button } from "@/components/ui/button";
+import { usePaymentGuestMutation } from "@/hooks/queries/useOrder";
+import { PAYMENT_METHOD, PaymentMethod } from "@/constants/type";
 
 export default function CheckoutPage() {
-  const { total, itemCount, clearOrder } = useOrder()
-  const router = useRouter()
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [showPaymentInfo, setShowPaymentInfo] = useState(false)
+  const { total, itemCount, clearOrder } = useOrder();
+  const router = useRouter();
+
+  const { mutateAsync: paymentOrderMutate, isPending: isOrderPaying } =
+    usePaymentGuestMutation();
+
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    null,
+  );
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showPaymentInfo, setShowPaymentInfo] = useState(false);
 
   if (itemCount === 0) {
     return (
@@ -29,26 +37,41 @@ export default function CheckoutPage() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   const handlePayment = async () => {
-    if (!paymentMethod) return
-    setIsProcessing(true)
-    setShowPaymentInfo(true)
-    setTimeout(() => {
-      clearOrder()
-      setPaymentMethod(null)
-      setIsProcessing(false)
-      setShowPaymentInfo(false)
-      router.push('/guest/menu')
-    }, 2000)
-  }
+    // payment
+    try {
+      const { payload } = await paymentOrderMutate({
+        orderId: Number(localStorage.getItem("order_id")),
+        body: {
+          payment_method: paymentMethod || PAYMENT_METHOD.CASH,
+        },
+      });
+      const paymentUrl = payload.data.url;
+      if (paymentUrl) {
+        window.open(paymentUrl, "_blank");
+      }
+
+      setIsProcessing(true);
+      setShowPaymentInfo(true);
+
+      setTimeout(() => {
+        clearOrder();
+        setPaymentMethod(null);
+        setIsProcessing(false);
+        setShowPaymentInfo(false);
+        router.push("/guest/menu");
+      }, 1000);
+    } catch {
+      setIsProcessing(false);
+      setShowPaymentInfo(false);
+    }
+  };
 
   return (
-    // pb-28 = nav bar (~64px) + nút (~48px) + breathing room
-    <div className="min-h-screen pb-28" style={{ backgroundColor: '#0f0e0c' }}>
-
+    <div className="min-h-screen bg-[#0f0e0c] pb-10">
       {/* HEADER */}
       <div className="top-16 z-20 border-b border-[#1e1c18] px-5 py-4" style={{ backgroundColor: '#0f0e0c' }}>
         <div className="max-w-sm mx-auto flex items-center justify-between">
@@ -61,16 +84,17 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="px-4 pt-5 max-w-sm mx-auto flex flex-col gap-4">
-
+      <div className="px-4 pt-5 pb-14 max-w-sm mx-auto flex flex-col gap-4">
         {/* TOTAL */}
         <div className="rounded-4xl border border-[#252118] p-5 text-center" style={{ backgroundColor: '#171512' }}>
           <p className="text-[10px] text-white/70 tracking-[0.3em] uppercase mb-2">
             Tổng tiền
           </p>
           <p className="text-[36px] font-bold text-amber-400 leading-none">
-            {total.toLocaleString('vi-VN')}
-            <span className="text-[16px] font-normal text-white/70 ml-2">₫</span>
+            {total.toLocaleString("vi-VN")}
+            <span className="text-[16px] font-normal text-white/70 ml-2">
+              ₫
+            </span>
           </p>
           <div className="flex items-center justify-center gap-2 mt-3">
             <div className="h-px w-8 bg-[#252118]" />
@@ -89,46 +113,67 @@ export default function CheckoutPage() {
 
           {/* VNPay */}
           <button
-            onClick={() => setPaymentMethod('vnpay')}
+            onClick={() => setPaymentMethod(PAYMENT_METHOD.QR_CODE)}
             className={`w-full flex items-center gap-4 px-4 py-4 border-b border-[#1a1816] transition-all ${
-              paymentMethod === 'vnpay' ? 'bg-amber-500/5' : 'hover:bg-[#1e1c18]'
+              paymentMethod === PAYMENT_METHOD.QR_CODE
+                ? "bg-amber-"
+                : "hover:bg-[#1e1c18]"
             }`}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              paymentMethod === 'vnpay' ? 'bg-blue-500' : 'bg-[#1e1c18] border border-[#2e2820]'
-            }`}>
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                paymentMethod === PAYMENT_METHOD.QR_CODE
+                  ? "bg-blue-500"
+                  : "bg-[#1e1c18] border border-[#2e2820]"
+              }`}
+            >
               <QrCode className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-left">
               <p className="text-[14px] font-medium text-[#f2ece0]">Thanh toán VNPay</p>
               <p className="text-[11px] text-white/60">Ví điện tử, QR, thẻ ngân hàng</p>
             </div>
-            {paymentMethod === 'vnpay' && <Check className="w-5 h-5 text-amber-400" />}
+
+            {paymentMethod === PAYMENT_METHOD.QR_CODE && (
+              <Check className="w-5 h-5 text-amber-400" />
+            )}
           </button>
 
           {/* CASH */}
           <button
-            onClick={() => setPaymentMethod('cash')}
+            onClick={() => setPaymentMethod(PAYMENT_METHOD.CASH)}
             className={`w-full flex items-center gap-4 px-4 py-4 transition-all ${
-              paymentMethod === 'cash' ? 'bg-amber-500/5' : 'hover:bg-[#1e1c18]'
+              paymentMethod === PAYMENT_METHOD.CASH
+                ? "bg-amber-"
+                : "hover:bg-[#1e1c18]"
             }`}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              paymentMethod === 'cash' ? 'bg-green-600' : 'bg-[#1e1c18] border border-[#2e2820]'
-            }`}>
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                paymentMethod === PAYMENT_METHOD.CASH
+                  ? "bg-green-600"
+                  : "bg-[#1e1c18] border border-[#2e2820]"
+              }`}
+            >
               <Banknote className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-left">
               <p className="text-[14px] font-medium text-[#f2ece0]">Tiền mặt</p>
-              <p className="text-[11px] text-white/60">Trả trực tiếp cho nhân viên</p>
+              <p className="text-[11px] text-white/60">
+                Trả trực tiếp cho nhân viên
+              </p>
             </div>
-            {paymentMethod === 'cash' && <Check className="w-5 h-5 text-amber-400" />}
+
+            {paymentMethod === PAYMENT_METHOD.CASH && (
+              <Check className="w-5 h-5 text-amber-400" />
+            )}
           </button>
         </div>
 
         {/* PAYMENT DETAIL */}
-        {paymentMethod === 'vnpay' && (
-          <div className="rounded-4xl border border-[#252118] p-5" style={{ backgroundColor: '#171512' }}>
+
+        {paymentMethod === PAYMENT_METHOD.QR_CODE && (
+          <div className="bg-[#171512] rounded-[20px] border border-[#252118] p-5">
             <p className="text-[10px] text-white/70 tracking-[0.25em] uppercase mb-4">
               Cổng thanh toán VNPay
             </p>
@@ -140,8 +185,8 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        {paymentMethod === 'cash' && (
-          <div className="rounded-4xl border border-[#252118] p-5" style={{ backgroundColor: '#171512' }}>
+        {paymentMethod === PAYMENT_METHOD.CASH && (
+          <div className="bg-[#171512] rounded-[20px] border border-[#252118] p-5">
             <p className="text-[10px] text-white/70 tracking-[0.25em] uppercase mb-4">
               Hướng dẫn thanh toán
             </p>
@@ -162,16 +207,16 @@ export default function CheckoutPage() {
             </button>
           </Link>
 
-          <button
+          <Button
             onClick={handlePayment}
-            disabled={!paymentMethod || isProcessing}
-            className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-30 text-[#0a0800] font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            disabled={!paymentMethod}
+            isLoading={isOrderPaying || isProcessing}
+            className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-30 text-[#0a0800] font-bold flex items-center justify-center gap-2"
           >
-            {isProcessing ? 'Đang xử lý' : 'Hoàn tất'}
-          </button>
+            {isProcessing ? "Đang xử lý" : "Hoàn tất"}
+          </Button>
         </div>
-
       </div>
     </div>
-  )
+  );
 }

@@ -31,7 +31,8 @@ export const accountApiRequest = {
     http.put<SuccessResponse<AccountResType>>(`/accounts/detail/${id}/`, body),
   deleteEmployee: (id: number) =>
     http.delete<SuccessResponse<AccountResType>>(`/accounts/detail/${id}/`),
-
+  getEmployee :(id: number) => 
+    http.get<SuccessResponse<AccountResType>>(`/accounts/detail/${id}/`),
   guestList: () => http.get<SuccessResponse<GetListGuestsResType>>("/accounts/guests/"),
   createGuest: (body: { name: string; tableNumber: number }) =>
     http.post<SuccessResponse<CreateGuestResType>>("/accounts/guests/", body),

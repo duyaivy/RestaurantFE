@@ -18,11 +18,18 @@ import { useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useAddEmployeeMutation } from '@/hooks/queries/useAccount'
+import { values } from 'lodash'
+import { useUploadMediaMutation } from '@/hooks/queries/UseMedia'
+import { toast } from '@/components/ui/use-toast'
+import { handleErrorApi } from '@/lib/utils'
 
 export default function AddEmployee() {
   const [file, setFile] = useState<File | null>(null)
   const [open, setOpen] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement | null>(null)
+  const addEmployeeMutation = useAddEmployeeMutation()
+  const UploadMediaMutation = useUploadMediaMutation()
   const form = useForm<CreateEmployeeAccountBodyType>({
     resolver: zodResolver(CreateEmployeeAccountBody),
     defaultValues: {
@@ -41,6 +48,42 @@ export default function AddEmployee() {
     }
     return avatar
   }, [file, avatar])
+
+  const reset = () => {
+    form.reset()
+    setFile(null) 
+    }
+
+  const onSubmit = async (values: CreateEmployeeAccountBodyType) => {
+    if(addEmployeeMutation.isPending) return;
+
+
+    try{
+      let body = values;
+      if(file){
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const uploadRes = await UploadMediaMutation.mutateAsync(formData);
+
+        const avatarUrl = uploadRes.payload.data
+        body = { ...values, avatar: avatarUrl 
+        }
+
+        
+      }
+      const result = await addEmployeeMutation.mutateAsync(body);
+      toast({
+        description: result.payload.message
+      })
+    reset();
+    }
+    catch(error){
+      handleErrorApi({
+        error,
+        setError: form.setError
+      })
+    }
+  }
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>

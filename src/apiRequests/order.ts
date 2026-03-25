@@ -1,5 +1,5 @@
-import http from '@/lib/http'
-import { SuccessResponse } from '@/constants/type'
+import http from "@/lib/http";
+import { SuccessResponse } from "@/constants/type";
 import {
   CreateOrdersBodyType,
   CreateOrdersResType,
@@ -9,27 +9,38 @@ import {
   PayGuestOrdersBodyType,
   PayGuestOrdersResType,
   UpdateOrderBodyType,
-  UpdateOrderResType
-} from '@/schemaValidations/order.schema'
-import queryString from 'query-string'
-
+  UpdateOrderResType,
+} from "@/schemaValidations/order.schema";
+import queryString from "query-string";
+const ORDER_URL = "/orders";
 const orderApiRequest = {
-  createOrders: (body: CreateOrdersBodyType) =>
-    http.post<SuccessResponse<CreateOrdersResType>>('/orders', body),
+  guestCreateOrders: (body: CreateOrdersBodyType) =>
+    http.post<SuccessResponse<CreateOrdersResType>>(
+      `${ORDER_URL}/guest-create/`,
+      body,
+    ),
   getOrderList: (queryParams: GetOrdersQueryParamsType) =>
     http.get<SuccessResponse<GetOrdersResType>>(
-      '/orders?' +
+      `${ORDER_URL}?` +
         queryString.stringify({
           fromDate: queryParams.fromDate?.toISOString(),
-          toDate: queryParams.toDate?.toISOString()
-        })
+          toDate: queryParams.toDate?.toISOString(),
+        }),
     ),
   updateOrder: (orderId: number, body: UpdateOrderBodyType) =>
-    http.put<SuccessResponse<UpdateOrderResType>>(`/orders/${orderId}`, body),
+    http.put<SuccessResponse<UpdateOrderResType>>(
+      `${ORDER_URL}/${orderId}/`,
+      body,
+    ),
   getOrderDetail: (orderId: number) =>
-    http.get<SuccessResponse<GetOrderDetailResType>>(`/orders/${orderId}`),
-  pay: (body: PayGuestOrdersBodyType) =>
-    http.post<SuccessResponse<PayGuestOrdersResType>>(`/orders/pay`, body)
-}
+    http.get<SuccessResponse<GetOrderDetailResType>>(
+      `${ORDER_URL}/${orderId}/`,
+    ),
+  pay: (orderId: number, body: PayGuestOrdersBodyType) =>
+    http.post<SuccessResponse<PayGuestOrdersResType>>(
+      `${ORDER_URL}/${orderId}/payment/`,
+      body,
+    ),
+};
 
-export default orderApiRequest
+export default orderApiRequest;
