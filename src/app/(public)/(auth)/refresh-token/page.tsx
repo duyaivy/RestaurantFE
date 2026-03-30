@@ -1,7 +1,6 @@
 "use client";
 import {
   checkAndRefreshToken,
-  getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
 } from "@/lib/utils";
 

@@ -62,7 +62,7 @@ export default function AddEmployee() {
       let body = values;
       if(file){
         const formData = new FormData();
-        formData.append('avatar', file);
+        formData.append('file', file);
         const uploadRes = await UploadMediaMutation.mutateAsync(formData);
 
         const avatarUrl = uploadRes.payload.data
@@ -76,6 +76,7 @@ export default function AddEmployee() {
         description: result.payload.message
       })
     reset();
+    setOpen(false);
     }
     catch(error){
       handleErrorApi({
@@ -99,7 +100,7 @@ export default function AddEmployee() {
           <DialogDescription>Các trường tên, email, mật khẩu là bắt buộc</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-employee-form'>
+          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-employee-form' onSubmit ={form.handleSubmit(onSubmit,e => {console.log(e)}) }>
             <div className='grid gap-4 py-4'>
               <FormField
                 control={form.control}
