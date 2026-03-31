@@ -28,16 +28,26 @@ export const useChangePasswordMutation = () => {
 export const useGetAccountList = () =>{
     return useQuery({
         queryKey: ['accounts'],
-        queryFn: accountApiRequest.list
+        queryFn: accountApiRequest.list,
+        staleTime: 1000 * 60 * 30,
+        gcTime: 1000 * 60 * 30,
+        retry: 2,
+        placeholderData: (prev) => prev
     })
 }
 
-export const useGetAccount =({ id }:{
-    id : number}
-) =>
+export const useGetAccount =({ id, enabled, }:{
+    id : number,
+    enabled: boolean
+}) =>
     { return useQuery({
         queryKey: ['account', id],
-        queryFn: () => accountApiRequest.getEmployee(id)
+        queryFn: () => accountApiRequest.getEmployee(id),
+        enabled,
+        staleTime: 1000 * 60 * 30,
+        gcTime: 1000 * 60 * 30,
+        retry: 2,
+        placeholderData: (prev) => prev
     })
 
 }

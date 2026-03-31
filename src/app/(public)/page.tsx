@@ -1,11 +1,10 @@
-// 
-
 
 import dishApiRequest from "@/apiRequests/dish";
 import { formatCurrency } from "@/lib/utils";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FEATURES } from "@/constants/banner";
 
 export default async function Home() {
   let dishList: DishListResType = [];
@@ -16,7 +15,10 @@ export default async function Home() {
       limit: 10
     });
     dishList = result.payload.data.results;
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error fetching dishes:", error);
+    dishList = [];
+  }
 
   return (
     
@@ -39,12 +41,12 @@ export default async function Home() {
         <div className="relative z-20 w-full px-8 sm:px-16 md:px-20 py-20 space-y-5">
           <div className="flex items-center gap-3">
             <div className="w-6 h-px bg-yellow-500/60" />
-            <p className="text-xs tracking-[0.5em] uppercase text-yellow-500/80 font-light">
+            <p className="text-xs tracking-[6px] uppercase text-yellow-500/80 font-light">
               Fine Dining
             </p>
           </div>
 
-          <h1 className="leading-[1.0]">
+          <h1 className="leading-none">
             <span className="block text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-white">
               Nhà hàng
             </span>
@@ -61,7 +63,7 @@ export default async function Home() {
 
           <div className="flex items-center gap-4 pt-1">
             <div className="w-10 h-px bg-yellow-500/30" />
-            <p className="text-xs tracking-[0.35em] uppercase text-white/30">
+            <p className="text-xs tracking-[5px] uppercase text-white/30">
               Vị ngon · Trọn khoảnh khắc
             </p>
           </div>
@@ -70,15 +72,10 @@ export default async function Home() {
 
       {/* DIVIDER */}
       <div className="border-y border-yellow-500/20 py-5 px-8 flex flex-wrap justify-center gap-8 sm:gap-16">
-        {[
-          "Nguyên liệu tươi ngon",
-          "Đầu bếp 5 sao",
-          "Không gian sang trọng",
-          "Phục vụ tận tâm"
-        ].map((item) => (
+        {FEATURES.map((item) => (
           <div key={item} className="flex items-center gap-2">
             <div className="w-1 h-1 rounded-full bg-yellow-500" />
-            <span className="text-xs tracking-[0.3em] uppercase text-white/40 font-light">
+            <span className="text-xs tracking-[3.5px] uppercase text-white/40 font-light">
               {item}
             </span>
           </div>
@@ -88,7 +85,7 @@ export default async function Home() {
       {/* MENU */}
       <section className="py-24 px-6 sm:px-16 md:px-24">
         <div className="text-center mb-16 space-y-4">
-          <p className="text-xs tracking-[0.5em] uppercase text-yellow-500/70 font-light">
+          <p className="text-xs tracking-[6px] uppercase text-yellow-500/70 font-light">
             Thực đơn
           </p>
 
@@ -147,7 +144,7 @@ export default async function Home() {
                 </div>
               ))
             ) : (
-              <Skeleton className="h-[20px] w-[100px] rounded-full" />
+              <Skeleton className="h-5 w-24 rounded-full" />
             )}
 
           </div>
@@ -161,7 +158,7 @@ export default async function Home() {
         <Image
           src="/banner.png"
           fill
-          quality={60}
+          quality={100}
           alt="bg"
           className="object-cover object-center blur-sm brightness-50"
         />

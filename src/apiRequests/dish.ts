@@ -2,7 +2,6 @@ import http from "@/lib/http";
 import { PaginationResponse, SuccessResponse } from "@/constants/type";
 import {
   CreateDishBodyType,
-  DishListResType,
   DishResType,
   UpdateDishBodyType,
 } from "@/schemaValidations/dish.schema";

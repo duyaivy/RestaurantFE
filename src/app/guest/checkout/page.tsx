@@ -173,7 +173,7 @@ export default function CheckoutPage() {
         {/* PAYMENT DETAIL */}
 
         {paymentMethod === PAYMENT_METHOD.QR_CODE && (
-          <div className="bg-[#171512] rounded-[20px] border border-[#252118] p-5">
+          <div className="bg-[#171512] rounded-4xl border border-[#252118] p-5">
             <p className="text-[10px] text-white/70 tracking-[0.25em] uppercase mb-4">
               Cổng thanh toán VNPay
             </p>
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
         )}
 
         {paymentMethod === PAYMENT_METHOD.CASH && (
-          <div className="bg-[#171512] rounded-[20px] border border-[#252118] p-5">
+          <div className="bg-[#171512] rounded-4xl border border-[#252118] p-5">
             <p className="text-[10px] text-white/70 tracking-[0.25em] uppercase mb-4">
               Hướng dẫn thanh toán
             </p>

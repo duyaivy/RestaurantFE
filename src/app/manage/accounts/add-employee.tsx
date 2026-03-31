@@ -19,7 +19,6 @@ import { useForm } from 'react-hook-form'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAddEmployeeMutation } from '@/hooks/queries/useAccount'
-import { values } from 'lodash'
 import { useUploadMediaMutation } from '@/hooks/queries/UseMedia'
 import { toast } from '@/components/ui/use-toast'
 import { handleErrorApi } from '@/lib/utils'
@@ -28,8 +27,8 @@ export default function AddEmployee() {
   const [file, setFile] = useState<File | null>(null)
   const [open, setOpen] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement | null>(null)
-  const addEmployeeMutation = useAddEmployeeMutation()
-  const UploadMediaMutation = useUploadMediaMutation()
+  const { mutateAsync: addEmployeeMutation, isPending: isAddingEmployee} = useAddEmployeeMutation()
+  const { mutateAsync: UploadMediaMutation } = useUploadMediaMutation()
   const form = useForm<CreateEmployeeAccountBodyType>({
     resolver: zodResolver(CreateEmployeeAccountBody),
     defaultValues: {
@@ -55,7 +54,7 @@ export default function AddEmployee() {
     }
 
   const onSubmit = async (values: CreateEmployeeAccountBodyType) => {
-    if(addEmployeeMutation.isPending) return;
+    if(isAddingEmployee) return;
 
 
     try{
@@ -63,7 +62,7 @@ export default function AddEmployee() {
       if(file){
         const formData = new FormData();
         formData.append('file', file);
-        const uploadRes = await UploadMediaMutation.mutateAsync(formData);
+        const uploadRes = await UploadMediaMutation(formData);
 
         const avatarUrl = uploadRes.payload.data
         body = { ...values, avatar: avatarUrl 
@@ -71,7 +70,7 @@ export default function AddEmployee() {
 
         
       }
-      const result = await addEmployeeMutation.mutateAsync(body);
+      const result = await addEmployeeMutation(body);
       toast({
         description: result.payload.message
       })
@@ -94,13 +93,13 @@ export default function AddEmployee() {
           <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Tạo tài khoản</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[600px] max-h-screen overflow-auto'>
+      <DialogContent className='sm:max-w-150 max-h-screen overflow-auto'>
         <DialogHeader>
           <DialogTitle>Tạo tài khoản</DialogTitle>
           <DialogDescription>Các trường tên, email, mật khẩu là bắt buộc</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-employee-form' onSubmit ={form.handleSubmit(onSubmit,e => {console.log(e)}) }>
+          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='add-employee-form' onSubmit ={form.handleSubmit(onSubmit) }>
             <div className='grid gap-4 py-4'>
               <FormField
                 control={form.control}
