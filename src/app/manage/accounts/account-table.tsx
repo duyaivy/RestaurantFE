@@ -43,7 +43,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
-
 type AccountItem = AccountListResType[0]
 
 const AccountTableContext = createContext<{
