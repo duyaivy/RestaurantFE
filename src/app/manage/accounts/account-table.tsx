@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
+import { useGetAccountList } from '@/hooks/queries/useAccount'
 
 type AccountItem = AccountListResType[0]
 

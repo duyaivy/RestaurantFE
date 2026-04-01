@@ -48,10 +48,10 @@ export default function CartPage() {
 
   if (itemCount === 0) {
     return (
-      <div className="h-full pt-14 bg-[#0a0908] flex flex-col items-center justify-center p-8 ">
+      <div className="h-full pt-14 bg-[#0a0908] flex flex-col items-center justify-center p-8">
         <div className="text-center">
-          <div className="w-20 h-20 rounded-3xl bg-[#161412] border border-white/5 flex items-center justify-center mx-auto mb-6">
-            <ShoppingBag className="w-8 h-8 text-white/30" strokeWidth={1.5} />
+          <div className="size-20 rounded-3xl bg-[#161412] border border-white/5 flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag className="size-8 text-white/30" strokeWidth={1.5} />
           </div>
           <h2 className="text-lg font-semibold text-white mb-2 tracking-wide">
             Giỏ hàng trống
@@ -100,7 +100,7 @@ export default function CartPage() {
         note: item.note || "",
       }));
       const { payload } = await createOrder({ items: dataApi });
-      const orderId = payload.data.id;
+      const orderId = payload.data?.id;
       localStorage.setItem("order_id", orderId.toString());
       items.forEach((item) => {
         for (let i = 0; i < item.quantity; i++) {
@@ -129,9 +129,10 @@ export default function CartPage() {
   };
 
   return (
-    <div className="h-full pt-14 bg-[#0a0908] pb-40">
+    // pb-[200px] = nav bar (~64px) + summary card + breathing room
+    <div className="min-h-full pt-14 bg-[#0a0908] pb-50">
       {/* HEADER */}
-      <div className="z-20 bg-[#0a0908]/95 backdrop-blur-md border-b border-white/5 px-5 py-4">
+      <div className="z-20 bg-[#0a0908] border-b border-white/5 px-5 py-4">
         <div className="max-w-sm mx-auto flex items-center justify-between">
           <h1 className="text-[17px] font-semibold text-white tracking-wide">
             Giỏ hàng
@@ -147,7 +148,8 @@ export default function CartPage() {
         {items.map((item) => (
           <div
             key={item.id}
-            className="bg-[#161412] rounded-[20px] border border-white/[0.07] overflow-hidden"
+            className="rounded-4xl border border-white/10 overflow-hidden"
+            style={{ backgroundColor: '#161412' }}
           >
             {/* TOP: image + info + delete + qty */}
             <div className="flex gap-3 p-3.5 items-start">
@@ -177,17 +179,15 @@ export default function CartPage() {
               </div>
 
               <div className="flex flex-col items-end gap-2.5 shrink-0">
-                {/* Trash — w-8 h-8 */}
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-red-500/10 transition-colors group"
+                  className="size-8 rounded-xl flex items-center justify-center hover:bg-red-500/10 transition-colors group"
                 >
                   <Trash2
-                    className="w-4 h-4 text-white/30 group-hover:text-red-400 transition-colors"
+                    className="size-4 text-white/30 group-hover:text-red-400 transition-colors"
                     strokeWidth={1.5}
                   />
                 </button>
-                {/* − qty + — cùng w-8 h-8 với thùng rác */}
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() =>
@@ -195,7 +195,7 @@ export default function CartPage() {
                     }
                     className="flex items-center justify-center hover:opacity-60 transition-opacity"
                   >
-                    <Minus className="w-4 h-4 text-white/50" strokeWidth={2} />
+                    <Minus className="size-4 text-white/50" strokeWidth={2} />
                   </button>
                   <span className="text-[14px] font-bold text-white tabular-nums w-5 text-center">
                     {item.quantity}
@@ -204,10 +204,7 @@ export default function CartPage() {
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     className="flex items-center justify-center hover:opacity-60 transition-opacity"
                   >
-                    <Plus
-                      className="w-4 h-4 text-amber-400"
-                      strokeWidth={2.5}
-                    />
+                    <Plus className="size-4 text-amber-400" strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
@@ -216,7 +213,7 @@ export default function CartPage() {
             {/* DIVIDER */}
             <div className="h-px bg-white/5" />
 
-            {/* BOTTOM ROW: note trigger (right) */}
+            {/* BOTTOM ROW: note */}
             {editingNoteId !== item.id && (
               <div className="flex items-center justify-between px-3.5 py-1.5">
                 {item.note ? (
@@ -233,15 +230,15 @@ export default function CartPage() {
                   }}
                   className="flex items-center gap-1.5 text-[11px] text-white/25 hover:text-amber-400 transition-colors shrink-0"
                 >
-                  <MessageSquare className="w-3 h-3" strokeWidth={1.5} />
+                  <MessageSquare className="size-3" strokeWidth={1.5} />
                   {item.note ? "Sửa ghi chú" : "+ Thêm ghi chú"}
                 </button>
               </div>
             )}
 
-            {/* NOTE EDITOR — inside card */}
+            {/* NOTE EDITOR */}
             {editingNoteId === item.id && (
-              <div className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/15 bg-amber-500/3">
+              <div className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/15" style={{ backgroundColor: 'rgba(245,158,11,0.03)' }}>
                 <textarea
                   autoFocus
                   value={editingNoteValue}
@@ -256,7 +253,8 @@ export default function CartPage() {
                       setEditingNoteId(null);
                       setEditingNoteValue("");
                     }}
-                    className="flex items-center gap-1 h-8 px-3 rounded-xl bg-white/[0.07] hover:bg-white/10 text-white/45 text-[12px] transition-colors"
+                    className="flex items-center gap-1 h-8 px-3 rounded-xl text-white/45 text-[12px] transition-colors"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
                   >
                     <X className="w-3 h-3" strokeWidth={2} /> Huỷ
                   </button>
@@ -276,7 +274,10 @@ export default function CartPage() {
         ))}
 
         {/* SUMMARY */}
-        <div className="mt-1 bg-[#161412] rounded-[20px] border border-white/[0.07] p-4">
+        <div
+          className="mt-1 rounded-4xl border border-white/[0.07] p-4"
+          style={{ backgroundColor: '#161412' }}
+        >
           <div className="flex justify-between items-center text-[12px] text-white/35 mb-1.5">
             <span>Tạm tính ({itemCount} món)</span>
             <span className="tabular-nums">
@@ -291,36 +292,33 @@ export default function CartPage() {
           <div className="h-px bg-white/6 mb-4" />
 
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[13px] text-white font-medium">
-              Tổng cộng
-            </span>
-            <span className="text-[22px] font-bold text-amber-400 tabular-nums leading-none">
+            <span className="text-xs text-white font-medium">Tổng cộng</span>
+            <span className="text-xl font-bold text-amber-400 tabular-nums leading-none">
               {total.toLocaleString("vi-VN")}
-              <span className="text-[11px] font-normal text-white/30 ml-1">
-                ₫
-              </span>
+              <span className="text-[11px] font-normal text-white/30 ml-1">₫</span>
             </span>
           </div>
 
           <div className="flex gap-2.5">
             <button
               onClick={() => setShowStaffCall(true)}
-              className="flex-1 h-12 rounded-2xl border border-white/8 bg-white/4 hover:bg-white/[0.07] text-white/50 text-[12px] font-medium flex items-center justify-center gap-2 transition-all"
+              className="flex-1 h-12 rounded-2xl border border-white/8 text-white/50 text-[12px] font-medium flex items-center justify-center gap-2 transition-all"
+              style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
             >
-              <MessageSquare className="w-3.5 h-3.5" strokeWidth={1.5} />
+              <MessageSquare className="size-3.5" strokeWidth={1.5} />
               Gọi nhân viên
             </button>
             <Button
               onClick={handlePlaceOrder}
               isLoading={isCreatingOrder || isOrdering}
-              className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-black text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all shadow-[0_4px_20px_rgba(245,158,11,0.35)]"
-            >
+             className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-black text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all"
+              style={{ boxShadow: '0 4px 20px rgba(245,158,11,0.35)' }}>
               {isOrdering || isCreatingOrder ? (
                 <p className="flex items-center gap-2 text-white">Đang xử lý</p>
               ) : (
-                <p className="flex items-center gap-2 text-white">
+                <span className="flex items-center gap-1 text-black">
                   Đặt món <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-                </p>
+                </span>
               )}
             </Button>
           </div>
@@ -329,22 +327,18 @@ export default function CartPage() {
 
       {/* STAFF CALL DIALOG */}
       <Dialog open={showStaffCall} onOpenChange={setShowStaffCall}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-[#161412] border border-white/8 p-6">
+        <DialogContent
+          className="w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/8 p-6"
+          style={{ backgroundColor: '#161412' }}
+        >
           {!isSubmitted ? (
             <div className="space-y-5">
               <div className="text-center">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-3">
-                  <MessageSquare
-                    className="w-5 h-5 text-amber-400"
-                    strokeWidth={1.5}
-                  />
+                <div className="w-12 h-12 rounded-2xl border border-amber-500/20 flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'rgba(245,158,11,0.1)' }}>
+                  <MessageSquare className="size-5 text-amber-400" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-[16px] font-semibold text-white">
-                  Gọi nhân viên
-                </h3>
-                <p className="text-[11px] text-white/40 mt-1">
-                  Nhân viên sẽ sớm đến hỗ trợ bạn
-                </p>
+                <h3 className="text-[16px] font-semibold text-white">Gọi nhân viên</h3>
+                <p className="text-[11px] text-white/40 mt-1">Nhân viên sẽ sớm đến hỗ trợ bạn</p>
               </div>
               <textarea
                 value={staffRequest}
@@ -356,30 +350,27 @@ export default function CartPage() {
               <div className="flex gap-2">
                 <Button
                   onClick={() => setShowStaffCall(false)}
-                  className="flex-1 h-11 rounded-2xl border border-white/8 bg-white/4 text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 hover:bg-white/[0.07] transition-all"
+                  className="flex-1 h-11 rounded-2xl border border-white/8 text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 transition-all"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
                 >
-                  <X className="w-3.5 h-3.5" strokeWidth={2} /> Huỷ
+                  <X className="size-3.5" strokeWidth={2} /> Huỷ
                 </Button>
                 <Button
                   onClick={handleStaffSubmit}
                   isLoading={isSendingMessage}
                   className="flex-1 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all"
                 >
-                  <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Gửi
+                  <Check className="size-3.5" strokeWidth={2.5} /> Gửi
                 </Button>
               </div>
             </div>
           ) : (
             <div className="text-center py-6 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-500/25 flex items-center justify-center mx-auto">
-                <Check className="w-5 h-5 text-amber-400" strokeWidth={2} />
+              <div className="size-12 rounded-full border border-amber-500/25 flex items-center justify-center mx-auto" style={{ backgroundColor: 'rgba(245,158,11,0.15)' }}>
+                <Check className="size-5 text-amber-400" strokeWidth={2} />
               </div>
-              <h3 className="text-[16px] font-semibold text-white">
-                Yêu cầu đã gửi!
-              </h3>
-              <p className="text-[11px] text-white/40">
-                Nhân viên sẽ sớm đến với bạn
-              </p>
+              <h3 className="text-[16px] font-semibold text-white">Yêu cầu đã gửi!</h3>
+              <p className="text-[11px] text-white/40">Nhân viên sẽ sớm đến với bạn</p>
             </div>
           )}
         </DialogContent>
