@@ -61,7 +61,7 @@ export const useAddEmployeeMutation = () => {
         }
     })
 }
-export const useUpdateEmployeeMutation = (id: number) => {
+export const useUpdateEmployeeMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
     mutationFn: ({id, ...body} : UpdateEmployeeAccountBodyType & { id: number }) => accountApiRequest.updateEmployee(id, body),
