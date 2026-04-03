@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
+import { useGetAccountList } from '@/hooks/queries/useAccount'
 type AccountItem = AccountListResType[0]
 
 const AccountTableContext = createContext<{
@@ -67,7 +68,7 @@ export const columns: ColumnDef<AccountType>[] = [
     header: 'Avatar',
     cell: ({ row }) => (
       <div>
-        <Avatar className='aspect-square w-[100px] h-[100px] rounded-md object-cover'>
+        <Avatar className='aspect-square size-25 rounded-md object-cover'>
           <AvatarImage src={row.getValue('avatar')} />
           <AvatarFallback className='rounded-none'>{row.original.name}</AvatarFallback>
         </Avatar>
@@ -164,7 +165,8 @@ export default function AccountTable() {
   // const params = Object.fromEntries(searchParam.entries())
   const [employeeIdEdit, setEmployeeIdEdit] = useState<number | undefined>()
   const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(null)
-  const data: any[] = []
+  const employeeListQuery = useGetAccountList()
+  const data = employeeListQuery.data?.payload.data.results || []
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

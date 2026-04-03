@@ -1,5 +1,5 @@
 import http from "@/lib/http";
-import { SuccessResponse } from "@/constants/type";
+import { PaginationResponse, SuccessResponse } from "@/constants/type";
 import {
   AccountListResType,
   AccountResType,
@@ -24,7 +24,7 @@ export const accountApiRequest = {
   changePassword: (body: ChangePasswordBodyType) =>
     http.post<SuccessResponse<AccountResType>>("/me/change-password/", body),
 
-  list: () => http.get<SuccessResponse<AccountListResType>>("/accounts/"),
+  list: () => http.get<SuccessResponse<PaginationResponse<AccountResType>>>("/accounts/"),
   addEmployee: (body: CreateEmployeeAccountBodyType) =>
     http.post<SuccessResponse<AccountResType>>("/accounts/", body),
   updateEmployee: (id: number, body: UpdateEmployeeAccountBodyType) =>
