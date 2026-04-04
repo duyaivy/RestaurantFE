@@ -61,7 +61,7 @@ export const useAddEmployeeMutation = () => {
         }
     })
 }
-export const useUpdateEmployeeMutation = (id: number) => {
+export const useUpdateEmployeeMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
     mutationFn: ({id, ...body} : UpdateEmployeeAccountBodyType & { id: number }) => accountApiRequest.updateEmployee(id, body),
@@ -73,8 +73,9 @@ export const useUpdateEmployeeMutation = (id: number) => {
 export const useDeleteEmployeeMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn:({id}: { id: number }) => accountApiRequest.deleteEmployee(id)   ,
+        mutationFn: accountApiRequest.deleteEmployee,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['accounts'] });
-        } })  
-    }
+        }
+    })
+}
