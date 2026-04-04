@@ -60,8 +60,8 @@ export default function EditEmployee({
   }, [file, avatar])
 
   const reset = () => {
-    form.reset()
-    setFile(null) 
+   setFile(null)
+   setId(undefined)
     }
 
   useEffect(() => {
@@ -89,14 +89,18 @@ export default function EditEmployee({
         const uploadRes = await uploadMediaMutation(formData);
         const avatarUrl = uploadRes.payload.data
 
-        body = { ...body, avatar: avatarUrl }
+        body = { ...body, avatar: avatarUrl 
+
+        }
+      }
         const result = await updateEmployeeMutation(body);
         toast({
           description: result.payload.message
         })
+        reset()
     onSubmitSuccess && onSubmitSuccess();
   
-    }}
+    }
      catch(error){ 
       handleErrorApi({
         error,
@@ -110,7 +114,7 @@ export default function EditEmployee({
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-          setId(undefined)
+          reset()
         }
       }}
     >
