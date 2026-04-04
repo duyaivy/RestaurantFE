@@ -175,12 +175,8 @@ function AlertDialogDeleteAccount({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel asChild>
-            <button>Cancel</button>
-          </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <button>Continue</button>
-          </AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
