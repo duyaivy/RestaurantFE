@@ -1,7 +1,6 @@
 import http from "@/lib/http";
 import { PaginationResponse, SuccessResponse } from "@/constants/type";
 import {
-  AccountListResType,
   AccountResType,
   ChangePasswordBodyType,
   CreateEmployeeAccountBodyType,

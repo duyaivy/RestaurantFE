@@ -36,8 +36,8 @@ export default function EditEmployee({
   const [file, setFile] = useState<File | null>(null)
   const avatarInputRef = useRef<HTMLInputElement | null>(null)
   const {data} = useGetAccount({ id: id as number, enabled: Boolean(id) })
-  const { mutateAsync: updateEmployeeMutation, isPending: isUpdatingEmployee} = useUpdateEmployeeMutation()
-  const { mutateAsync: uploadMediaMutation } = useUploadMediaMutation()
+  const { mutateAsync: updateEmployee, isPending: isUpdatingEmployee} = useUpdateEmployeeMutation()
+  const { mutateAsync: uploadMedia } = useUploadMediaMutation()
   const form = useForm<UpdateEmployeeAccountBodyType>({
     resolver: zodResolver(UpdateEmployeeAccountBody) as any,
     defaultValues: {
@@ -86,14 +86,14 @@ export default function EditEmployee({
       if(file){
         const formData = new FormData();
         formData.append('file', file);
-        const uploadRes = await uploadMediaMutation(formData);
+        const uploadRes = await uploadMedia(formData);
         const avatarUrl = uploadRes.payload.data
 
         body = { ...body, avatar: avatarUrl 
 
         }
       }
-        const result = await updateEmployeeMutation(body);
+        const result = await updateEmployee(body);
         toast({
           description: result.payload.message
         })

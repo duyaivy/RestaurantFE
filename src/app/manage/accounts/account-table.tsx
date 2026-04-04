@@ -53,9 +53,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/auto-pagination";
-import { useDeleteEmployeeMutation, useGetAccountList } from "@/hooks/queries/useAccount";
+import {
+  useDeleteEmployeeMutation,
+  useGetAccountList,
+} from "@/hooks/queries/useAccount";
 import { handleErrorApi } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
+import { ROUTE } from "@/constants/route";
+import { Skeleton } from "@/components/ui/skeleton";
 type AccountItem = AccountListResType[0];
 
 const AccountTableContext = createContext<{
@@ -136,7 +141,7 @@ export const columns: ColumnDef<AccountType>[] = [
             <DropdownMenuItem onClick={openEditEmployee}>Sửa</DropdownMenuItem>
             <DropdownMenuItem
               onSelect={(e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 openDeleteEmployee();
               }}
             >
@@ -156,22 +161,21 @@ function AlertDialogDeleteAccount({
   employeeDelete: AccountItem | null;
   setEmployeeDelete: (value: AccountItem | null) => void;
 }) {
-
-  const {mutateAsync: deleteEmployeeMutation} = useDeleteEmployeeMutation();
+  const { mutateAsync: deleteEmployeeMutation } = useDeleteEmployeeMutation();
 
   const handleDeleteEmployee = async () => {
-    if(employeeDelete){
+    if (employeeDelete) {
       try {
         const result = await deleteEmployeeMutation(employeeDelete.id);
         setEmployeeDelete(null);
-        toast ({
-          description: result.payload.message
-        })
+        toast({
+          description: result.payload.message,
+        });
       } catch (error) {
         handleErrorApi({
           error,
           // setError: form.setError
-        })  
+        });
       }
     }
   };
@@ -310,12 +314,18 @@ export default function AccountTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
+              {employeeListQuery.isPending ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
                   >
+                    <Skeleton className="h-6 w-full" />
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(
@@ -349,7 +359,7 @@ export default function AccountTable() {
             <AutoPagination
               page={table.getState().pagination.pageIndex + 1}
               pageSize={table.getPageCount()}
-              pathname="/manage/accounts"
+              pathname={ROUTE.MANAGE.ACCOUNTS}
             />
           </div>
         </div>
