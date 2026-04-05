@@ -69,7 +69,7 @@ export const columns: ColumnDef<DishItem>[] = [
     header: 'Ảnh',
     cell: ({ row }) => (
       <div>
-        <Avatar className='aspect-square w-[100px] h-[100px] rounded-md object-cover'>
+        <Avatar className='aspect-square size-25 rounded-md object-cover'>
           <AvatarImage src={row.getValue('image')} />
           <AvatarFallback className='rounded-none'>{row.original.name.vi}</AvatarFallback>
         </Avatar>

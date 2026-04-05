@@ -12,7 +12,7 @@ import queryString from "query-string";
 const dishApiRequest = {
   list: (queryParams: DishListConfig) =>
     http.get<SuccessResponse<PaginationResponse<DishResType>>>(
-      "dishes?" +
+      "dishes/?" +
         queryString.stringify({
           ...queryParams,
         }),

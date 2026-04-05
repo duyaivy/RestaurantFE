@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getVietnameseDishStatus } from "@/lib/utils";
+import { getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
 import {
   CreateDishBody,
   CreateDishBodyType,
@@ -36,19 +36,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAddDishMutation } from "@/hooks/queries/useDish";
+import { useUploadMediaMutation } from "@/hooks/queries/UseMedia";
+import { useCategoryQuery } from "@/hooks/queries/useCategory";
+import { toast } from "@/components/ui/use-toast";
 
 export default function AddDish() {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
+  const uploadMedia = useUploadMediaMutation();
+  const { mutateAsync: addDish, isPending: isAddingDish } = useAddDishMutation();
+  const { data: categoriesData } = useCategoryQuery();
+  const categories = categoriesData?.payload?.data || [];
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const form = useForm<CreateDishBodyType>({
     resolver: zodResolver(CreateDishBody) as any,
     defaultValues: {
       name: "",
       description: "",
-      price: 0,
-      image: "",
+      price: 10000,
+      image: "https://example.com/image.jpg",
       status: DishStatus.Unavailable,
+      category_id: categories.length > 0 ? categories[0].id : 1,
     },
   });
   const image = form.watch("image");
@@ -60,6 +69,36 @@ export default function AddDish() {
     return image;
   }, [file, image]);
 
+  const onSubmit = async (values: CreateDishBodyType) => {
+    console.log("submit", values);
+    if(isAddingDish) return;
+    try{
+      let body = values;
+      if(file){
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadResult = await uploadMedia.mutateAsync(formData);
+        const imageUrl = uploadResult.payload.data
+        body = { ...values, image: imageUrl };
+      } 
+      const result = await addDish(body);
+      toast({
+        description: result.payload.message
+      })
+      reset();
+      setOpen(false);
+
+    } catch(error){
+      handleErrorApi({
+        error,
+        setError: form.setError
+      })
+    }
+  }
+const reset = () => {
+    form.reset()
+    setFile(null) 
+    }
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
@@ -70,7 +109,7 @@ export default function AddDish() {
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
+      <DialogContent className="sm:max-w-150 max-h-screen overflow-auto">
         <DialogHeader>
           <DialogTitle>Thêm món ăn</DialogTitle>
         </DialogHeader>
@@ -78,7 +117,7 @@ export default function AddDish() {
           <form
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
-            id="add-dish-form"
+            id="add-dish-form" onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="grid gap-4 py-4">
               <FormField
@@ -87,7 +126,7 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex gap-2 items-start justify-start">
-                      <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
+                      <Avatar className="aspect-square size-25 rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
                           {name || "Avatar"}
@@ -101,15 +140,13 @@ export default function AddDish() {
                           const file = e.target.files?.[0];
                           if (file) {
                             setFile(file);
-                            field.onChange(
-                              "http://localhost:3000/" + file.name,
-                            );
+                            // Không set URL giả, để upload hoàn thành mới set
                           }
                         }}
                         className="hidden"
                       />
                       <button
-                        className="flex aspect-square w-[100px] items-center justify-center rounded-md border border-dashed"
+                        className="flex aspect-square w-25 items-center justify-center rounded-md border border-dashed"
                         type="button"
                         onClick={() => imageInputRef.current?.click()}
                       >
@@ -203,6 +240,37 @@ export default function AddDish() {
                       </div>
 
                       <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="category_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="category">Danh mục</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value ? String(field.value) : ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn danh mục" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={String(category.id)}>
+                                {category.name.vi}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </div>
                     </div>
                   </FormItem>
                 )}
