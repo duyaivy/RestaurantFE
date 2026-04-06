@@ -9,7 +9,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -33,7 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,10 +69,10 @@ const DishTableContext = createContext<{
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }>({
-  setDishIdEdit: (value: number | undefined) => {},
+  setDishIdEdit: (_value: number | undefined) => {},
   dishIdEdit: undefined,
   dishDelete: null,
-  setDishDelete: (value: DishItem | null) => {},
+  setDishDelete: (_value: DishItem | null) => {},
 });
 
 export const columns: ColumnDef<DishItem>[] = [
@@ -222,12 +221,12 @@ function AlertDialogDeleteDish({
 }
 export default function DishTable() {
   const queryConfig = useDishQueryConfig();
-  const PAGE_SIZE = Number(queryConfig.limit) || 10;
-  const page = Number(queryConfig.page) || 1;
-  const pageIndex = page - 1;
+  const pageFromQuery = Number(queryConfig.page) || 1;
 
   const dishListQuery = useDishListQuery(queryConfig);
   const data = dishListQuery.data?.payload.data.results || [];
+  const currentPage = dishListQuery.data?.payload.data.current || pageFromQuery;
+  const pageCount = dishListQuery.data?.payload.data.count || 1;
 
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
@@ -242,7 +241,6 @@ export default function DishTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -253,10 +251,6 @@ export default function DishTable() {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex,
-        pageSize: PAGE_SIZE,
-      },
     },
   });
 
@@ -379,14 +373,12 @@ export default function DishTable() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+            Trang <strong>{currentPage}</strong> trong <strong>{pageCount}</strong>
           </div>
           <div>
             <AutoPagination
-              page={table.getState().pagination.pageIndex + 1}
-              pageSize={table.getPageCount()}
+              page={currentPage}
+              pageSize={pageCount}
               pathname={ROUTE.MANAGE.DISHES}
             />
           </div>

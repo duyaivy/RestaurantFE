@@ -9,7 +9,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -40,7 +39,7 @@ import {
 import AddEmployee from "@/app/manage/accounts/add-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditEmployee from "@/app/manage/accounts/edit-employee";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,7 +50,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/auto-pagination";
 import {
   useDeleteEmployeeMutation,
@@ -61,6 +59,7 @@ import { handleErrorApi } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { ROUTE } from "@/constants/route";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAccountQueryConfig } from "@/hooks/common/useAccountQueryConfig";
 type AccountItem = AccountListResType[0];
 
 const AccountTableContext = createContext<{
@@ -210,27 +209,23 @@ function AlertDialogDeleteAccount({
     </AlertDialog>
   );
 }
-// Số lượng item trên 1 trang
-const PAGE_SIZE = 10;
 export default function AccountTable() {
-  const searchParam = useSearchParams();
-  const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
-  const pageIndex = page - 1;
-  // const params = Object.fromEntries(searchParam.entries())
+  const queryConfig = useAccountQueryConfig();
+  const pageFromQuery = Number(queryConfig.page) || 1;
+
+  const employeeListQuery = useGetAccountList(queryConfig);
+  const data = employeeListQuery.data?.payload.data.results || [];
+  const currentPage = employeeListQuery.data?.payload.data.current || pageFromQuery;
+  const pageCount = employeeListQuery.data?.payload.data.count || 1;
+
   const [employeeIdEdit, setEmployeeIdEdit] = useState<number | undefined>();
   const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(
     null,
   );
-  const employeeListQuery = useGetAccountList();
-  const data = employeeListQuery.data?.payload.data.results || [];
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [pagination, setPagination] = useState({
-    pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-    pageSize: PAGE_SIZE, //default page size
-  });
 
   const table = useReactTable({
     data,
@@ -238,28 +233,18 @@ export default function AccountTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
   });
-
-  useEffect(() => {
-    table.setPagination({
-      pageIndex,
-      pageSize: PAGE_SIZE,
-    });
-  }, [table, pageIndex]);
 
   return (
     <AccountTableContext.Provider
@@ -351,14 +336,12 @@ export default function AccountTable() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+            Trang <strong>{currentPage}</strong> trong <strong>{pageCount}</strong>
           </div>
           <div>
             <AutoPagination
-              page={table.getState().pagination.pageIndex + 1}
-              pageSize={table.getPageCount()}
+              page={currentPage}
+              pageSize={pageCount}
               pathname={ROUTE.MANAGE.ACCOUNTS}
             />
           </div>
