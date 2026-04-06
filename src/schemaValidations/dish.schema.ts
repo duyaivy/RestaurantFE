@@ -7,7 +7,7 @@ export const CreateDishBody = z.object({
   description: z.string().max(10000),
   image: z.string().url(),
   status: z.enum(DishStatusValues).optional(),
-  category: z.number()
+  category_id: z.number()
 })
 
 
@@ -22,7 +22,11 @@ export const DishSchema = z.object({
   status: z.enum(DishStatusValues),
   created_at: z.date(),
   updated_at: z.date(),
-  category: z.number()
+  // category_id: z.number()
+  category: z.object({
+    id: z.number(),
+    name: LanguageSchema
+  })
 })
 
 export const DishRes = DishSchema

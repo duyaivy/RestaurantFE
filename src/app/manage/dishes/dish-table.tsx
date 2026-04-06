@@ -93,6 +93,14 @@ export const columns: ColumnDef<DishItem>[] = [
       <div dangerouslySetInnerHTML={{ __html: row.original.description.vi }} className='whitespace-pre-line' />
     )
   },
+
+  {
+    accessorKey: 'category',
+    header: 'Danh mục',
+    cell: ({ row }) => <div className='capitalize'>{row.original.category.name.vi}</div>
+
+  },
+ 
   {
     accessorKey: 'status',
     header: 'Trạng thái',

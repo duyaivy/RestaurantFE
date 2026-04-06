@@ -52,7 +52,7 @@ export default function EditDish({
       price: 0,
       image: '',
       status: DishStatus.Unavailable,
-      category: undefined
+      category_id: undefined
     }
   })
   const image = form.watch('image')
@@ -73,7 +73,7 @@ export default function EditDish({
         price,
         image,
         status,
-        category,
+        category_id: category.id,
       })
 
      
@@ -240,7 +240,7 @@ export default function EditDish({
               />
               <FormField
                 control={form.control}
-                name='category'
+                name='category_id'
                 render={({ field }) => (
                   <FormItem>
                     <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
