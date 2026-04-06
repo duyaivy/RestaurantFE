@@ -40,13 +40,14 @@ import { useAddDishMutation } from "@/hooks/queries/useDish";
 import { useUploadMediaMutation } from "@/hooks/queries/UseMedia";
 import { useCategoryQuery } from "@/hooks/queries/useCategory";
 import { toast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AddDish() {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const uploadMedia = useUploadMediaMutation();
   const { mutateAsync: addDish, isPending: isAddingDish } = useAddDishMutation();
-  const { data: categoriesData } = useCategoryQuery();
+  const { data: categoriesData, isPending: isCategoriesPending } = useCategoryQuery();
   const categories = categoriesData?.payload?.data || [];
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const form = useForm<CreateDishBodyType>({
@@ -54,8 +55,8 @@ export default function AddDish() {
     defaultValues: {
       name: "",
       description: "",
-      price: 10000,
-      image: "https://example.com/image.jpg",
+      price: 0,
+      image:  undefined,
       status: DishStatus.Unavailable,
       category_id: categories.length > 0 ? categories[0].id : 1,
     },
@@ -252,6 +253,9 @@ const reset = () => {
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
                       <Label htmlFor="category">Danh mục</Label>
                       <div className="col-span-3 w-full space-y-2">
+                       {isCategoriesPending ? (
+                          <Skeleton className="h-4 w-32" />
+                        ) : (
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))}
                           value={field.value ? String(field.value) : ""}
@@ -269,6 +273,7 @@ const reset = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        )}
                         <FormMessage />
                       </div>
                     </div>
