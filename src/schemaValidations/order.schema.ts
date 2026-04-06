@@ -7,6 +7,17 @@ import { AccountSchema } from "@/schemaValidations/account.schema";
 import { TableSchema } from "@/schemaValidations/table.schema";
 import z from "zod";
 
+const OrderMiniSchema = z.object({
+  id: z.number(),
+  guest_id: z.number().nullable(),
+  table_number: z.number().nullable(),
+  order_handler_id: z.number().nullable(),
+  status: z.enum(OrderStatusValues),
+  payment_method: z.enum(PAYMENT_METHOD_VALUES),
+  total_amount: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
 const DishSnapshotSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -68,8 +79,6 @@ export type GetOrdersQueryParamsType = z.TypeOf<typeof GetOrdersQueryParams>;
 
 export const GetOrdersRes = z.array(OrderSchema);
 
-export type GetOrdersResType = z.TypeOf<typeof GetOrdersRes>;
-
 export const GetOrderDetailRes = OrderSchema.extend({
   table: TableSchema,
 });
@@ -102,6 +111,6 @@ export const CreateOrdersBody = z
 
 export type CreateOrdersBodyType = z.TypeOf<typeof CreateOrdersBody>;
 
-export const CreateOrdersRes = z.array(OrderSchema);
+export type CreateOrdersResType = z.TypeOf<typeof OrderSchema>;
 
-export type CreateOrdersResType = z.TypeOf<typeof CreateOrdersRes>;
+export type OrderMiniResType = z.TypeOf<typeof OrderMiniSchema>;

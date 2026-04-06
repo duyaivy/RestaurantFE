@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { ROUTE } from "@/constants/route";
 // route bắt buoc phải đăng nhập mới vào được
-const privatePaths = ["/manage"];
+const privatePaths = [ROUTE.MANAGE.ROOT];
 // route dành cho người chưa đăng nhập
-const unAuthPaths = ["/login"];
+const unAuthPaths = [ROUTE.AUTH.LOGIN];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,12 +13,12 @@ export function middleware(request: NextRequest) {
 
   // chưa đăng nhâpk thì không vào privatePaths
   if (privatePaths.some((path) => pathname.startsWith(path)) && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL(ROUTE.AUTH.LOGIN, request.url));
   }
 
   // đã đăng nhập thì không vào LOGIN nữa
   if (unAuthPaths.some((path) => pathname.startsWith(path)) && refreshToken) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL(ROUTE.HOME, request.url));
   }
   // TH dang nhap roi nhung accessToken het han
   if (
@@ -25,7 +26,7 @@ export function middleware(request: NextRequest) {
     !accessToken &&
     refreshToken
   ) {
-    const url = new URL("/refresh-token", request.url);
+    const url = new URL(ROUTE.AUTH.REFRESH_TOKEN, request.url);
     url.searchParams.set("refreshToken", refreshToken);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);

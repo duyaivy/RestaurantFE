@@ -1,37 +1,84 @@
-import { Home, LineChart, ShoppingCart, Users2, Salad, Table } from 'lucide-react'
+import {
+  LayoutDashboard,
+  LineChart,
+  MessageCircleMore,
+  Salad,
+  ShoppingCart,
+  Table,
+  Users2,
+  type LucideIcon,
+} from "lucide-react";
+import { ROUTE } from "@/constants/route";
+import { Role } from "@/constants/type";
+import { RoleType } from "@/types/jwt.types";
 
-const menuItems = [
+export type ManageMenuItem = {
+  title: string;
+  Icon: LucideIcon;
+  href: string;
+};
+
+const adminMenuItems: ManageMenuItem[] = [
   {
-    title: 'Trang chủ',
-    Icon: Home,
-    href: '/'
+    title: "Dashboard",
+    Icon: LayoutDashboard,
+    href: ROUTE.MANAGE.DASHBOARD,
   },
   {
-    title: 'Đơn hàng',
+    title: "Đơn hàng",
     Icon: ShoppingCart,
-    href: '/manage/orders'
+    href: ROUTE.MANAGE.ORDERS,
   },
   {
-    title: 'Bàn ăn',
+    title: "Bàn ăn",
     Icon: Table,
-    href: '/manage/tables'
+    href: ROUTE.MANAGE.TABLES,
   },
   {
-    title: 'Món ăn',
+    title: "Món ăn",
     Icon: Salad,
-    href: '/manage/dishes'
+    href: ROUTE.MANAGE.DISHES,
   },
-
   {
-    title: 'Phân tích',
+    title: "Phân tích",
     Icon: LineChart,
-    href: '/manage/analytics'
+    href: ROUTE.MANAGE.ANALYTICS,
   },
   {
-    title: 'Nhân viên',
+    title: "Nhân viên",
     Icon: Users2,
-    href: '/manage/accounts'
-  }
-]
+    href: ROUTE.MANAGE.ACCOUNTS,
+  },
+  {
+    title: "Chăm sóc khách hàng",
+    Icon: MessageCircleMore,
+    href: ROUTE.MANAGE.MESSAGES,
+  },
+];
 
-export default menuItems
+const employeeMenuItems: ManageMenuItem[] = [
+  {
+    title: "Đơn hàng",
+    Icon: ShoppingCart,
+    href: ROUTE.MANAGE.ORDERS,
+  },
+  {
+    title: "Chăm sóc khách hàng",
+    Icon: MessageCircleMore,
+    href: ROUTE.MANAGE.MESSAGES,
+  },
+];
+
+export const getMenuItemsByRole = (
+  role: RoleType | null | undefined,
+): ManageMenuItem[] => {
+  if (role === Role.Admin) {
+    return adminMenuItems;
+  }
+
+  if (role === Role.Employee) {
+    return employeeMenuItems;
+  }
+
+  return [];
+};

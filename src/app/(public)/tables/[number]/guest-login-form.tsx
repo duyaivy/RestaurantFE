@@ -12,6 +12,7 @@ import { bgGuestLogin } from "public";
 import { useGuestLoginMutation } from "@/hooks/queries/useGuest";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { ROUTE } from "@/constants/route";
 
 export default function GuestLoginForm() {
   const router = useRouter();
@@ -35,13 +36,14 @@ export default function GuestLoginForm() {
 
       // save
       localStorage.setItem("accessToken", result.payload.data.accessToken);
+      localStorage.setItem("guestName", data.name);
       localStorage.setItem("table_number_id", data.tableNumber.toString());
 
       toast({
         title: "Đăng nhập thành công",
         description: result.payload.message,
       });
-      router.push("/guest/menu");
+      router.push(ROUTE.GUEST.MENU);
     } catch (error: any) {
       toast({
         title: "Đăng nhập thất bại",

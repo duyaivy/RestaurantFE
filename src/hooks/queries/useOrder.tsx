@@ -1,11 +1,19 @@
 import orderApiRequest from "@/apiRequests/order";
 import {
+  GuestOrderListQueryParams,
+  GuestOrderListItem,
+} from "@/apiRequests/order";
+import {
   GetOrdersQueryParamsType,
   OrderItemType,
   PayGuestOrdersBodyType,
   UpdateOrderBodyType,
 } from "@/schemaValidations/order.schema";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+
+export const getGuestOrderListQueryKey = ({
+  guestId,
+}: GuestOrderListQueryParams) => ["guest-orders", guestId] as const;
 
 export const useUpdateOrderMutation = () => {
   return useMutation({
@@ -22,6 +30,27 @@ export const useGetOrderListQuery = (queryParams: GetOrdersQueryParamsType) => {
   return useQuery({
     queryFn: () => orderApiRequest.getOrderList(queryParams),
     queryKey: ["orders", queryParams],
+  });
+};
+
+export const useGetGuestOrderListQuery = ({
+  guestId,
+  enabled = true,
+}: GuestOrderListQueryParams & {
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryFn: () =>
+      orderApiRequest.getGuestOrderList({
+        guestId,
+      }),
+    queryKey: getGuestOrderListQueryKey({
+      guestId,
+    }),
+    enabled,
+    placeholderData: keepPreviousData,
+    staleTime: 15 * 1000,
+    refetchOnWindowFocus: false,
   });
 };
 
