@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,9 +11,9 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
+  useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 
 import {
   DropdownMenu,
@@ -21,12 +21,19 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { createContext, useContext, useEffect, useState } from 'react'
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,122 +42,160 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog'
-import { formatCurrency, getVietnameseDishStatus } from '@/lib/utils'
-import AutoPagination from '@/components/auto-pagination'
-import { useDishQueryConfig } from '@/hooks/common/useDishQueryConfig'
-import { DishListResType } from '@/schemaValidations/dish.schema'
-import EditDish from '@/app/manage/dishes/edit-dish'
-import AddDish from '@/app/manage/dishes/add-dish'
-import { useDishListQuery } from '@/hooks/queries/useDish'
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  formatCurrency,
+  getVietnameseDishStatus,
+  handleErrorApi,
+} from "@/lib/utils";
+import AutoPagination from "@/components/auto-pagination";
+import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
+import { DishListResType } from "@/schemaValidations/dish.schema";
+import EditDish from "@/app/manage/dishes/edit-dish";
+import AddDish from "@/app/manage/dishes/add-dish";
+import {
+  useDeleteDishMutation,
+  useDishListQuery,
+} from "@/hooks/queries/useDish";
+import { toast } from "@/components/ui/use-toast";
+import { ROUTE } from "@/constants/route";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type DishItem = DishListResType[0]
+type DishItem = DishListResType[0];
 
 const DishTableContext = createContext<{
-  setDishIdEdit: (value: number) => void
-  dishIdEdit: number | undefined
-  dishDelete: DishItem | null
-  setDishDelete: (value: DishItem | null) => void
+  setDishIdEdit: (value: number) => void;
+  dishIdEdit: number | undefined;
+  dishDelete: DishItem | null;
+  setDishDelete: (value: DishItem | null) => void;
 }>({
-  setDishIdEdit: (value: number | undefined) => { },
+  setDishIdEdit: (value: number | undefined) => {},
   dishIdEdit: undefined,
   dishDelete: null,
-  setDishDelete: (value: DishItem | null) => { }
-})
+  setDishDelete: (value: DishItem | null) => {},
+});
 
 export const columns: ColumnDef<DishItem>[] = [
   {
-    accessorKey: 'id',
-    header: 'ID'
+    accessorKey: "id",
+    header: "ID",
   },
   {
-    accessorKey: 'image',
-    header: 'Ảnh',
+    accessorKey: "image",
+    header: "Ảnh",
     cell: ({ row }) => (
       <div>
-        <Avatar className='aspect-square size-25 rounded-md object-cover'>
-          <AvatarImage src={row.getValue('image')} />
-          <AvatarFallback className='rounded-none'>{row.original.name.vi}</AvatarFallback>
+        <Avatar className="aspect-square size-25 rounded-md object-cover">
+          <AvatarImage src={row.getValue("image")} />
+          <AvatarFallback className="rounded-none">
+            {row.original.name.vi}
+          </AvatarFallback>
         </Avatar>
       </div>
-    )
+    ),
   },
   {
-    accessorKey: 'name',
-    header: 'Tên',
-    cell: ({ row }) => <div className='capitalize'>{row.original.name.vi}</div>
+    accessorKey: "name",
+    header: "Tên",
+    cell: ({ row }) => <div className="capitalize">{row.original.name.vi}</div>,
   },
   {
-    accessorKey: 'price',
-    header: 'Giá cả',
-    cell: ({ row }) => <div className='capitalize'>{formatCurrency(row.getValue('price'))}</div>
-  },
-  {
-    accessorKey: 'description',
-    header: 'Mô tả',
+    accessorKey: "price",
+    header: "Giá cả",
     cell: ({ row }) => (
-      <div dangerouslySetInnerHTML={{ __html: row.original.description.vi }} className='whitespace-pre-line' />
-    )
+      <div className="capitalize">{formatCurrency(row.getValue("price"))}</div>
+    ),
+  },
+  {
+    accessorKey: "description",
+    header: "Mô tả",
+    cell: ({ row }) => (
+      <div
+        dangerouslySetInnerHTML={{ __html: row.original.description.vi }}
+        className="whitespace-pre-line"
+      />
+    ),
   },
 
   {
-    accessorKey: 'category',
-    header: 'Danh mục',
-    cell: ({ row }) => <div className='capitalize'>{row.original.category.name.vi}</div>
+    accessorKey: "category",
+    header: "Danh mục",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.category.name.vi}</div>
+    ),
+  },
 
-  },
- 
   {
-    accessorKey: 'status',
-    header: 'Trạng thái',
-    cell: ({ row }) => <div>{getVietnameseDishStatus(row.getValue('status'))}</div>
+    accessorKey: "status",
+    header: "Trạng thái",
+    cell: ({ row }) => (
+      <div>{getVietnameseDishStatus(row.getValue("status"))}</div>
+    ),
   },
   {
-    id: 'actions',
+    id: "actions",
     enableHiding: false,
     cell: function Actions({ row }) {
-      const { setDishIdEdit, setDishDelete } = useContext(DishTableContext)
+      const { setDishIdEdit, setDishDelete } = useContext(DishTableContext);
       const openEditDish = () => {
-        setDishIdEdit(row.original.id)
-      }
+        setDishIdEdit(row.original.id);
+      };
 
       const openDeleteDish = () => {
-        setDishDelete(row.original)
-      }
+        setDishDelete(row.original);
+      };
       return (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <DotsHorizontalIcon className='h-4 w-4' />
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
+          <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={openEditDish}>Sửa</DropdownMenuItem>
             <DropdownMenuItem onClick={openDeleteDish}>Xóa</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
-    }
-  }
-]
+      );
+    },
+  },
+];
 
 function AlertDialogDeleteDish({
   dishDelete,
-  setDishDelete
+  setDishDelete,
 }: {
-  dishDelete: DishItem | null
-  setDishDelete: (value: DishItem | null) => void
+  dishDelete: DishItem | null;
+  setDishDelete: (value: DishItem | null) => void;
 }) {
+  const { mutateAsync: deleteDish } = useDeleteDishMutation();
+  const handleDeleteDish = async () => {
+    if (dishDelete) {
+      try {
+        const result = await deleteDish(dishDelete.id);
+        setDishDelete(null);
+
+        toast({
+          description: result.payload.message,
+        });
+      } catch (error) {
+        handleErrorApi({
+          error,
+          // setError: form.setError
+        });
+      }
+    }
+  };
   return (
     <AlertDialog
       open={Boolean(dishDelete)}
       onOpenChange={(value) => {
         if (!value) {
-          setDishDelete(null)
+          setDishDelete(null);
         }
       }}
     >
@@ -158,33 +203,38 @@ function AlertDialogDeleteDish({
         <AlertDialogHeader>
           <AlertDialogTitle>Xóa món ăn?</AlertDialogTitle>
           <AlertDialogDescription>
-            Món <span className='bg-foreground text-primary-foreground rounded px-1'>{dishDelete?.name?.vi}</span> sẽ bị xóa
-            vĩnh viễn
+            Món{" "}
+            <span className="bg-foreground text-primary-foreground rounded px-1">
+              {dishDelete?.name?.vi}
+            </span>{" "}
+            sẽ bị xóa vĩnh viễn
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={handleDeleteDish}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 export default function DishTable() {
-  const queryConfig = useDishQueryConfig()
-  const PAGE_SIZE = Number(queryConfig.limit) || 10
-  const page = Number(queryConfig.page) || 1
-  const pageIndex = page - 1
+  const queryConfig = useDishQueryConfig();
+  const PAGE_SIZE = Number(queryConfig.limit) || 10;
+  const page = Number(queryConfig.page) || 1;
+  const pageIndex = page - 1;
 
-  const dishListQuery = useDishListQuery(queryConfig)
-  const data = dishListQuery.data?.payload.data.results || []
+  const dishListQuery = useDishListQuery(queryConfig);
+  const data = dishListQuery.data?.payload.data.results || [];
 
-  const [dishIdEdit, setDishIdEdit] = useState<number | undefined>()
-  const [dishDelete, setDishDelete] = useState<DishItem | null>(null)
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
+  const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -205,28 +255,35 @@ export default function DishTable() {
       rowSelection,
       pagination: {
         pageIndex,
-        pageSize: PAGE_SIZE
-      }
-    }
-  })
+        pageSize: PAGE_SIZE,
+      },
+    },
+  });
 
   return (
-    <DishTableContext.Provider value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}>
-      <div className='w-full'>
+    <DishTableContext.Provider
+      value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}
+    >
+      <div className="w-full">
         <EditDish id={dishIdEdit} setId={setDishIdEdit} />
-        <AlertDialogDeleteDish dishDelete={dishDelete} setDishDelete={setDishDelete} />
-        <div className='flex items-center py-4'>
+        <AlertDialogDeleteDish
+          dishDelete={dishDelete}
+          setDishDelete={setDishDelete}
+        />
+        <div className="flex items-center py-4">
           <Input
-            placeholder='Lọc tên'
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-            className='max-w-sm'
+            placeholder="Lọc tên"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
           />
-          <div className='ml-auto flex items-center gap-2'>
+          <div className="ml-auto flex items-center gap-2">
             <AddDish />
           </div>
         </div>
-        <div className='rounded-md border'>
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -234,25 +291,85 @@ export default function DishTable() {
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead key={header.id}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
-                    )
+                    );
                   })}
                 </TableRow>
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {dishListQuery.isLoading ? (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <TableRow key={index}>
+                    {/* ID */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-6" />
+                    </TableCell>
+
+                    {/* Ảnh */}
+                    <TableCell>
+                      <Skeleton className="h-12 w-12 rounded-md" />
+                    </TableCell>
+
+                    {/* Tên */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-32" />
+                    </TableCell>
+
+                    {/* Giá */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+
+                    {/* Mô tả */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-48" />
+                    </TableCell>
+
+                    {/* Danh mục */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+
+                    {/* Trạng thái */}
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+
+                    {/* Action */}
+                    <TableCell>
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className='h-24 text-center'>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>
@@ -260,20 +377,21 @@ export default function DishTable() {
             </TableBody>
           </Table>
         </div>
-        <div className='flex items-center justify-end space-x-2 py-4'>
-          <div className='text-xs text-muted-foreground py-4 flex-1 '>
-            Hiển thị <strong>{table.getPaginationRowModel().rows.length}</strong> trong <strong>{data.length}</strong>{' '}
-            kết quả
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="text-xs text-muted-foreground py-4 flex-1 ">
+            Hiển thị{" "}
+            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
+            <strong>{data.length}</strong> kết quả
           </div>
           <div>
             <AutoPagination
               page={table.getState().pagination.pageIndex + 1}
               pageSize={table.getPageCount()}
-              pathname='/manage/dishes'
+              pathname={ROUTE.MANAGE.DISHES}
             />
           </div>
         </div>
       </div>
     </DishTableContext.Provider>
-  )
+  );
 }
