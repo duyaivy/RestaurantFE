@@ -1,4 +1,3 @@
-
 import dishApiRequest from "@/apiRequests/dish";
 import { formatCurrency } from "@/lib/utils";
 import { DishListResType } from "@/schemaValidations/dish.schema";
@@ -12,7 +11,7 @@ export default async function Home() {
   try {
     const result = await dishApiRequest.list({
       page: 1,
-      limit: 10
+      limit: 10,
     });
     dishList = result.payload.data.results;
   } catch (error) {
@@ -21,10 +20,7 @@ export default async function Home() {
   }
 
   return (
-    
-
     <div className="w-full bg-neutral-950 text-white">
-
       {/* HERO */}
       <div className="relative min-h-[90vh] flex items-center overflow-hidden bg-black">
         <div className="absolute top-0 right-0 w-1/2 h-full">
@@ -90,7 +86,8 @@ export default async function Home() {
           </p>
 
           <h2 className="text-4xl md:text-5xl font-bold">
-            Đa dạng <span className="font-extralight text-yellow-400">món ăn</span>
+            Đa dạng{" "}
+            <span className="font-extralight text-yellow-400">món ăn</span>
           </h2>
 
           <div className="flex items-center justify-center gap-3">
@@ -101,10 +98,8 @@ export default async function Home() {
         </div>
 
         <div className="max-w-7xl mx-auto">
-
           {/* CAROUSEL */}
           <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-6">
-
             {dishList && dishList.length > 0 ? (
               dishList.map((dish) => (
                 <div
@@ -146,7 +141,6 @@ export default async function Home() {
             ) : (
               <Skeleton className="h-5 w-24 rounded-full" />
             )}
-
           </div>
         </div>
       </section>
@@ -164,9 +158,7 @@ export default async function Home() {
         />
 
         <div className="relative z-20 text-center px-6 space-y-6 max-w-2xl mx-auto">
-          <div className="text-6xl text-yellow-500/30 font-serif leading-none">
-        
-          </div>
+          <div className="text-6xl text-yellow-500/30 font-serif leading-none"></div>
 
           <p className="text-xl sm:text-2xl font-light text-white/80 leading-relaxed italic">
             Mỗi bữa ăn là một hành trình. Hãy để Big Boy đưa bạn đến những cảm

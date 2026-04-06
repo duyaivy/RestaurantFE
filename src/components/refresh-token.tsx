@@ -1,12 +1,15 @@
 "use client";
 
-import {
-  checkAndRefreshToken,
-
-} from "@/lib/utils";
+import { checkAndRefreshToken } from "@/lib/utils";
 import { usePathname, redirect } from "next/navigation";
 import { useEffect } from "react";
-const UNAUTHENTICATED_PATH = ["/login", "/register", "/refresh-token"];
+import { ROUTE } from "@/constants/route";
+
+const UNAUTHENTICATED_PATH = [
+  ROUTE.AUTH.LOGIN,
+  ROUTE.AUTH.REGISTER,
+  ROUTE.AUTH.REFRESH_TOKEN,
+];
 export default function RefreshToken() {
   const pathname = usePathname();
   useEffect(() => {

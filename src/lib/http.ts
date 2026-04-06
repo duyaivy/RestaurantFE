@@ -1,5 +1,6 @@
 import envConfig from "@/config";
 import { SuccessResponse } from "@/constants/type";
+import { ROUTE } from "@/constants/route";
 import { normalizePath } from "@/lib/utils";
 import { LoginResType } from "@/schemaValidations/auth.schema";
 import { redirect } from "next/navigation";
@@ -71,8 +72,8 @@ const request = async <Response>(
     body instanceof FormData
       ? {}
       : {
-        "Content-Type": "application/json",
-      };
+          "Content-Type": "application/json",
+        };
   if (isClient) {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
@@ -119,11 +120,11 @@ const request = async <Response>(
         message: "Response is not valid JSON",
         ...(isDev
           ? {
-            fullUrl,
-            status: res.status,
-            contentType,
-            snippet,
-          }
+              fullUrl,
+              status: res.status,
+              contentType,
+              snippet,
+            }
           : {}),
       },
       message:
@@ -165,7 +166,7 @@ const request = async <Response>(
             // Nếu không không được xử lý đúng cách
             // Vì nếu rơi vào trường hợp tại trang Login, chúng ta có gọi các API cần access token
             // Mà access token đã bị xóa thì nó lại nhảy vào đây, và cứ thế nó sẽ bị lặp
-            location.href = "/login";
+            location.href = ROUTE.AUTH.LOGIN;
           }
         }
       } else {
@@ -178,7 +179,7 @@ const request = async <Response>(
           throw new HttpError(data);
         }
         const accessToken = authHeader.split("Bearer ")[1];
-        redirect(`/login?accessToken=${accessToken}`);
+        redirect(`${ROUTE.AUTH.LOGIN}?accessToken=${accessToken}`);
       }
     } else {
       throw new HttpError(data);
@@ -187,14 +188,20 @@ const request = async <Response>(
   // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
   if (isClient) {
     // strip trailing slash để tránh mismatch: 'api/auth/login/' vs 'api/auth/login'
-    const normalizeUrl = normalizePath(url).replace(/\/$/, '');
-    if (normalizeUrl === "api/auth/login" || normalizeUrl === "api/guest/auth/login") {
+    const normalizeUrl = normalizePath(url).replace(/\/$/, "");
+    if (
+      normalizeUrl === "api/auth/login" ||
+      normalizeUrl === "api/guest/auth/login"
+    ) {
       const { accessToken, refreshToken } = (
         payload as SuccessResponse<LoginResType>
       ).data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-    } else if (normalizeUrl === "api/auth/logout" || normalizeUrl === "api/guest/logout") {
+    } else if (
+      normalizeUrl === "api/auth/logout" ||
+      normalizeUrl === "api/guest/logout"
+    ) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     }

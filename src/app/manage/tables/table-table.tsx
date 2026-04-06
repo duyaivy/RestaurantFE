@@ -51,6 +51,7 @@ import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
 import { useTableListQuery } from "@/hooks/queries/useTable";
 import QRCodeTable from "@/components/qrcode-table";
+import { ROUTE } from "@/constants/route";
 
 type TableItem = TableListResType[0];
 
@@ -60,10 +61,10 @@ const TableTableContext = createContext<{
   tableDelete: TableItem | null;
   setTableDelete: (value: TableItem | null) => void;
 }>({
-  setTableIdEdit: (value: number | undefined) => { },
+  setTableIdEdit: (value: number | undefined) => {},
   tableIdEdit: undefined,
   tableDelete: null,
-  setTableDelete: (value: TableItem | null) => { },
+  setTableDelete: (value: TableItem | null) => {},
 });
 
 export const columns: ColumnDef<TableItem>[] = [
@@ -94,10 +95,9 @@ export const columns: ColumnDef<TableItem>[] = [
     cell: ({ row }) => (
       <div>
         <QRCodeTable
-          token={row.getValue('token')}
-          tableNumber={row.getValue('number')}
+          token={row.getValue("token")}
+          tableNumber={row.getValue("number")}
         />
-
       </div>
     ),
   },
@@ -255,9 +255,9 @@ export default function TableTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -304,7 +304,7 @@ export default function TableTable() {
             <AutoPagination
               page={table.getState().pagination.pageIndex + 1}
               pageSize={table.getPageCount()}
-              pathname="/manage/tables"
+              pathname={ROUTE.MANAGE.TABLES}
             />
           </div>
         </div>

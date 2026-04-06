@@ -1,26 +1,26 @@
 "use client";
-import { NAVIGATE } from "@/constants/navigate";
+import { ROUTE } from "@/constants/route";
 import { getAccessTokenFromLocalStorage } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 const menuItems = [
   {
     title: "Menu",
-    href: "/guest/menu", // dang nhap hay chua deu cho hien thi
+    href: ROUTE.GUEST.MENU, // dang nhap hay chua deu cho hien thi
   },
   {
     title: "Đơn hàng",
-    href: "/guest/orders",
+    href: ROUTE.GUEST.ORDERS,
     authRequired: true,
   },
   {
     title: "Đăng nhập",
-    href: NAVIGATE.LOGIN,
+    href: ROUTE.AUTH.LOGIN,
     authRequired: false, // khi false nghia la chua dang nhap la se hien thi
   },
   {
     title: "Quản lý",
-    href: "/manage/dashboard",
+    href: ROUTE.MANAGE.DASHBOARD,
     authRequired: true, // tru nghia la dang nhap roi moi hien thi
   },
 ];

@@ -18,7 +18,7 @@ export const useMessageEmployeeMutation = () => {
     mutationFn: guestApiRequest.messageEmployee,
     onSuccess: () => {
       toast({
-        title: "Goị nhân viên thành công",
+        title: "Gọi nhân viên thành công",
       });
     },
   });

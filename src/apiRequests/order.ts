@@ -1,11 +1,11 @@
 import http from "@/lib/http";
-import { SuccessResponse } from "@/constants/type";
+import { PaginationResponse, SuccessResponse } from "@/constants/type";
 import {
   CreateOrdersBodyType,
   CreateOrdersResType,
   GetOrderDetailResType,
   GetOrdersQueryParamsType,
-  GetOrdersResType,
+  OrderMiniResType,
   PayGuestOrdersBodyType,
   PayGuestOrdersResType,
   UpdateOrderBodyType,
@@ -13,6 +13,13 @@ import {
 } from "@/schemaValidations/order.schema";
 import queryString from "query-string";
 const ORDER_URL = "/orders";
+
+export type GuestOrderListQueryParams = {
+  guestId: number;
+};
+
+export type GuestOrderListItem = Record<string, unknown>;
+
 const orderApiRequest = {
   guestCreateOrders: (body: CreateOrdersBodyType) =>
     http.post<SuccessResponse<CreateOrdersResType>>(
@@ -20,13 +27,15 @@ const orderApiRequest = {
       body,
     ),
   getOrderList: (queryParams: GetOrdersQueryParamsType) =>
-    http.get<SuccessResponse<GetOrdersResType>>(
+    http.get<SuccessResponse<PaginationResponse<OrderMiniResType>>>(
       `${ORDER_URL}?` +
         queryString.stringify({
           fromDate: queryParams.fromDate?.toISOString(),
           toDate: queryParams.toDate?.toISOString(),
         }),
     ),
+  getGuestOrderList: ({ guestId }: GuestOrderListQueryParams) =>
+    http.get<SuccessResponse<GuestOrderListItem[]>>(`/orders/guest/${guestId}`),
   updateOrder: (orderId: number, body: UpdateOrderBodyType) =>
     http.put<SuccessResponse<UpdateOrderResType>>(
       `${ORDER_URL}/${orderId}/`,

@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import authApiRequest from "@/apiRequests/auth";
 import jwt from "jsonwebtoken";
 import { DishStatus, OrderStatus, Role, TableStatus } from "@/constants/type";
+import { ROUTE } from "@/constants/route";
 import envConfig from "@/config";
 import { TokenPayload } from "@/types/jwt.types";
 export function cn(...inputs: ClassValue[]) {
@@ -143,9 +144,7 @@ export const getTableLink = ({
   token: string;
   tableNumber: number;
 }) => {
-  return (
-    envConfig.NEXT_PUBLIC_URL + "/tables/" + tableNumber + "?token=" + token
-  );
+  return `${envConfig.NEXT_PUBLIC_URL}${ROUTE.PUBLIC.TABLE_BY_NUMBER(tableNumber)}?token=${token}`;
 };
 export const decodeToken = (token: string) => {
   return jwt.decode(token) as TokenPayload;

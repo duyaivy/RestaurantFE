@@ -20,7 +20,9 @@ import NextImage from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCreateOrderMutation } from "@/hooks/queries/useOrder";
 import { toast } from "@/components/ui/use-toast";
-import { useMessageEmployeeMutation } from "@/hooks/queries/useGuest";
+import { useTableChat } from "@/hooks/common/useTableChat";
+import { useSocket } from "@/hooks/common/useSocket";
+import { ROUTE } from "@/constants/route";
 
 export default function CartPage() {
   const {
@@ -37,8 +39,8 @@ export default function CartPage() {
 
   const { mutateAsync: createOrder, isPending: isCreatingOrder } =
     useCreateOrderMutation();
-  const { mutateAsync: createMessageToEmployee, isPending: isSendingMessage } =
-    useMessageEmployeeMutation();
+  const { sendMessage } = useTableChat();
+  const { isConnected } = useSocket();
   const [showStaffCall, setShowStaffCall] = useState(false);
   const [staffRequest, setStaffRequest] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -59,7 +61,7 @@ export default function CartPage() {
           <p className="text-white/40 text-sm mb-8">
             Bạn chưa thêm sản phẩm nào
           </p>
-          <Link href="/guest/menu">
+          <Link href={ROUTE.GUEST.MENU}>
             <button className="bg-amber-500 hover:bg-amber-400 active:scale-95 transition-all text-black font-bold text-sm px-8 py-3.5 rounded-2xl tracking-wide shadow-[0_4px_20px_rgba(245,158,11,0.35)]">
               Quay lại mua hàng
             </button>
@@ -69,25 +71,32 @@ export default function CartPage() {
     );
   }
 
-  const handleStaffSubmit = async () => {
-    try {
-      const message = staffRequest.trim() || "Khách hàng cần hỗ trợ";
-      // Gọi API gửi message đến nhân viên
-      await createMessageToEmployee(message);
-
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setShowStaffCall(false);
-        setStaffRequest("");
-        setIsSubmitted(false);
-      }, 1500);
-    } catch {
+  const handleStaffSubmit = () => {
+    if (!isConnected) {
       toast({
         title: "Gọi nhân viên thất bại",
-        description: "Vui lòng thử lại sau.",
+        description: "Mất kết nối realtime, vui lòng thử lại.",
         variant: "destructive",
       });
+      return;
     }
+
+    const tableNumber =
+      typeof window !== "undefined"
+        ? localStorage.getItem("table_number_id")
+        : null;
+
+    const fallbackMessage = `Khách ở bàn số ${tableNumber || "xxx"} yêu cầu gọi nhân viên.`;
+    const message = staffRequest.trim() || fallbackMessage;
+
+    sendMessage(message);
+
+    setIsSubmitted(true);
+    setTimeout(() => {
+      setShowStaffCall(false);
+      setStaffRequest("");
+      setIsSubmitted(false);
+    }, 1500);
   };
 
   const handlePlaceOrder = async () => {
@@ -100,6 +109,7 @@ export default function CartPage() {
         note: item.note || "",
       }));
       const { payload } = await createOrder({ items: dataApi });
+
       const orderId = payload.data?.id;
       localStorage.setItem("order_id", orderId.toString());
       items.forEach((item) => {
@@ -115,7 +125,7 @@ export default function CartPage() {
       });
       placeOrder();
       clearCart();
-      router.push("/guest/order-confirmation");
+      router.push(ROUTE.GUEST.ORDER_CONFIRMATION);
     } catch (error) {
       console.error("Error placing order:", error);
       toast({
@@ -149,7 +159,7 @@ export default function CartPage() {
           <div
             key={item.id}
             className="rounded-4xl border border-white/10 overflow-hidden"
-            style={{ backgroundColor: '#161412' }}
+            style={{ backgroundColor: "#161412" }}
           >
             {/* TOP: image + info + delete + qty */}
             <div className="flex gap-3 p-3.5 items-start">
@@ -238,7 +248,10 @@ export default function CartPage() {
 
             {/* NOTE EDITOR */}
             {editingNoteId === item.id && (
-              <div className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/15" style={{ backgroundColor: 'rgba(245,158,11,0.03)' }}>
+              <div
+                className="px-3.5 pt-2.5 pb-3 border-t border-amber-500/15"
+                style={{ backgroundColor: "rgba(245,158,11,0.03)" }}
+              >
                 <textarea
                   autoFocus
                   value={editingNoteValue}
@@ -254,7 +267,7 @@ export default function CartPage() {
                       setEditingNoteValue("");
                     }}
                     className="flex items-center gap-1 h-8 px-3 rounded-xl text-white/45 text-[12px] transition-colors"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+                    style={{ backgroundColor: "rgba(255,255,255,0.07)" }}
                   >
                     <X className="w-3 h-3" strokeWidth={2} /> Huỷ
                   </button>
@@ -276,7 +289,7 @@ export default function CartPage() {
         {/* SUMMARY */}
         <div
           className="mt-1 rounded-4xl border border-white/[0.07] p-4"
-          style={{ backgroundColor: '#161412' }}
+          style={{ backgroundColor: "#161412" }}
         >
           <div className="flex justify-between items-center text-[12px] text-white/35 mb-1.5">
             <span>Tạm tính ({itemCount} món)</span>
@@ -295,7 +308,9 @@ export default function CartPage() {
             <span className="text-xs text-white font-medium">Tổng cộng</span>
             <span className="text-xl font-bold text-amber-400 tabular-nums leading-none">
               {total.toLocaleString("vi-VN")}
-              <span className="text-[11px] font-normal text-white/30 ml-1">₫</span>
+              <span className="text-[11px] font-normal text-white/30 ml-1">
+                ₫
+              </span>
             </span>
           </div>
 
@@ -303,7 +318,7 @@ export default function CartPage() {
             <button
               onClick={() => setShowStaffCall(true)}
               className="flex-1 h-12 rounded-2xl border border-white/8 text-white/50 text-[12px] font-medium flex items-center justify-center gap-2 transition-all"
-              style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
+              style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
             >
               <MessageSquare className="size-3.5" strokeWidth={1.5} />
               Gọi nhân viên
@@ -311,8 +326,9 @@ export default function CartPage() {
             <Button
               onClick={handlePlaceOrder}
               isLoading={isCreatingOrder || isOrdering}
-             className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-black text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all"
-              style={{ boxShadow: '0 4px 20px rgba(245,158,11,0.35)' }}>
+              className="flex-1 h-12 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 active:scale-[0.98] text-black text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all"
+              style={{ boxShadow: "0 4px 20px rgba(245,158,11,0.35)" }}
+            >
               {isOrdering || isCreatingOrder ? (
                 <p className="flex items-center gap-2 text-white">Đang xử lý</p>
               ) : (
@@ -329,16 +345,26 @@ export default function CartPage() {
       <Dialog open={showStaffCall} onOpenChange={setShowStaffCall}>
         <DialogContent
           className="w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/8 p-6"
-          style={{ backgroundColor: '#161412' }}
+          style={{ backgroundColor: "#161412" }}
         >
           {!isSubmitted ? (
             <div className="space-y-5">
               <div className="text-center">
-                <div className="w-12 h-12 rounded-2xl border border-amber-500/20 flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'rgba(245,158,11,0.1)' }}>
-                  <MessageSquare className="size-5 text-amber-400" strokeWidth={1.5} />
+                <div
+                  className="w-12 h-12 rounded-2xl border border-amber-500/20 flex items-center justify-center mx-auto mb-3"
+                  style={{ backgroundColor: "rgba(245,158,11,0.1)" }}
+                >
+                  <MessageSquare
+                    className="size-5 text-amber-400"
+                    strokeWidth={1.5}
+                  />
                 </div>
-                <h3 className="text-[16px] font-semibold text-white">Gọi nhân viên</h3>
-                <p className="text-[11px] text-white/40 mt-1">Nhân viên sẽ sớm đến hỗ trợ bạn</p>
+                <h3 className="text-[16px] font-semibold text-white">
+                  Gọi nhân viên
+                </h3>
+                <p className="text-[11px] text-white/40 mt-1">
+                  Nhân viên sẽ sớm đến hỗ trợ bạn
+                </p>
               </div>
               <textarea
                 value={staffRequest}
@@ -351,13 +377,12 @@ export default function CartPage() {
                 <Button
                   onClick={() => setShowStaffCall(false)}
                   className="flex-1 h-11 rounded-2xl border border-white/8 text-white/50 text-[13px] font-medium flex items-center justify-center gap-1.5 transition-all"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
+                  style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
                 >
                   <X className="size-3.5" strokeWidth={2} /> Huỷ
                 </Button>
                 <Button
                   onClick={handleStaffSubmit}
-                  isLoading={isSendingMessage}
                   className="flex-1 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all"
                 >
                   <Check className="size-3.5" strokeWidth={2.5} /> Gửi
@@ -366,11 +391,18 @@ export default function CartPage() {
             </div>
           ) : (
             <div className="text-center py-6 space-y-3">
-              <div className="size-12 rounded-full border border-amber-500/25 flex items-center justify-center mx-auto" style={{ backgroundColor: 'rgba(245,158,11,0.15)' }}>
+              <div
+                className="size-12 rounded-full border border-amber-500/25 flex items-center justify-center mx-auto"
+                style={{ backgroundColor: "rgba(245,158,11,0.15)" }}
+              >
                 <Check className="size-5 text-amber-400" strokeWidth={2} />
               </div>
-              <h3 className="text-[16px] font-semibold text-white">Yêu cầu đã gửi!</h3>
-              <p className="text-[11px] text-white/40">Nhân viên sẽ sớm đến với bạn</p>
+              <h3 className="text-[16px] font-semibold text-white">
+                Yêu cầu đã gửi!
+              </h3>
+              <p className="text-[11px] text-white/40">
+                Nhân viên sẽ sớm đến với bạn
+              </p>
             </div>
           )}
         </DialogContent>
