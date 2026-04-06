@@ -43,7 +43,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getTableLink, getVietnameseTableStatus } from "@/lib/utils";
+import { getVietnameseTableStatus } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/auto-pagination";
 import { TableListResType } from "@/schemaValidations/table.schema";
@@ -51,6 +51,7 @@ import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
 import { useTableListQuery } from "@/hooks/queries/useTable";
 import QRCodeTable from "@/components/qrcode-table";
+import SkeletonTableTable from "./skeleton-table-table";
 
 type TableItem = TableListResType[0];
 
@@ -265,7 +266,9 @@ export default function TableTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {tableListQuery.isLoading ? (
+                <SkeletonTableTable />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}

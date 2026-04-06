@@ -58,8 +58,8 @@ import {
 import { handleErrorApi } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { ROUTE } from "@/constants/route";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useAccountQueryConfig } from "@/hooks/common/useAccountQueryConfig";
+import SkeletonAccountTable from "./skeleton-account-table";
 type AccountItem = AccountListResType[0];
 
 const AccountTableContext = createContext<{
@@ -300,14 +300,7 @@ export default function AccountTable() {
             </TableHeader>
             <TableBody>
               {employeeListQuery.isPending ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <Skeleton className="h-6 w-full" />
-                  </TableCell>
-                </TableRow>
+                <SkeletonAccountTable />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>

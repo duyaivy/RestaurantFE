@@ -7,7 +7,7 @@ type MenuListSkeletonProps = {
 function MenuCardSkeleton() {
   return (
     <div className="flex items-center gap-4 rounded-[28px] border border-[#2b221b] bg-[#15110e] p-3 shadow-sm">
-      <Skeleton className="size-24 rounded-[20px] bg-[#3a3028]" />
+      <Skeleton className="size-24 rounded-4xl bg-[#3a3028]" />
 
       <div className="flex min-h-24 flex-1 flex-col justify-between">
         <div className="space-y-3">
