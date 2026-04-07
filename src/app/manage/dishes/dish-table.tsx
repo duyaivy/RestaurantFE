@@ -32,7 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,11 +43,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  formatCurrency,
-  getVietnameseDishStatus,
-  handleErrorApi,
-} from "@/lib/utils";
+import { formatCurrency, getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
 import AutoPagination from "@/components/auto-pagination";
 import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
 import { DishListResType } from "@/schemaValidations/dish.schema";
@@ -69,10 +65,10 @@ const DishTableContext = createContext<{
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }>({
-  setDishIdEdit: (_value: number | undefined) => {},
+  setDishIdEdit: (value: number | undefined) => {},
   dishIdEdit: undefined,
   dishDelete: null,
-  setDishDelete: (_value: DishItem | null) => {},
+  setDishDelete: (value: DishItem | null) => {},
 });
 
 export const columns: ColumnDef<DishItem>[] = [

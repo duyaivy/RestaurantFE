@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -13,6 +12,7 @@ import { CreateTableBody, CreateTableBodyType } from '@/schemaValidations/table.
 import { TableStatus, TableStatusValues } from '@/constants/type'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAddTableMutation } from '@/hooks/queries/useTable'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function AddTable() {
   const [open, setOpen] = useState(false)
@@ -41,7 +41,7 @@ export default function AddTable() {
           <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Thêm bàn</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[600px] max-h-screen overflow-auto' onCloseAutoFocus={() => form.reset()}>
+      <DialogContent className='sm:max-w-150 max-h-screen overflow-auto' onCloseAutoFocus={() => form.reset()}>
         <DialogHeader>
           <DialogTitle>Thêm bàn</DialogTitle>
         </DialogHeader>

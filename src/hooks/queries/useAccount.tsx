@@ -1,6 +1,6 @@
 import { accountApiRequest } from "@/apiRequests/account"
 import { UpdateEmployeeAccountBodyType } from "@/schemaValidations/account.schema"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useMutation } from "@tanstack/react-query"
 import { QueryAccountConfig } from "@/hooks/common/useAccountQueryConfig"
 export const useAccountMe = () => {
@@ -37,7 +37,7 @@ export const useGetAccountList = (queryConfig: QueryAccountConfig) =>{
         staleTime: 1000 * 60 * 30,
         gcTime: 1000 * 60 * 30,
         retry: 2,
-        placeholderData: (prev) => prev
+        placeholderData: keepPreviousData
     })
 }
 
@@ -52,7 +52,7 @@ export const useGetAccount =({ id, enabled, }:{
         staleTime: 1000 * 60 * 30,
         gcTime: 1000 * 60 * 30,
         retry: 2,
-        placeholderData: (prev) => prev
+        placeholderData: keepPreviousData
     })
 
 }
