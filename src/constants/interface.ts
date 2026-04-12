@@ -6,3 +6,9 @@ export interface DishListConfig {
     max_price?: number
     min_price?: number
 }
+
+export interface AccountListConfig {
+    page?: number
+    limit?: number
+    search?: string
+}

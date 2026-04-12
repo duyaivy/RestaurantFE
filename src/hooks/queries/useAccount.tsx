@@ -1,7 +1,8 @@
 import { accountApiRequest } from "@/apiRequests/account"
 import { UpdateEmployeeAccountBodyType } from "@/schemaValidations/account.schema"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useMutation } from "@tanstack/react-query"
+import { QueryAccountConfig } from "@/hooks/common/useAccountQueryConfig"
 export const useAccountMe = () => {
     return useQuery({
         queryKey: ['account-me'],
@@ -25,14 +26,18 @@ export const useChangePasswordMutation = () => {
     })
 }
 
-export const useGetAccountList = () =>{
+export const useGetAccountList = (queryConfig: QueryAccountConfig) =>{
     return useQuery({
-        queryKey: ['accounts'],
-        queryFn: accountApiRequest.list,
+        queryKey: ['accounts', queryConfig],
+        queryFn: () => accountApiRequest.list({
+            page: queryConfig.page ? Number(queryConfig.page) : undefined,
+            limit: queryConfig.limit ? Number(queryConfig.limit) : undefined,
+            search: queryConfig.search
+        }),
         staleTime: 1000 * 60 * 30,
         gcTime: 1000 * 60 * 30,
         retry: 2,
-        placeholderData: (prev) => prev
+        placeholderData: keepPreviousData
     })
 }
 
@@ -47,7 +52,7 @@ export const useGetAccount =({ id, enabled, }:{
         staleTime: 1000 * 60 * 30,
         gcTime: 1000 * 60 * 30,
         retry: 2,
-        placeholderData: (prev) => prev
+        placeholderData: keepPreviousData
     })
 
 }

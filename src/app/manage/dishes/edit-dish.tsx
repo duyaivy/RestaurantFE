@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Upload } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -21,6 +21,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { UpdateDishBody, UpdateDishBodyType } from '@/schemaValidations/dish.schema'
 import { DishStatus, DishStatusValues } from '@/constants/type'
 import { Textarea } from '@/components/ui/textarea'
+import { useGetDishQuery, useUpdateDishMutation } from '@/hooks/queries/useDish'
+import { useUploadMediaMutation} from '@/hooks/queries/UseMedia'
+import { useCategoryQuery } from '@/hooks/queries/useCategory'
+import { toast } from '@/components/ui/use-toast'
 
 export default function EditDish({
   id,
@@ -33,6 +37,13 @@ export default function EditDish({
 }) {
   const [file, setFile] = useState<File | null>(null)
   const imageInputRef = useRef<HTMLInputElement | null>(null)
+  const {data} = useGetDishQuery({ id: id as number,enabled: Boolean(id) })
+  const { mutateAsync: updateDish, isPending: isUpdatingDish} = useUpdateDishMutation()
+  const { mutateAsync: uploadMedia } = useUploadMediaMutation()
+  const { data: categoriesData } = useCategoryQuery()
+  const categories = useMemo(() => {
+  return categoriesData?.payload?.data || []
+}, [categoriesData])
   const form = useForm<UpdateDishBodyType>({
     resolver: zodResolver(UpdateDishBody) as any,
     defaultValues: {
@@ -40,7 +51,8 @@ export default function EditDish({
       description: '',
       price: 0,
       image: '',
-      status: DishStatus.Unavailable
+      status: DishStatus.Unavailable,
+      category_id: undefined
     }
   })
   const image = form.watch('image')
@@ -51,6 +63,55 @@ export default function EditDish({
     }
     return image
   }, [file, image])
+
+  useEffect(() => {
+    if (data) {
+      const { name, description, price, image, status, category } = data.payload.data
+      form.reset({
+        name: name.vi,
+        description: description.vi,
+        price,
+        image,
+        status,
+        category_id: category.id,
+      })
+
+     
+    }
+  }, [data,categories, form])
+
+  const onSubmit = async (values: UpdateDishBodyType) => {
+    try {
+      if(isUpdatingDish) return
+      let body = values;
+      if(file){
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadRes = await uploadMedia(formData);
+        const avatarUrl = uploadRes.payload.data
+
+        body = { ...body, image: avatarUrl
+
+        }
+      }
+        const result = await updateDish({ id: id as number, ...body });
+        toast({
+          description: result.payload.message
+        })
+        reset()
+        onSubmitSuccess?.();
+      
+  } catch (error) {
+    handleErrorApi({
+      error,
+      setError: form.setError
+    })
+  }
+}
+  const reset = () => {
+    setFile(null)
+    setId(undefined)
+     }
   return (
     <Dialog
       open={Boolean(id)}
@@ -60,21 +121,21 @@ export default function EditDish({
         }
       }}
     >
-      <DialogContent className='sm:max-w-[600px] max-h-screen overflow-auto'>
+      <DialogContent className='sm:max-w-150 max-h-screen overflow-auto'>
         <DialogHeader>
           <DialogTitle>Cập nhật món ăn</DialogTitle>
           <DialogDescription>Các trường sau đây là bắ buộc: Tên, ảnh</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='edit-dish-form'>
+          <form noValidate className='grid auto-rows-max items-start gap-4 md:gap-8' id='edit-dish-form' onSubmit={form.handleSubmit(onSubmit)} >
             <div className='grid gap-4 py-4'>
               <FormField
                 control={form.control}
                 name='image'
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <div className='flex gap-2 items-start justify-start'>
-                      <Avatar className='aspect-square w-[100px] h-[100px] rounded-md object-cover'>
+                      <Avatar className='aspect-square size-25 rounded-md object-cover'>
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className='rounded-none'>{name || 'Avatar'}</AvatarFallback>
                       </Avatar>
@@ -86,13 +147,12 @@ export default function EditDish({
                           const file = e.target.files?.[0]
                           if (file) {
                             setFile(file)
-                            field.onChange('http://localhost:3000/' + file.name)
                           }
                         }}
                         className='hidden'
                       />
                       <button
-                        className='flex aspect-square w-[100px] items-center justify-center rounded-md border border-dashed'
+                        className='flex aspect-square w-25 items-center justify-center rounded-md border border-dashed'
                         type='button'
                         onClick={() => imageInputRef.current?.click()}
                       >
@@ -167,6 +227,38 @@ export default function EditDish({
                             {DishStatusValues.map((status) => (
                               <SelectItem key={status} value={status}>
                                 {getVietnameseDishStatus(status)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='category_id'
+                render={({ field }) => (
+                  <FormItem>
+                    <div className='grid grid-cols-4 items-center justify-items-start gap-4'>
+                      <Label htmlFor='category'>Danh mục</Label>
+                      <div className='col-span-3 w-full space-y-2'>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value ? String(field.value) : ''}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Chọn danh mục' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={String(category.id)}>
+                                {category.name.vi}
                               </SelectItem>
                             ))}
                           </SelectContent>

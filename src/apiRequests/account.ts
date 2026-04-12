@@ -9,6 +9,8 @@ import {
   UpdateEmployeeAccountBodyType,
   UpdateMeBodyType,
 } from "@/schemaValidations/account.schema";
+import { AccountListConfig } from "@/constants/interface";
+import queryString from "query-string";
 
 export const accountApiRequest = {
   me: () => http.get<SuccessResponse<AccountResType>>("/me/"),
@@ -23,7 +25,14 @@ export const accountApiRequest = {
   changePassword: (body: ChangePasswordBodyType) =>
     http.post<SuccessResponse<AccountResType>>("/me/change-password/", body),
 
-  list: () => http.get<SuccessResponse<PaginationResponse<AccountResType>>>("/accounts/"),
+  list: (queryParams: AccountListConfig) =>
+    http.get<SuccessResponse<PaginationResponse<AccountResType>>>(
+      "accounts/?" +
+        queryString.stringify({
+          ...queryParams,
+        }),
+      { next: { tags: ["accounts"] } },
+    ),
   addEmployee: (body: CreateEmployeeAccountBodyType) =>
     http.post<SuccessResponse<AccountResType>>("/accounts/", body),
   updateEmployee: (id: number, body: UpdateEmployeeAccountBodyType) =>

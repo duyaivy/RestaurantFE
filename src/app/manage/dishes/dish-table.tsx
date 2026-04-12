@@ -9,7 +9,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -44,14 +43,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatCurrency, getVietnameseDishStatus } from "@/lib/utils";
+import { formatCurrency, getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
 import AutoPagination from "@/components/auto-pagination";
-import { ROUTE } from "@/constants/route";
 import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
-import { useDishListQuery } from "@/hooks/queries/useDish";
+import {
+  useDeleteDishMutation,
+  useDishListQuery,
+} from "@/hooks/queries/useDish";
+import { toast } from "@/components/ui/use-toast";
+import { ROUTE } from "@/constants/route";
+import SkeletonDishTable from "./skeleton-dish-table";
 
 type DishItem = DishListResType[0];
 
@@ -77,7 +81,7 @@ export const columns: ColumnDef<DishItem>[] = [
     header: "Ảnh",
     cell: ({ row }) => (
       <div>
-        <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
+        <Avatar className="aspect-square size-25 rounded-md object-cover">
           <AvatarImage src={row.getValue("image")} />
           <AvatarFallback className="rounded-none">
             {row.original.name.vi}
@@ -108,6 +112,15 @@ export const columns: ColumnDef<DishItem>[] = [
       />
     ),
   },
+
+  {
+    accessorKey: "category",
+    header: "Danh mục",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.category.name.vi}</div>
+    ),
+  },
+
   {
     accessorKey: "status",
     header: "Trạng thái",
@@ -154,6 +167,24 @@ function AlertDialogDeleteDish({
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }) {
+  const { mutateAsync: deleteDish } = useDeleteDishMutation();
+  const handleDeleteDish = async () => {
+    if (dishDelete) {
+      try {
+        const result = await deleteDish(dishDelete.id);
+        setDishDelete(null);
+
+        toast({
+          description: result.payload.message,
+        });
+      } catch (error) {
+        handleErrorApi({
+          error,
+          // setError: form.setError
+        });
+      }
+    }
+  };
   return (
     <AlertDialog
       open={Boolean(dishDelete)}
@@ -176,7 +207,9 @@ function AlertDialogDeleteDish({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={handleDeleteDish}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -184,12 +217,12 @@ function AlertDialogDeleteDish({
 }
 export default function DishTable() {
   const queryConfig = useDishQueryConfig();
-  const PAGE_SIZE = Number(queryConfig.limit) || 10;
-  const page = Number(queryConfig.page) || 1;
-  const pageIndex = page - 1;
+  const pageFromQuery = Number(queryConfig.page) || 1;
 
   const dishListQuery = useDishListQuery(queryConfig);
   const data = dishListQuery.data?.payload.data.results || [];
+  const currentPage = dishListQuery.data?.payload.data.current || pageFromQuery;
+  const pageCount = dishListQuery.data?.payload.data.count || 1;
 
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
@@ -204,7 +237,6 @@ export default function DishTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -215,10 +247,6 @@ export default function DishTable() {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex,
-        pageSize: PAGE_SIZE,
-      },
     },
   });
 
@@ -266,7 +294,9 @@ export default function DishTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {dishListQuery.isLoading ? (
+                <SkeletonDishTable />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -297,14 +327,12 @@ export default function DishTable() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+            Trang <strong>{currentPage}</strong> trong <strong>{pageCount}</strong>
           </div>
           <div>
             <AutoPagination
-              page={table.getState().pagination.pageIndex + 1}
-              pageSize={table.getPageCount()}
+              page={currentPage}
+              pageSize={pageCount}
               pathname={ROUTE.MANAGE.DISHES}
             />
           </div>

@@ -48,7 +48,7 @@ export const useUpdateDishMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["dishes"],
-        exact: true,
+        // exact: true,
       });
     },
   });
