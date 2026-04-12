@@ -6,7 +6,7 @@ const privatePaths = [ROUTE.MANAGE.ROOT];
 // route dành cho người chưa đăng nhập
 const unAuthPaths = [ROUTE.AUTH.LOGIN];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
