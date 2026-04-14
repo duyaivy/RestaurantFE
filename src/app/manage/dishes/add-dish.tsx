@@ -45,18 +45,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function AddDish() {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
-  const uploadMedia = useUploadMediaMutation();
-  const { mutateAsync: addDish, isPending: isAddingDish } = useAddDishMutation();
-  const { data: categoriesData, isPending: isCategoriesPending } = useCategoryQuery();
+
+  const { mutateAsync: uploadMedia, isPending: isUploadingMedia } =
+    useUploadMediaMutation();
+  const { mutateAsync: addDish, isPending: isAddingDish } =
+    useAddDishMutation();
+  const { data: categoriesData, isPending: isCategoriesPending } =
+    useCategoryQuery();
   const categories = categoriesData?.payload?.data || [];
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<CreateDishBodyType>({
     resolver: zodResolver(CreateDishBody) as any,
     defaultValues: {
       name: "",
       description: "",
       price: 0,
-      image:  undefined,
+      image: "",
       status: DishStatus.Unavailable,
       category_id: categories.length > 0 ? categories[0].id : 1,
     },
@@ -71,35 +76,35 @@ export default function AddDish() {
   }, [file, image]);
 
   const onSubmit = async (values: CreateDishBodyType) => {
-    console.log("submit", values);
-    if(isAddingDish) return;
-    try{
+    console.log({ values });
+
+    if (isAddingDish) return;
+    try {
       let body = values;
-      if(file){
+      if (file) {
         const formData = new FormData();
-        formData.append('file', file);
-        const uploadResult = await uploadMedia.mutateAsync(formData);
-        const imageUrl = uploadResult.payload.data
+        formData.append("file", file);
+        const uploadResult = await uploadMedia(formData);
+        const imageUrl = uploadResult.payload.data;
         body = { ...values, image: imageUrl };
-      } 
+      }
       const result = await addDish(body);
       toast({
-        description: result.payload.message
-      })
+        description: result.payload.message,
+      });
       reset();
       setOpen(false);
-
-    } catch(error){
+    } catch (error) {
       handleErrorApi({
         error,
-        setError: form.setError
-      })
+        setError: form.setError,
+      });
     }
-  }
-const reset = () => {
-    form.reset()
-    setFile(null) 
-    }
+  };
+  const reset = () => {
+    form.reset();
+    setFile(null);
+  };
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
@@ -118,7 +123,8 @@ const reset = () => {
           <form
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
-            id="add-dish-form" onSubmit={form.handleSubmit(onSubmit)}
+            id="add-dish-form"
+            onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="grid gap-4 py-4">
               <FormField
@@ -130,7 +136,7 @@ const reset = () => {
                       <Avatar className="aspect-square size-25 rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Avatar"}
+                          {name || "Món ăn"}
                         </AvatarFallback>
                       </Avatar>
                       <input
@@ -141,7 +147,9 @@ const reset = () => {
                           const file = e.target.files?.[0];
                           if (file) {
                             setFile(file);
-                            // Không set URL giả, để upload hoàn thành mới set
+                            field.onChange(
+                              "http://localhost:3000/" + field.name,
+                            );
                           }
                         }}
                         className="hidden"
@@ -155,6 +163,7 @@ const reset = () => {
                         <span className="sr-only">Upload</span>
                       </button>
                     </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -253,26 +262,31 @@ const reset = () => {
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
                       <Label htmlFor="category">Danh mục</Label>
                       <div className="col-span-3 w-full space-y-2">
-                       {isCategoriesPending ? (
+                        {isCategoriesPending ? (
                           <Skeleton className="h-4 w-32" />
                         ) : (
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))}
-                          value={field.value ? String(field.value) : ""}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn danh mục" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category.id} value={String(category.id)}>
-                                {category.name.vi}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          <Select
+                            onValueChange={(value) =>
+                              field.onChange(Number(value))
+                            }
+                            value={field.value ? String(field.value) : ""}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chọn danh mục" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {categories.map((category) => (
+                                <SelectItem
+                                  key={category.id}
+                                  value={String(category.id)}
+                                >
+                                  {category.name.vi}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         )}
                         <FormMessage />
                       </div>
@@ -284,7 +298,11 @@ const reset = () => {
           </form>
         </Form>
         <DialogFooter>
-          <Button type="submit" form="add-dish-form">
+          <Button
+            isLoading={isAddingDish || isUploadingMedia}
+            type="submit"
+            form="add-dish-form"
+          >
             Thêm
           </Button>
         </DialogFooter>

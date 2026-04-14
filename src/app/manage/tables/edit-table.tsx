@@ -111,7 +111,7 @@ export default function EditTable({
       }}
     >
       <DialogContent
-        className="sm:max-w-[600px] max-h-screen overflow-auto"
+        className="sm:max-w-150 max-h-screen overflow-auto"
         onCloseAutoFocus={() => {
           form.reset();
           setId(undefined);
