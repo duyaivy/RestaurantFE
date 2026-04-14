@@ -1,16 +1,10 @@
 export const ROUTE = {
-<<<<<<< HEAD
-  MANAGE: {
-    ACCOUNTS: "/manage/accounts",
-    DISHES: "/manage/dishes",
-=======
   HOME: "/",
   AUTH: {
     LOGIN: "/login",
     REGISTER: "/register",
     REFRESH_TOKEN: "/refresh-token",
     LOGOUT: "/logout",
->>>>>>> a1000f342c740509f570333907a92716b4468e24
   },
   PUBLIC: {
     TABLES: "/tables",
