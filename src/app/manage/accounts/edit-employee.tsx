@@ -41,7 +41,8 @@ export default function EditEmployee({
   const { data } = useGetAccount({ id: id as number, enabled: Boolean(id) });
   const { mutateAsync: updateEmployee, isPending: isUpdatingEmployee } =
     useUpdateEmployeeMutation();
-  const { mutateAsync: uploadMedia } = useUploadMediaMutation();
+  const { mutateAsync: uploadMedia, isPending: isUploadingMedia } =
+    useUploadMediaMutation();
   const form = useForm<UpdateEmployeeAccountBodyType>({
     resolver: zodResolver(UpdateEmployeeAccountBody) as any,
     defaultValues: {
@@ -274,7 +275,11 @@ export default function EditEmployee({
           </form>
         </Form>
         <DialogFooter>
-          <Button type="submit" form="edit-employee-form">
+          <Button
+            isLoading={isUpdatingEmployee || isUploadingMedia}
+            type="submit"
+            form="edit-employee-form"
+          >
             Lưu
           </Button>
         </DialogFooter>
