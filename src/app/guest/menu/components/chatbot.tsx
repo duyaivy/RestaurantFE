@@ -1,5 +1,5 @@
-import { chatbotQuestions } from '@/constants/category';
-import useChatbotStore from '@/hooks/stores/useChatbotStore';
+import { chatbotQuestions } from '@/features/menu/constants/category';
+import useChatbotStore from '@/features/messages/store/useChatbotStore';
 import { MessageCircle } from 'lucide-react';
 import React from 'react'
 

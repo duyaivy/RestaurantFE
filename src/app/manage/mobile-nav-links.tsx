@@ -1,12 +1,12 @@
 "use client";
 import { getMenuItemsByRole } from "./menuItems";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
+import { cn } from "@/shared/lib/utils";
 import { Package2, PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppContext } from "@/context/app-provider";
+import { useAppContext } from "@/shared/providers/app-provider";
 
 export default function MobileNavLinks() {
   const pathname = usePathname();

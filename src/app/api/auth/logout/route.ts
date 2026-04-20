@@ -1,5 +1,5 @@
-import authApiRequest from "@/apiRequests/auth";
-import { LoginBodyType } from "@/schemaValidations/auth.schema";
+import authApiRequest from "@/features/auth/api/auth";
+import { LoginBodyType } from "@/features/auth/schemas/auth.schema";
 import { cookies } from "next/headers";
 
 export async function POST(request: Request) {

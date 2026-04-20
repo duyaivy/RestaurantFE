@@ -1,0 +1,25 @@
+import guestApiRequest from "@/features/guest/api/guest";
+import { toast } from "@/shared/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
+
+export const useGuestLoginMutation = () => {
+  return useMutation({
+    mutationFn: guestApiRequest.login,
+  });
+};
+
+export const useLogoutMutation = () => {
+  return useMutation({
+    mutationFn: guestApiRequest.logout,
+  });
+};
+export const useMessageEmployeeMutation = () => {
+  return useMutation({
+    mutationFn: guestApiRequest.messageEmployee,
+    onSuccess: () => {
+      toast({
+        title: "Gọi nhân viên thành công",
+      });
+    },
+  });
+};

@@ -1,9 +1,9 @@
-import dishApiRequest from "@/apiRequests/dish";
-import { formatCurrency } from "@/lib/utils";
-import { DishListResType } from "@/schemaValidations/dish.schema";
+import dishApiRequest from "@/features/dishes/api/dish";
+import { formatCurrency } from "@/shared/lib/utils";
+import { DishListResType } from "@/features/dishes/schemas/dish.schema";
 import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeleton";
-import { FEATURES } from "@/constants/banner";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { FEATURES } from "@/shared/constants/banner";
 
 export default async function Home() {
   let dishList: DishListResType = [];

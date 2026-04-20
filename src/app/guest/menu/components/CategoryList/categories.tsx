@@ -1,7 +1,7 @@
-import { SHOW_DEFAULT } from "@/constants/category";
-import { DishListConfig } from "@/constants/interface";
-import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
-import useCategoryStore from "@/hooks/stores/useCategoryStore";
+import { SHOW_DEFAULT } from "@/features/menu/constants/category";
+import { DishListConfig } from "@/features/dishes/types/dish-list-config";
+import { useDishQueryConfig } from "@/features/dishes/hooks/useDishQueryConfig";
+import useCategoryStore from "@/features/menu/store/useCategoryStore";
 import NextImage from "next/image";
 import { useEffect, useState } from "react";
 import { CategoryGridSkeleton } from "./category-skeleton";

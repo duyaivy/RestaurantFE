@@ -1,6 +1,6 @@
 "use client";
-import { ROUTE } from "@/constants/route";
-import { getAccessTokenFromLocalStorage } from "@/lib/utils";
+import { ROUTE } from "@/shared/constants/route";
+import { getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 const menuItems = [

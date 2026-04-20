@@ -1,18 +1,18 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormMessage } from "@/shared/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   GuestLoginBody,
   GuestLoginBodyType,
-} from "@/schemaValidations/guest.schema";
+} from "@/features/guest/schemas/guest.schema";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { bgGuestLogin } from "public";
-import { useGuestLoginMutation } from "@/hooks/queries/useGuest";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
-import { ROUTE } from "@/constants/route";
+import { useGuestLoginMutation } from "@/features/guest/hooks/useGuest";
+import { Button } from "@/shared/ui/button";
+import { toast } from "@/shared/ui/use-toast";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function GuestLoginForm() {
   const router = useRouter();

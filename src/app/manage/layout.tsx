@@ -1,4 +1,4 @@
-import DarkModeToggle from '@/components/dark-mode-toggle'
+import DarkModeToggle from '@/shared/ui/dark-mode-toggle'
 import DropdownAvatar from '@/app/manage/dropdown-avatar'
 import NavLinks from '@/app/manage/nav-links'
 import MobileNavLinks from '@/app/manage/mobile-nav-links'

@@ -2,12 +2,12 @@
 import {
   checkAndRefreshToken,
   getRefreshTokenFromLocalStorage,
-} from "@/lib/utils";
+} from "@/shared/lib/utils";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 function RefreshTokenComponent() {
   const route = useRouter();

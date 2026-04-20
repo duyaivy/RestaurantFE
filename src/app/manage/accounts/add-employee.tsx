@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/shared/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { CreateEmployeeAccountBody, CreateEmployeeAccountBodyType } from '@/schemaValidations/account.schema'
+} from '@/shared/ui/dialog'
+import { Input } from '@/shared/ui/input'
+import { Label } from '@/shared/ui/label'
+import { CreateEmployeeAccountBody, CreateEmployeeAccountBodyType } from '@/features/accounts/schemas/account.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusCircle, Upload } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useAddEmployeeMutation } from '@/hooks/queries/useAccount'
-import { useUploadMediaMutation } from '@/hooks/queries/UseMedia'
-import { toast } from '@/components/ui/use-toast'
-import { handleErrorApi } from '@/lib/utils'
+import { Form, FormField, FormItem, FormMessage } from '@/shared/ui/form'
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar'
+import { useAddEmployeeMutation } from '@/features/accounts/hooks/useAccount'
+import { useUploadMediaMutation } from '@/shared/hooks/UseMedia'
+import { toast } from '@/shared/ui/use-toast'
+import { handleErrorApi } from '@/shared/lib/utils'
 
 export default function AddEmployee() {
   const [file, setFile] = useState<File | null>(null)

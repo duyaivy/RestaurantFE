@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 import { CARD_STYLE } from "./constants";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 type EmptyOrderStateProps = {
   title: string;

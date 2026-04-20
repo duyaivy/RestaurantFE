@@ -1,16 +1,16 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Button } from '@/shared/ui/button'
+import { Input } from '@/shared/ui/input'
+import { Label } from '@/shared/ui/label'
 
 import { useForm } from 'react-hook-form'
-import { ChangePasswordBody, ChangePasswordBodyType } from '@/schemaValidations/account.schema'
+import { ChangePasswordBody, ChangePasswordBodyType } from '@/features/accounts/schemas/account.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { useChangePasswordMutation } from '@/hooks/queries/useAccount'
-import { toast } from '@/components/ui/use-toast'
-import { handleErrorApi } from '@/lib/utils'
+import { Form, FormField, FormItem, FormMessage } from '@/shared/ui/form'
+import { useChangePasswordMutation } from '@/features/accounts/hooks/useAccount'
+import { toast } from '@/shared/ui/use-toast'
+import { handleErrorApi } from '@/shared/lib/utils'
 
 export default function ChangePasswordForm() {
   const changePasswordMutation = useChangePasswordMutation()

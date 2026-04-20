@@ -2,12 +2,12 @@
 import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
-} from "@/lib/utils";
-import { useLogoutMutation } from "@/hooks/queries/useAuth";
+} from "@/shared/lib/utils";
+import { useLogoutMutation } from "@/features/auth/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 function LogoutComponent() {
   const { mutateAsync } = useLogoutMutation();

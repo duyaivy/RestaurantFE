@@ -5,18 +5,18 @@ import {
   getGuestOrderListQueryKey,
   useGetGuestOrderListQuery,
   usePaymentGuestMutation,
-} from "@/hooks/queries/useOrder";
+} from "@/features/orders/hooks/useOrder";
 import {
   getCurrentChatIdentity,
   toNullableNumber,
-} from "@/hooks/common/chat-identity";
+} from "@/features/messages/hooks/chat-identity";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSocket } from "@/hooks/common/useSocket";
-import { SOCKET_EVENTS } from "@/lib/socket-events";
-import { OrderNotificationPayload } from "@/types/socket";
-import { useTableChat } from "@/hooks/common/useTableChat";
-import { toast } from "@/components/ui/use-toast";
-import { PAYMENT_METHOD, PaymentMethod } from "@/constants/type";
+import { useSocket } from "@/shared/hooks/useSocket";
+import { SOCKET_EVENTS } from "@/shared/sockets/socket-events";
+import { OrderNotificationPayload } from "@/shared/types/socket";
+import { useTableChat } from "@/features/messages/hooks/useTableChat";
+import { toast } from "@/shared/ui/use-toast";
+import { PAYMENT_METHOD, PaymentMethod } from "@/shared/constants/type";
 import { ORDER_STATUS_UI, PAGE_STYLE } from "./components/constants";
 import { pickLatestOrder } from "./components/utils";
 import { EmptyOrderState } from "./components/empty-order-state";

@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { Menu, Package2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import DarkModeToggle from '@/components/dark-mode-toggle'
+import { Button } from '@/shared/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/sheet'
+import DarkModeToggle from '@/shared/ui/dark-mode-toggle'
 import NavItems from '@/app/(public)/nav-items'
-import { SheetTitle } from '@/components/ui/sheet'
+import { SheetTitle } from '@/shared/ui/sheet'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 export default function Layout({
   children

@@ -1,10 +1,10 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import { RevenueLineChart } from '@/app/manage/dashboard/revenue-line-chart'
 import { DishBarChart } from '@/app/manage/dashboard/dish-bar-chart'
-import { formatCurrency } from '@/lib/utils'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { formatCurrency } from '@/shared/lib/utils'
+import { Input } from '@/shared/ui/input'
+import { Button } from '@/shared/ui/button'
 
 const fakeStats = {
   revenue: 48_750_000,

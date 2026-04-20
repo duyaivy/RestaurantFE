@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 
 import {
   DropdownMenu,
@@ -23,8 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/dropdown-menu";
+import { Input } from "@/shared/ui/input";
 import {
   Table,
   TableBody,
@@ -32,13 +32,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/ui/table";
 import {
   AccountListResType,
   AccountType,
-} from "@/schemaValidations/account.schema";
+} from "@/features/accounts/schemas/account.schema";
 import AddEmployee from "@/app/manage/accounts/add-employee";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import EditEmployee from "@/app/manage/accounts/edit-employee";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
@@ -50,17 +50,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/shared/ui/alert-dialog";
 import { useSearchParams } from "next/navigation";
-import AutoPagination from "@/components/auto-pagination";
+import AutoPagination from "@/shared/ui/auto-pagination";
 import {
   useDeleteEmployeeMutation,
   useGetAccountList,
-} from "@/hooks/queries/useAccount";
-import { handleErrorApi } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
-import { ROUTE } from "@/constants/route";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/features/accounts/hooks/useAccount";
+import { handleErrorApi } from "@/shared/lib/utils";
+import { toast } from "@/shared/ui/use-toast";
+import { ROUTE } from "@/shared/constants/route";
+import { Skeleton } from "@/shared/ui/skeleton";
 type AccountItem = AccountListResType[0];
 
 const AccountTableContext = createContext<{

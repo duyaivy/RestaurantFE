@@ -1,8 +1,8 @@
 'use client'
 
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shared/ui/chart'
 import { format, parse } from 'date-fns'
 
 const chartConfig = {

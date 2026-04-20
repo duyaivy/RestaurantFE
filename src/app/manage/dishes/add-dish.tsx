@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle, Upload } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
@@ -20,22 +20,22 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getVietnameseDishStatus } from "@/lib/utils";
+} from "@/shared/ui/form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { getVietnameseDishStatus } from "@/shared/lib/utils";
 import {
   CreateDishBody,
   CreateDishBodyType,
-} from "@/schemaValidations/dish.schema";
-import { DishStatus, DishStatusValues } from "@/constants/type";
+} from "@/features/dishes/schemas/dish.schema";
+import { DishStatus, DishStatusValues } from "@/shared/constants/type";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/shared/ui/select";
+import { Textarea } from "@/shared/ui/textarea";
 
 export default function AddDish() {
   const [file, setFile] = useState<File | null>(null);

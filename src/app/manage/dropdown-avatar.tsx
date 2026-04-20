@@ -6,15 +6,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+} from "@/shared/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Button } from "@/shared/ui/button";
 import Link from "next/link";
-import { useLogoutMutation } from "@/hooks/queries/useAuth";
-import { handleErrorApi } from "@/lib/utils";
+import { useLogoutMutation } from "@/features/auth/hooks/useAuth";
+import { handleErrorApi } from "@/shared/lib/utils";
 import { useRouter } from "next/navigation";
-import { useAccountMe } from "@/hooks/queries/useAccount";
-import { ROUTE } from "@/constants/route";
+import { useAccountMe } from "@/features/accounts/hooks/useAccount";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function DropdownAvatar() {
   const logoutMutation = useLogoutMutation();

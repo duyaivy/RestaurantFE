@@ -1,5 +1,5 @@
 import { DishCard } from "@/app/guest/menu/components/DishList/dish-card";
-import { DishResType } from "@/schemaValidations/dish.schema";
+import { DishResType } from "@/features/dishes/schemas/dish.schema";
 import { Search } from "lucide-react";
 import MenuListSkeleton from "./menu-card-skeleton";
 

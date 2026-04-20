@@ -1,14 +1,14 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -17,33 +17,33 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/ui/form";
 import {
   getTableLink,
   getVietnameseTableStatus,
   handleErrorApi,
-} from "@/lib/utils";
+} from "@/shared/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/select";
 import {
   UpdateTableBody,
   UpdateTableBodyType,
-} from "@/schemaValidations/table.schema";
-import { TableStatus, TableStatusValues } from "@/constants/type";
-import { Switch } from "@/components/ui/switch";
+} from "@/features/tables/schemas/table.schema";
+import { TableStatus, TableStatusValues } from "@/shared/constants/type";
+import { Switch } from "@/shared/ui/switch";
 import Link from "next/link";
 import { useEffect } from "react";
 import {
   useGetTableQuery,
   useUpdateTableMutation,
-} from "@/hooks/queries/useTable";
-import { toast } from "@/components/ui/use-toast";
-import QRCodeTable from "@/components/qrcode-table";
+} from "@/features/tables/hooks/useTable";
+import { toast } from "@/shared/ui/use-toast";
+import QRCodeTable from "@/features/tables/components/qrcode-table";
 
 export default function EditTable({
   id,

@@ -1,4 +1,4 @@
-import { ChatMessagePayload } from "@/types/socket";
+import { ChatMessagePayload } from "@/shared/types/socket";
 
 export interface MessageRoomItem {
   tableNumber: number;

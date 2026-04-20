@@ -1,4 +1,4 @@
-import { BANNERS } from '@/constants/category';
+import { BANNERS } from '@/features/menu/constants/category';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 

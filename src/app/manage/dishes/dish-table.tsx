@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 
 import {
   DropdownMenu,
@@ -22,8 +22,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/dropdown-menu";
+import { Input } from "@/shared/ui/input";
 import {
   Table,
   TableBody,
@@ -31,8 +31,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@/shared/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -43,15 +43,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { formatCurrency, getVietnameseDishStatus } from "@/lib/utils";
-import AutoPagination from "@/components/auto-pagination";
-import { ROUTE } from "@/constants/route";
-import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
-import { DishListResType } from "@/schemaValidations/dish.schema";
+} from "@/shared/ui/alert-dialog";
+import { formatCurrency, getVietnameseDishStatus } from "@/shared/lib/utils";
+import AutoPagination from "@/shared/ui/auto-pagination";
+import { ROUTE } from "@/shared/constants/route";
+import { useDishQueryConfig } from "@/features/dishes/hooks/useDishQueryConfig";
+import { DishListResType } from "@/features/dishes/schemas/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
-import { useDishListQuery } from "@/hooks/queries/useDish";
+import { useDishListQuery } from "@/features/dishes/hooks/useDish";
 
 type DishItem = DishListResType[0];
 

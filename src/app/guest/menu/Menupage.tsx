@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { ChatbotWidget } from "@/components/ChatbotWidget";
-import { useDishListQuery } from "@/hooks/queries/useDish";
+import { ChatbotWidget } from "@/features/messages/components/ChatbotWidget";
+import { useDishListQuery } from "@/features/dishes/hooks/useDish";
 import { Search, X } from "lucide-react";
-import useChatbotStore from "@/hooks/stores/useChatbotStore";
+import useChatbotStore from "@/features/messages/store/useChatbotStore";
 import ChatbotSection from "./components/chatbot";
 import Footer from "./components/footer";
 import LabelFood from "./components/label-food";
@@ -13,8 +13,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Header from "./components/header";
 import Categories from "./components/CategoryList/categories";
 import DishListGuest from "./components/DishList/dish-list";
-import { useDishQueryConfig } from "@/hooks/common/useDishQueryConfig";
-import { DishListConfig } from "@/constants/interface";
+import { useDishQueryConfig } from "@/features/dishes/hooks/useDishQueryConfig";
+import { DishListConfig } from "@/features/dishes/types/dish-list-config";
 
 export default function MenusPage() {
   const { category_id, page, limit, search } = useDishQueryConfig();

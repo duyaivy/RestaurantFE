@@ -1,23 +1,23 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
+import { Form, FormField, FormItem, FormMessage } from "@/shared/ui/form";
+import { LoginBody, LoginBodyType } from "@/features/auth/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLoginMutation } from "@/hooks/queries/useAuth";
-import { toast } from "@/components/ui/use-toast";
-import { handleErrorApi } from "@/lib/utils";
+import { useLoginMutation } from "@/features/auth/hooks/useAuth";
+import { toast } from "@/shared/ui/use-toast";
+import { handleErrorApi } from "@/shared/lib/utils";
 import { useRouter } from "next/navigation";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function LoginForm() {
   const LoginMutation = useLoginMutation();

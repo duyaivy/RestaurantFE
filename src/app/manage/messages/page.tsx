@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useTableListQuery } from "@/hooks/queries/useTable";
-import { useTableChat } from "@/hooks/common/useTableChat";
-import { useChatStore } from "@/hooks/stores/useChatStore";
-import { useOrderNotificationStore } from "@/hooks/stores/useOrderNotificationStore";
-import { useManageChatMessageView } from "@/hooks/common/useManageChatMessageView";
-import { useSocket } from "@/hooks/common/useSocket";
-import { useAppContext } from "@/context/app-provider";
-import { Role } from "@/constants/type";
+import { useTableListQuery } from "@/features/tables/hooks/useTable";
+import { useTableChat } from "@/features/messages/hooks/useTableChat";
+import { useChatStore } from "@/features/messages/store/useChatStore";
+import { useOrderNotificationStore } from "@/features/orders/store/useOrderNotificationStore";
+import { useManageChatMessageView } from "@/features/messages/hooks/useManageChatMessageView";
+import { useSocket } from "@/shared/hooks/useSocket";
+import { useAppContext } from "@/shared/providers/app-provider";
+import { Role } from "@/shared/constants/type";
 import MessagesSidebar from "./components/messages-sidebar";
 import ConversationHeader from "./components/conversation-header";
 import MessageThread from "./components/message-thread";

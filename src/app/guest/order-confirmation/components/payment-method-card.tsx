@@ -1,6 +1,6 @@
 import { Banknote, Check, QrCode } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PAYMENT_METHOD, PaymentMethod } from "@/constants/type";
+import { Button } from "@/shared/ui/button";
+import { PAYMENT_METHOD, PaymentMethod } from "@/shared/constants/type";
 import { CARD_STYLE } from "./constants";
 
 type PaymentMethodCardProps = {

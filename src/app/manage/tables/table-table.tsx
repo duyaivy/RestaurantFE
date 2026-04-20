@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 
 import {
   DropdownMenu,
@@ -22,8 +22,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/dropdown-menu";
+import { Input } from "@/shared/ui/input";
 import {
   Table,
   TableBody,
@@ -31,7 +31,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/ui/table";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -42,16 +42,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { getTableLink, getVietnameseTableStatus } from "@/lib/utils";
+} from "@/shared/ui/alert-dialog";
+import { getTableLink, getVietnameseTableStatus } from "@/shared/lib/utils";
 import { useSearchParams } from "next/navigation";
-import AutoPagination from "@/components/auto-pagination";
-import { TableListResType } from "@/schemaValidations/table.schema";
+import AutoPagination from "@/shared/ui/auto-pagination";
+import { TableListResType } from "@/features/tables/schemas/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
-import { useTableListQuery } from "@/hooks/queries/useTable";
-import QRCodeTable from "@/components/qrcode-table";
-import { ROUTE } from "@/constants/route";
+import { useTableListQuery } from "@/features/tables/hooks/useTable";
+import QRCodeTable from "@/features/tables/components/qrcode-table";
+import { ROUTE } from "@/shared/constants/route";
 
 type TableItem = TableListResType[0];
 

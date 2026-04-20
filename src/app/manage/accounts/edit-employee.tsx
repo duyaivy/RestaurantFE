@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,25 +7,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import {
   UpdateEmployeeAccountBody,
   UpdateEmployeeAccountBodyType,
-} from "@/schemaValidations/account.schema";
+} from "@/features/accounts/schemas/account.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
-import { useGetAccount } from "@/hooks/queries/useAccount";
-import { useUploadMediaMutation } from "@/hooks/queries/UseMedia";
-import { useUpdateEmployeeMutation } from "@/hooks/queries/useAccount";
-import { handleErrorApi } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
+import { Form, FormField, FormItem, FormMessage } from "@/shared/ui/form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Switch } from "@/shared/ui/switch";
+import { useGetAccount } from "@/features/accounts/hooks/useAccount";
+import { useUploadMediaMutation } from "@/shared/hooks/UseMedia";
+import { useUpdateEmployeeMutation } from "@/features/accounts/hooks/useAccount";
+import { handleErrorApi } from "@/shared/lib/utils";
+import { toast } from "@/shared/ui/use-toast";
 
 export default function EditEmployee({
   id,

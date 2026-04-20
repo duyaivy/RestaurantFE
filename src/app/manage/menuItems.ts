@@ -8,9 +8,9 @@ import {
   Users2,
   type LucideIcon,
 } from "lucide-react";
-import { ROUTE } from "@/constants/route";
-import { Role } from "@/constants/type";
-import { RoleType } from "@/types/jwt.types";
+import { ROUTE } from "@/shared/constants/route";
+import { Role } from "@/shared/constants/type";
+import { RoleType } from "@/shared/types/jwt.types";
 
 export type ManageMenuItem = {
   title: string;

@@ -5,11 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, Banknote, QrCode } from "lucide-react";
-import { useOrder } from "@/context/OrderContext";
-import { Button } from "@/components/ui/button";
-import { usePaymentGuestMutation } from "@/hooks/queries/useOrder";
-import { PAYMENT_METHOD, PaymentMethod } from "@/constants/type";
-import { ROUTE } from "@/constants/route";
+import { useOrder } from "@/features/orders/context/OrderContext";
+import { Button } from "@/shared/ui/button";
+import { usePaymentGuestMutation } from "@/features/orders/hooks/useOrder";
+import { PAYMENT_METHOD, PaymentMethod } from "@/shared/constants/type";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function CheckoutPage() {
   const { total, itemCount, clearOrder } = useOrder();

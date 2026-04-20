@@ -1,4 +1,4 @@
-import { toNullableNumber } from "@/hooks/common/chat-identity";
+import { toNullableNumber } from "@/features/messages/hooks/chat-identity";
 import { NormalizedOrder, NormalizedOrderItem } from "./types";
 
 export const parsePrice = (value: unknown) => {

@@ -1,8 +1,8 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useCart } from "@/context/CartContext";
-import { useOrder } from "@/context/OrderContext";
+import { Dialog, DialogContent } from "@/shared/ui/dialog";
+import { useCart } from "@/features/cart/context/CartContext";
+import { useOrder } from "@/features/orders/context/OrderContext";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,12 +17,12 @@ import {
   X,
 } from "lucide-react";
 import NextImage from "next/image";
-import { Button } from "@/components/ui/button";
-import { useCreateOrderMutation } from "@/hooks/queries/useOrder";
-import { toast } from "@/components/ui/use-toast";
-import { useTableChat } from "@/hooks/common/useTableChat";
-import { useSocket } from "@/hooks/common/useSocket";
-import { ROUTE } from "@/constants/route";
+import { Button } from "@/shared/ui/button";
+import { useCreateOrderMutation } from "@/features/orders/hooks/useOrder";
+import { toast } from "@/shared/ui/use-toast";
+import { useTableChat } from "@/features/messages/hooks/useTableChat";
+import { useSocket } from "@/shared/hooks/useSocket";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function CartPage() {
   const {

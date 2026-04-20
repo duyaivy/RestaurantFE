@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { ChatMessagePayload } from "@/types/socket";
+import { ChatMessagePayload } from "@/shared/types/socket";
 import { formatTime } from "./format-time";
 
 interface MessageThreadProps {
