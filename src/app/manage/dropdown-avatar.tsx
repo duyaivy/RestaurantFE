@@ -10,10 +10,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
-import { useLogoutMutation } from "@/features/auth/hooks/useAuth";
+import { useLogoutMutation } from "@/features/auth/hooks/use-auth";
 import { handleErrorApi } from "@/shared/lib/utils";
 import { useRouter } from "next/navigation";
-import { useAccountMe } from "@/features/accounts/hooks/useAccount";
+import { useAccountMe } from "@/features/accounts/hooks/use-account";
 import { ROUTE } from "@/shared/constants/route";
 
 export default function DropdownAvatar() {

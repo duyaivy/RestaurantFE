@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { ConnectionStatus } from "@/features/messages/components/connection-status";
 import { MessageList } from "@/features/messages/components/message-list";
 import { ChatInput } from "@/features/messages/components/chat-input";
-import { useSocket } from "@/shared/hooks/useSocket";
-import { useTableChat } from "@/features/messages/hooks/useTableChat";
-import { useChatStore } from "@/features/messages/store/useChatStore";
+import { useSocket } from "@/shared/hooks/use-socket";
+import { useTableChat } from "@/features/messages/hooks/use-table-chat";
+import { useChatStore } from "@/features/messages/store/use-chat-store";
 import { decodeToken, getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
 import { Role } from "@/shared/constants/type";
 // ─── Staff-only table selector ────────────────────────────────────────────────

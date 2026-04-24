@@ -3,7 +3,7 @@ import { Menu, Package2 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/sheet'
 import DarkModeToggle from '@/shared/ui/dark-mode-toggle'
-import NavItems from '@/app/(public)/nav-items'
+import NavItems from '@/features/auth/components/NavItems'
 import { SheetTitle } from '@/shared/ui/sheet'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 export default function Layout({

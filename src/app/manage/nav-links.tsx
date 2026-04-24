@@ -1,5 +1,5 @@
 "use client";
-import { getMenuItemsByRole } from "./menuItems";
+import { getMenuItemsByRole } from "./menu-items";
 import {
   Tooltip,
   TooltipContent,

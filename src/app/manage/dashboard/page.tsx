@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import DashboardMain from './dashboard-main'
+import DashboardMain from "@/features/dashboard/components/dashboard-main"
 export default async function Dashboard() {
   return (
     <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>

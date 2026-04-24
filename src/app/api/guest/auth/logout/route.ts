@@ -1,5 +1,5 @@
 
-import guestApiRequest from "@/features/guest/api/guest";
+import guestApiRequest from "@/features/guest/api/guest.api";
 import { cookies } from "next/headers";
 export async function POST(request: Request) {
     const cookieStore= await cookies()

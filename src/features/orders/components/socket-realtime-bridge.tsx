@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSocket } from "@/shared/hooks/useSocket";
-import { useChatStore } from "@/features/messages/store/useChatStore";
-import { useOrderNotificationStore } from "@/features/orders/store/useOrderNotificationStore";
+import { useSocket } from "@/shared/hooks/use-socket";
+import { useChatStore } from "@/features/messages/store/use-chat-store";
+import { useOrderNotificationStore } from "@/features/orders/store/use-order-notification-store";
 import { toNullableNumber } from "@/features/messages/hooks/chat-identity";
 import { SOCKET_EVENTS } from "@/shared/sockets/socket-events";
 import {

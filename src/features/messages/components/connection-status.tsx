@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { useSocket } from '@/shared/hooks/useSocket'
+import { useSocket } from '@/shared/hooks/use-socket'
 type BadgeVariant = 'connected' | 'connecting' | 'disconnected'
 const LABELS: Record<BadgeVariant, string> = {
     connected: 'Connected',

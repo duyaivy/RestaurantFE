@@ -1,5 +1,5 @@
-import GuestLoginForm from '@/app/(public)/tables/[number]/guest-login-form'
+import GuestLoginForm from "@/features/guest/components/GuestLoginForm";
 
 export default function TableNumberPage() {
-  return <GuestLoginForm />
+  return <GuestLoginForm />;
 }

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
-import TableTable from '@/app/manage/tables/table-table'
+import TableTable from '@/features/tables/components/table-table'
 import { Suspense } from 'react'
 
 export default function TablesPage() {

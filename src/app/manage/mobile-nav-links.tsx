@@ -1,5 +1,5 @@
 "use client";
-import { getMenuItemsByRole } from "./menuItems";
+import { getMenuItemsByRole } from "./menu-items";
 import { Button } from "@/shared/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
 import { cn } from "@/shared/lib/utils";

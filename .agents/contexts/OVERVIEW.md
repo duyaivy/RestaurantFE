@@ -1,9 +1,9 @@
-# Layer 1 — Frontend Foundation (Feature-First, Adapted to Current Structure)
+# Layer 1 — Frontend Foundation (Feature-First Architecture)
 
 **Project:** VietFood Restaurant Management System  
 **Type:** Frontend Architecture Specification  
-**Scope:** Refactor current Next.js frontend structure toward Feature-First Architecture  
-**Status:** Adapted from current real project structure
+**Scope:** Feature-First Architecture — applied across the entire codebase  
+**Status:** Refactor complete — the entire codebase follows Feature-First Architecture
 
 ---
 
@@ -31,79 +31,40 @@ We are building **VietFood**, a restaurant management frontend using:
 - shadcn/ui
 - Zod
 
-The system has 3 major route groups:
+The system has 4 major route groups:
 
+- `app/(public)/*` → for **public-facing pages** accessible without authentication (login, landing, public table view)
 - `app/manage/*` → for **staff/admin**
 - `app/guest/*` → for **all users**, including unauthenticated and authenticated guest users
 - `app/api/*` → for **Next.js route handlers / proxy / BFF endpoints**
 
-This document defines how to reorganize the current frontend structure into a **feature-first architecture** while still respecting the current route model.
+This document defines the **feature-first architecture** that the entire frontend codebase now follows.
 
 ---
 
-## 2. CURRENT STRUCTURE PROBLEM
+## 2. ARCHITECTURE OVERVIEW
 
-The current project structure is not unusable, but it has several architectural issues:
+The entire codebase has been successfully refactored to **Feature-First Architecture**.
 
-### 2.1 Technical-type grouping instead of business grouping
+There is no longer a distinction between old and new structure. All code now strictly follows the layered architecture principles:
 
-The current folders are grouped by technical concern:
-
-- `components`
-- `hooks`
-- `context`
-- `stores`
-- `types`
-- `schemaValidations`
-- `apiRequests`
-
-This makes the project harder to scale because one feature is spread across many unrelated folders.
-
----
-
-### 2.2 Global folders are becoming dumping grounds
-
-Folders like these can quickly become overloaded:
-
-- `components`
-- `hooks`
-- `lib`
-- `types`
-- `apiRequests`
-
-When feature count grows, developers no longer know:
-
-- which file belongs to which business domain
-- where to place new code
-- which files can be safely reused
-- which files are guest-only vs manage-only
-
----
-
-### 2.3 Route grouping exists, but business logic boundaries are weak
-
-You already have good route boundaries:
-
-- guest
-- manage
-- api
-
-But the underlying logic is still too mixed.
-
-The goal is **not** to rewrite the routing model.  
-The goal is to make the internal codebase follow **feature-first boundaries**.
+- route files live in `app/`
+- business logic lives in `features/`
+- reusable domain objects live in `entities/`
+- generic shared utilities live in `shared/`
 
 ---
 
 ## 3. TARGET ARCHITECTURE PRINCIPLE
 
-We will keep the route structure:
+We keep the route structure:
 
+- `app/(public)`
 - `app/manage`
 - `app/guest`
 - `app/api`
 
-But below the route layer, we will organize code by **feature/domain ownership**.
+But below the route layer, code is organized by **feature/domain ownership**.
 
 This means:
 
@@ -116,8 +77,6 @@ This is a **hybrid architecture**:
 
 - **route-first at the App Router level**
 - **feature-first at the business logic level**
-
-This is the best fit for your current project.
 
 ---
 
@@ -136,6 +95,7 @@ Responsible for:
 
 This includes:
 
+- `app/(public)/*`
 - `app/manage/*`
 - `app/guest/*`
 - `app/api/*`
@@ -210,7 +170,26 @@ Responsible for:
 
 ## 5. ROUTE STRATEGY
 
-### 5.1 `app/manage/*`
+### 5.1 `app/(public)/*`
+
+This route group is for **public-facing pages** that do not require authentication.
+
+Typical pages:
+
+- login / register
+- landing page
+- public table QR entry
+
+Rules:
+
+- route files should stay thin
+- page file only assembles UI and calls feature modules
+- business UI and logic must move into the appropriate feature module (e.g. `features/auth`)
+- must follow the same feature-first rules as `app/manage` and `app/guest` — no exceptions
+
+---
+
+### 5.2 `app/manage/*`
 
 This route group is for **staff/admin side**.
 
@@ -232,7 +211,7 @@ Rules:
 
 ---
 
-### 5.2 `app/guest/*`
+### 5.3 `app/guest/*`
 
 This route group is for **public/guest experience**.
 
@@ -257,7 +236,7 @@ Rules:
 
 ---
 
-### 5.3 `app/api/*`
+### 5.4 `app/api/*`
 
 This route group is for **Next.js API route handlers**.
 
@@ -277,9 +256,7 @@ Rules:
 
 ---
 
-## 6. RECOMMENDED TARGET STRUCTURE
-
-Below is the recommended structure adapted to your current project.
+## 6. PROJECT STRUCTURE
 
 ```txt
 src/
@@ -457,202 +434,69 @@ src/
 │       ├── permissions.ts
 │       └── guards.ts
 │
-├── legacy/
-│   ├── apiRequests/
-│   ├── context/
-│   ├── hooks/
-│   ├── schemaValidations/
-│   └── types/
-│
 └── middleware.ts
 ```
 
-## 7. IMPORTANT DESIGN DECISION
+## 7. ARCHITECTURE LAYER RULES
 
-### Keep current route folders
+### 7.1 `features/` — Feature Layer
 
-We will keep:
+Each feature owns all code related to its domain:
 
-- `app/manage`
-- `app/guest`
-- `app/api`
-
-because they already match the product routing model.
-
-### Refactor business logic gradually
-
-We will **not** move everything in one shot.
-
-Instead:
-
-- keep existing routes
-- create `features/`, `entities/`, `shared/`
-- migrate old files gradually
-- leave old folders in place temporarily under `legacy/` conceptually, until fully replaced
-
-This prevents project breakage and reduces refactor risk.
-
----
-
-## 8. HOW TO MAP CURRENT FOLDERS TO NEW ARCHITECTURE
-
-### 8.1 `src/apiRequests`
-
-**Current issue:** likely mixes requests of many unrelated domains.
-
-**New rule:** split by feature.
-
-Move toward:
-
-- `features/auth/api/*`
-- `features/menu/api/*`
-- `features/orders/api/*`
-- `features/tables/api/*`
-- `features/accounts/api/*`
-
-Only truly generic request setup should stay in:
-
-- `shared/api/axios.ts`
-- `shared/api/endpoints.ts`
-
----
-
-### 8.2 `src/app/components`
-
-**Current issue:** global component folder can become unbounded.
-
-**New rule:**
-
-- if component belongs to one feature → move into that feature
-- if component is reusable app-wide → move into `shared/ui`
-- if component is entity-specific → move into `entities/*/ui`
+- **API clients** → `features/<feature>/api/`
+- **React Query hooks** → `features/<feature>/hooks/`
+- **UI components** → `features/<feature>/components/`
+- **Schemas (Zod)** → `features/<feature>/schemas/`
+- **Zustand store** (when needed) → `features/<feature>/store/`
+- **Socket listeners** → `features/<feature>/socket/`
+- **Types** → `features/<feature>/types/`
 
 Examples:
 
-- menu card → `features/menu/components`
-- order summary → `features/orders/components`
-- avatar badge for user → `entities/user/ui`
-- generic modal → `shared/ui`
+- `features/auth/api/auth.api.ts`
+- `features/menu/hooks/useMenu.ts`
+- `features/orders/socket/order-events.ts`
 
 ---
 
-### 8.3 `src/app/context`
+### 7.2 `entities/` — Entity Layer
 
-**Current issue:** too many contexts can make ownership blurry.
+Contains reusable domain objects shared across features:
 
-Current examples:
-
-- `CartContext`
-- `OrderContext`
-- `UserContext`
-- `socket-provider`
-- `theme-provider`
-- `app-provider`
-
-**New rule:**
-
-- app-wide providers → `shared/providers`
-- feature-specific state should prefer Zustand or feature hooks instead of large context trees
-- only keep React Context when it truly needs provider scoping
-
-Recommended mapping:
-
-- `theme-provider.tsx` → `shared/providers/theme-provider.tsx`
-- `socket-provider.tsx` → `shared/providers/socket-provider.tsx`
-- `app-provider.tsx` → `shared/providers/app-provider.tsx`
-- `CartContext.tsx` → refactor toward `features/cart/store` or `features/cart/hooks`
-- `OrderContext.tsx` → refactor toward `features/orders/store` or query-based state
-- `UserContext.tsx` → refactor toward `features/auth/store`
+- `entities/user/` → types, model helpers, UI primitives
+- `entities/dish/` → types, model helpers, UI primitives
+- `entities/order/`, `entities/table/`, `entities/cart-item/`, etc.
 
 ---
 
-### 8.4 `src/app/hooks`
+### 7.3 `shared/` — Shared Layer
 
-**Current issue:** mixed hooks with unclear ownership.
+Contains only code that is **truly shared** and does not belong to any specific feature:
 
-**New rule:**
-
-- common generic hooks → `shared/hooks`
-- feature hooks → `features/<feature>/hooks`
-
-Examples:
-
-- `useMenu` → `features/menu/hooks`
-- `useCart` → `features/cart/hooks`
-- `useOrders` → `features/orders/hooks`
-- `useDebounce` → `shared/hooks`
+- `shared/api/axios.ts` → single axios instance
+- `shared/providers/` → app-wide providers
+- `shared/hooks/` → generic hooks (useDebounce, useMounted…)
+- `shared/lib/` → utilities, formatters, query-key builders
+- `shared/sockets/socket-client.ts` → base socket client
+- `shared/stores/` → global UI/app store
+- `shared/types/` → shared types (api, common, pagination)
+- `shared/auth/` → session, permissions, guards
 
 ---
 
-### 8.5 `src/app/stores`
+### 7.4 `app/` — Route Layer
 
-**New rule:**
+Contains route entrypoints, layouts, and page assembly. **Page files must stay thin:**
 
-- feature-specific store → inside that feature
-- global UI/app store → `shared/stores`
+- import feature components
+- read route params
+- compose UI sections
 
-Examples:
-
-- auth store → `features/auth/store`
-- cart store → `features/cart/store`
-- app sidebar state → `shared/stores`
+Page files must not contain raw axios calls, inline business rules, or large data orchestration logic.
 
 ---
 
-### 8.6 `src/schemaValidations`
-
-**Current issue:** all schemas are globally grouped.
-
-**New rule:**
-
-- feature schema → `features/<feature>/schemas`
-- common schema → `shared/validators`
-
-Examples:
-
-- login schema → `features/auth/schemas`
-- checkout schema → `features/checkout/schemas`
-- dish form schema → `features/dishes/schemas`
-- generic pagination schema → `shared/validators`
-
----
-
-### 8.7 `src/types`
-
-**Current issue:** types are centralized but ownership is unclear.
-
-**New rule:**
-
-- feature types → inside feature
-- entity types → inside entity
-- truly global types → `shared/types`
-
-Examples:
-
-- JWT payload type → `shared/types` or `shared/auth`
-- socket base event types → `shared/types`
-- dish type → `entities/dish/types` or `features/dishes/types`
-- order response type → `features/orders/types`
-
----
-
-### 8.8 `src/lib`
-
-**New rule:** only generic utilities should live here.
-
-Examples:
-
-- formatter
-- query key builders
-- helper functions
-- date formatters
-- number formatters
-
-Do not place feature logic inside `lib`.
-
----
-
-## 9. FEATURE OWNERSHIP MODEL
+## 8. FEATURE OWNERSHIP MODEL
 
 Each feature should own as much of its code as possible.
 
@@ -697,9 +541,9 @@ Owns:
 
 ---
 
-## 10. APP LAYER RULES
+## 9. APP LAYER RULES
 
-### 10.1 `page.tsx` must stay thin
+### 9.1 `page.tsx` must stay thin
 
 A page should:
 
@@ -716,7 +560,37 @@ A page should not:
 
 ---
 
-### 10.2 `layout.tsx` is for composition and guards
+### 9.2 Screen-level view files must stay manageable
+
+In some cases, `page.tsx` delegates to an intermediate screen-level file such as:
+
+- `MenuPage.tsx`
+- `DashboardView.tsx`
+- `OrderConfirmationView.tsx`
+
+These files are acceptable as an orchestration layer between `page.tsx` and feature components, but they must not become bloated.
+
+If a screen-level file is too large, mixes data logic with presentation, or is hard to scan, split it into named **section components**:
+
+```
+header-section.tsx
+filters-section.tsx
+list-section.tsx
+summary-section.tsx
+actions-section.tsx
+details-section.tsx
+```
+
+Rules for section splitting:
+
+- split only when it improves readability, ownership, or maintainability
+- do not split blindly into meaningless micro-components
+- keep the screen file as a lightweight orchestration layer after splitting
+- section components live alongside the screen file inside `features/<feature>/components/`
+
+---
+
+### 9.2 `layout.tsx` is for composition and guards
 
 Use layouts for:
 
@@ -728,7 +602,7 @@ Use layouts for:
 
 ---
 
-### 10.3 App route components can remain local if route-specific
+### 9.3 App route components can remain local if route-specific
 
 Some files may remain inside `app/manage` or `app/guest` when they are purely route-shell components.
 
@@ -746,9 +620,9 @@ But if these become feature-aware or reused heavily, move them to:
 
 ---
 
-## 11. API LAYER RULES
+## 10. API LAYER RULES
 
-### 11.1 Shared Axios Client
+### 10.1 Shared Axios Client
 
 There should be exactly one primary axios client in:
 
@@ -763,7 +637,7 @@ It handles:
 
 ---
 
-### 11.2 Feature APIs
+### 10.2 Feature APIs
 
 Feature request functions should live inside each feature.
 
@@ -775,7 +649,7 @@ Examples:
 
 ---
 
-### 11.3 Next.js route handlers
+### 10.3 Next.js route handlers
 
 `app/api/*` should be used when:
 
@@ -788,9 +662,9 @@ Do not use `app/api/*` as a replacement for feature-level API client code.
 
 ---
 
-## 12. STATE MANAGEMENT RULES
+## 11. STATE MANAGEMENT RULES
 
-### 12.1 React Query
+### 11.1 React Query
 
 Use React Query for all server state:
 
@@ -804,7 +678,7 @@ Do not mirror server state into Zustand without strong reason.
 
 ---
 
-### 12.2 Zustand
+### 11.2 Zustand
 
 Use Zustand for:
 
@@ -817,7 +691,7 @@ Use Zustand for:
 
 ---
 
-### 12.3 Context
+### 11.3 Context
 
 Use Context only for:
 
@@ -830,7 +704,7 @@ Prefer feature hooks + Zustand over large global contexts.
 
 ---
 
-## 13. SOCKET ARCHITECTURE RULES
+## 12. SOCKET ARCHITECTURE RULES
 
 Socket code must not be scattered across pages.
 
@@ -846,7 +720,7 @@ Examples:
 
 ---
 
-## 14. CLEAN CODE RULES FOR THIS PROJECT
+## 13. CLEAN CODE RULES FOR THIS PROJECT
 
 ### Rule 1
 
@@ -854,7 +728,7 @@ Feature code belongs to the feature that owns the use case.
 
 ### Rule 2
 
-Shared code must be truly shared, not “temporarily shared”.
+Shared code must be truly shared, not "temporarily shared".
 
 ### Rule 3
 
@@ -880,6 +754,182 @@ Every new feature must decide first:
 - feature-level?
 - entity-level?
 - shared-level?
+
+## 14. NAMING CONVENTIONS
+
+Consistent naming is critical for readability and navigability across the codebase. All files and components must follow the rules below.
+
+---
+
+### 14.1 React Components
+
+**Rule:** PascalCase for all React component files and their exported function names.
+
+```
+// File name
+DishCard.tsx
+OrderSummary.tsx
+CartItemRow.tsx
+MenuPage.tsx
+
+// Export
+export default function DishCard() {}
+export function OrderSummary() {}
+```
+
+Do not mix casing styles. A file named `dishCard.tsx` or `dish-card.tsx` must not export a React component.
+
+---
+
+### 14.2 Non-Component TypeScript Files
+
+**Rule:** kebab-case for all non-component `.ts` and `.tsx` files.
+
+```
+// API clients
+menu.api.ts
+order.api.ts
+auth.api.ts
+
+// Hooks
+use-menu.ts
+use-cart.ts
+use-debounce.ts
+
+// Stores
+use-cart-store.ts
+use-app-store.ts
+
+// Schemas
+dish.schema.ts
+checkout.schema.ts
+
+// Types
+order.types.ts
+dish.types.ts
+
+// Utilities / helpers
+format.ts
+query-keys.ts
+query-client.ts
+```
+
+---
+
+### 14.3 Hooks
+
+**Rule:** Hook function names always start with `use`, exported from a `use-<name>.ts` file.
+
+```
+// File: features/menu/hooks/use-menu.ts
+export function useMenu() {}
+
+// File: features/cart/hooks/use-cart.ts
+export function useCart() {}
+
+// File: shared/hooks/use-debounce.ts
+export function useDebounce() {}
+```
+
+---
+
+### 14.4 Zustand Stores
+
+**Rule:** Store files follow the `use-<domain>-store.ts` naming pattern — consistent with hook file conventions — because Zustand stores are consumed as hooks. The exported store hook follows `use<Domain>Store` naming.
+
+```
+// File: features/auth/store/use-auth-store.ts
+export const useAuthStore = create(...)
+
+// File: features/cart/store/use-cart-store.ts
+export const useCartStore = create(...)
+
+// File: shared/stores/use-app-store.ts
+export const useAppStore = create(...)
+```
+
+---
+
+### 14.5 API Client Files
+
+**Rule:** API files use the `.api.ts` suffix. Functions inside follow `<verb><Domain>` naming.
+
+```
+// File: features/menu/api/menu.api.ts
+export async function getMenuList() {}
+export async function getMenuDetail(id: string) {}
+
+// File: features/orders/api/order.api.ts
+export async function createOrder(payload: CreateOrderPayload) {}
+export async function getOrderById(id: string) {}
+```
+
+---
+
+### 14.6 Zod Schemas
+
+**Rule:** Schema files use the `.schema.ts` suffix. Schema variables use `<domain><Action>Schema` naming. Inferred types use `<Domain><Action>Type` naming.
+
+```
+// File: features/auth/schemas/auth.schema.ts
+export const loginFormSchema = z.object({ ... })
+export type LoginFormType = z.infer<typeof loginFormSchema>
+
+// File: features/dishes/schemas/dish.schema.ts
+export const createDishSchema = z.object({ ... })
+export type CreateDishType = z.infer<typeof createDishSchema>
+```
+
+---
+
+### 14.7 Type Files
+
+**Rule:** Type files use the `.types.ts` suffix. Interfaces and types use PascalCase. Types for API response/request payloads follow `<Domain>Response` / `<Domain>Payload` naming.
+
+```
+// File: features/orders/types/order.types.ts
+export interface OrderItem { ... }
+export type OrderStatus = 'pending' | 'confirmed' | 'done'
+export type CreateOrderPayload = { ... }
+export type OrderResponse = { ... }
+```
+
+---
+
+### 14.8 Directories
+
+**Rule:** All directory names use kebab-case.
+
+```
+features/cart-item/
+features/order-confirmation/
+shared/query-keys/
+entities/cart-item/
+```
+
+Do not use PascalCase or camelCase for folder names.
+
+---
+
+### 14.9 Quick Reference Table
+
+| Type | Convention | Example |
+|---|---|---|
+| React component file | PascalCase | `DishCard.tsx` |
+| React component export | PascalCase | `export default function DishCard()` |
+| Hook file | kebab-case | `use-cart.ts` |
+| Hook function | camelCase `use` prefix | `useCart()` |
+| API client file | kebab-case `.api.ts` | `menu.api.ts` |
+| API function | camelCase verb+noun | `getMenuList()` |
+| Store file | kebab-case `use-<domain>-store.ts` | `use-cart-store.ts` |
+| Store hook | PascalCase `use` prefix | `useCartStore` |
+| Schema file | kebab-case `.schema.ts` | `dish.schema.ts` |
+| Schema variable | camelCase | `createDishSchema` |
+| Type file | kebab-case `.types.ts` | `order.types.ts` |
+| Type / Interface | PascalCase | `OrderItem`, `OrderStatus` |
+| Directory | kebab-case | `cart-item/`, `order-confirmation/` |
+
+---
 
 ## 15. Definition of Done
 
@@ -909,7 +959,7 @@ A task is considered done only when **all** of the following conditions are sati
   - setup steps change
   - run/build commands change
   - architecture rules or folder conventions change
-- The code passes linting and build checks.
+- The code passes linting, type-checking, and build checks.
 - The feature is ready for another developer to understand and continue without guessing project conventions.
 
 ### Additional Definition of Done Notes
@@ -947,4 +997,10 @@ pnpm dev
 
 ```bash
 pnpm lint
+```
+
+### Type check
+
+```bash
+pnpm type-check
 ```

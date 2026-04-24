@@ -9,10 +9,10 @@ import {
   WifiOff,
   Loader2,
 } from "lucide-react";
-import { useChatStore } from "@/features/messages/store/useChatStore";
-import { useTableChat } from "@/features/messages/hooks/useTableChat";
-import { useGuestChatMessageView } from "@/features/messages/hooks/useGuestChatMessageView";
-import { useSocket } from "@/shared/hooks/useSocket";
+import { useChatStore } from "@/features/messages/store/use-chat-store";
+import { useTableChat } from "@/features/messages/hooks/use-table-chat";
+import { useGuestChatMessageView } from "@/features/messages/hooks/use-guest-chat-message-view";
+import { useSocket } from "@/shared/hooks/use-socket";
 import { Role } from "@/shared/constants/type";
 
 const chatSuggestions = [

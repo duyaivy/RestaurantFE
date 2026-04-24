@@ -1,4 +1,4 @@
-import authApiRequest from "@/features/auth/api/auth";
+import authApiRequest from "@/features/auth/api/auth.api";
 import jwt from "jsonwebtoken";
 import { TokenPayload } from "@/shared/types/jwt.types";
 

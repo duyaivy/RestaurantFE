@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { Role } from "@/shared/constants/type";
-import { useChatMessageView } from "@/features/messages/hooks/useChatMessageView";
+import { useChatMessageView } from "@/features/messages/hooks/use-chat-message-view";
 import { ChatMessagePayload } from "@/shared/types/socket";
 const ROLE_LABEL: Record<string, string> = {
   [Role.Admin]: "Admin",
