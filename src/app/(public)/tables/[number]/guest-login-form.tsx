@@ -13,11 +13,18 @@ import { useGuestLoginMutation } from "@/hooks/queries/useGuest";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { ROUTE } from "@/constants/route";
+import { use, useEffect } from "react";
+import { useAppContext } from "@/context/app-provider";
+import { set } from "lodash";
+import { handleErrorApi } from "@/lib/utils";
 
 export default function GuestLoginForm() {
+  const { setRole } = useAppContext();
   const router = useRouter();
   const params = useParams<{ number: string }>();
   const searchParams = useSearchParams();
+  const tableNumber = Number(params.number);
+  const tableToken = searchParams.get("token");
   const { mutateAsync: guestLogin, isPending: isGuestLoginPending } =
     useGuestLoginMutation();
 
@@ -25,14 +32,21 @@ export default function GuestLoginForm() {
     resolver: zodResolver(GuestLoginBody),
     defaultValues: {
       name: "",
-      tableToken: searchParams.get("token") || "",
-      tableNumber: Number(params.number),
+      tableToken: tableToken ?? "",
+      tableNumber
     },
   });
 
+  useEffect(() => {
+    if (!tableToken) {
+      router.push('/');
+    }  }, [tableToken, router]);
+
   const onSubmit = async (data: GuestLoginBodyType) => {
+    if(isGuestLoginPending) return;
     try {
       const result = await guestLogin(data);
+      setRole(result.payload.data.guest.role);
 
       // save
       localStorage.setItem("accessToken", result.payload.data.accessToken);
@@ -45,6 +59,10 @@ export default function GuestLoginForm() {
       });
       router.push(ROUTE.GUEST.MENU);
     } catch (error: any) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
       toast({
         title: "Đăng nhập thất bại",
         description: error.message,

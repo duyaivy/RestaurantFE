@@ -9,6 +9,7 @@ import { DishStatus, OrderStatus, Role, TableStatus } from "@/constants/type";
 import { ROUTE } from "@/constants/route";
 import envConfig from "@/config";
 import { TokenPayload } from "@/types/jwt.types";
+import guestApiRequest from "@/apiRequests/guest";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -92,7 +93,8 @@ export const checkAndRefreshToken = async (param?: {
     (decodeAccessToken.exp - decodeAccessToken.iat) / 3
   ) {
     try {
-      const res = await authApiRequest.refreshToken();
+      const role = decodeRefreshToken.role;
+      const res = role=== Role.Guest? (await guestApiRequest.refreshToken()):(await authApiRequest.refreshToken() );
       setAccessTokenToLoacalStorage(res.payload.data.accessToken);
       setRefreshTokenToLoacalStorage(res.payload.data.refreshToken);
       if (param?.onSuccess) {

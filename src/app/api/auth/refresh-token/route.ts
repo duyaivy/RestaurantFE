@@ -47,6 +47,6 @@ export async function POST( request: Request) {
 catch (error: any) {
     return Response.json({
         message: error.message ?? 'có lỗi xảy ra'}, 
-        {status: 500})
+        {status: 401})
     
     }}

@@ -1,7 +1,7 @@
 import envConfig from "@/config";
 import { SuccessResponse } from "@/constants/type";
 import { ROUTE } from "@/constants/route";
-import { normalizePath } from "@/lib/utils";
+import { getAccessTokenFromLocalStorage, normalizePath, removeTokensFromLocalStorage, setAccessTokenToLoacalStorage, setRefreshTokenToLoacalStorage } from "@/lib/utils";
 import { LoginResType } from "@/schemaValidations/auth.schema";
 import { redirect } from "next/navigation";
 type CustomOptions = Omit<RequestInit, "method"> & {
@@ -75,7 +75,7 @@ const request = async <Response>(
           "Content-Type": "application/json",
         };
   if (isClient) {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessTokenFromLocalStorage();
     if (accessToken) {
       baseHeaders.Authorization = `Bearer ${accessToken}`;
     }
@@ -159,8 +159,7 @@ const request = async <Response>(
             await clientLogoutRequest;
           } catch (_error) {
           } finally {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
+            removeTokensFromLocalStorage();
             clientLogoutRequest = null;
             // Redirect về trang login có thể dẫn đến loop vô hạn
             // Nếu không không được xử lý đúng cách
@@ -196,14 +195,13 @@ const request = async <Response>(
       const { accessToken, refreshToken } = (
         payload as SuccessResponse<LoginResType>
       ).data;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      setAccessTokenToLoacalStorage(accessToken);
+      setRefreshTokenToLoacalStorage(refreshToken);
     } else if (
       normalizeUrl === "api/auth/logout" ||
       normalizeUrl === "api/guest/logout"
     ) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      removeTokensFromLocalStorage();
     }
   }
   return data;

@@ -9,7 +9,7 @@ import { SocketProvider } from "@/context/socket-provider";
 import SocketRealtimeBridge from "@/components/socket-realtime-bridge";
 
 const fontSans = FontSans({
-  subsets: ["latin"],
+  subsets: ["latin"],                                                                                               
   variable: "--font-sans",
 });
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default function RootLayout({
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
-        )}
+        )} 
       >
         <AppProvider>
           <SocketProvider>

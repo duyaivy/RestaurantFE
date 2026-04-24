@@ -18,9 +18,16 @@ import { toast } from "@/components/ui/use-toast";
 import { handleErrorApi } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ROUTE } from "@/constants/route";
+import { useAppContext } from "@/context/app-provider";
+import { useParams,useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { set } from "lodash";
 
 export default function LoginForm() {
   const LoginMutation = useLoginMutation();
+  const { setRole } = useAppContext();
+  const searchParams = useSearchParams();
+  const clearTokens = searchParams.get("clearTokens");
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -29,16 +36,21 @@ export default function LoginForm() {
     },
   });
   const router = useRouter();
+  useEffect(() => {
+    if (clearTokens) {
+      setRole()
+    }
+  }, [clearTokens, setRole]);
 
   const onSubmit = async (data: LoginBodyType) => {
     if (LoginMutation.isPending) return;
     try {
       const result = await LoginMutation.mutateAsync(data);
-      console.log({ result });
-
+     
       toast({
         description: result.payload.message,
       });
+        setRole(result.payload.data.account.role);
       router.push(ROUTE.MANAGE.DASHBOARD);
     } catch (error: any) {
       handleErrorApi({

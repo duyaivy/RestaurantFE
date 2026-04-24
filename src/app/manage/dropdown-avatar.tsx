@@ -15,11 +15,13 @@ import { handleErrorApi } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useAccountMe } from "@/hooks/queries/useAccount";
 import { ROUTE } from "@/constants/route";
+import { useAppContext } from "@/context/app-provider";
 
 export default function DropdownAvatar() {
   const logoutMutation = useLogoutMutation();
   const route = useRouter();
   const { data } = useAccountMe();
+  const {setRole} = useAppContext();
   const account = data?.payload.data;
 
   const logout = async () => {
@@ -27,6 +29,7 @@ export default function DropdownAvatar() {
 
     try {
       await logoutMutation.mutateAsync();
+        setRole();
       route.push(ROUTE.HOME);
     } catch (error: any) {
       handleErrorApi({
