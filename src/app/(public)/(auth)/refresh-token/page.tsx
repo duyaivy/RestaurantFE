@@ -2,12 +2,12 @@
 import {
   checkAndRefreshToken,
   getRefreshTokenFromLocalStorage,
-} from "@/lib/utils";
+} from "@/shared/lib/utils";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 function RefreshTokenComponent() {
   const route = useRouter();
@@ -27,7 +27,7 @@ function RefreshTokenComponent() {
     }
   }, [route, refreshTokenFromUrl, redirectPathname]);
   return (
-    <div>
+    <div className="flex gap-2 items-center justify-center">
       <Loader2Icon className="animate-spin size-5" />
       Refresh token
     </div>
@@ -38,7 +38,7 @@ export default function RefreshTokenPage() {
   return (
     <Suspense
       fallback={
-        <div>
+        <div className="flex gap-2 items-center justify-center">
           <Loader2Icon className="animate-spin size-5" />
           Refresh token
         </div>

@@ -1,9 +1,9 @@
 
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import { HttpError } from "@/lib/http";
-import { GuestLoginBodyType } from "@/schemaValidations/guest.schema";
-import guestApiRequest from "@/apiRequests/guest";
+import { HttpError } from "@/shared/api/http";
+import { GuestLoginBodyType } from "@/features/guest/schemas/guest.schema";
+import guestApiRequest from "@/features/guest/api/guest.api";
 
 export async function POST(request: Request) {
     const body = (await request.json()) as GuestLoginBodyType

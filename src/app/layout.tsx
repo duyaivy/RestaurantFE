@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/context/theme-provider";
-import AppProvider from "@/context/app-provider";
-import { SocketProvider } from "@/context/socket-provider";
-import SocketRealtimeBridge from "@/components/socket-realtime-bridge";
+import { cn } from "@/shared/lib/utils";
+import { Toaster } from "@/shared/ui/toaster";
+import { ThemeProvider } from "@/shared/providers/theme-provider";
+import AppProvider from "@/shared/providers/app-provider";
+import { SocketProvider } from "@/shared/providers/socket-provider";
+import SocketRealtimeBridge from "@/features/orders/components/socket-realtime-bridge";
 
 const fontSans = FontSans({
   subsets: ["latin"],

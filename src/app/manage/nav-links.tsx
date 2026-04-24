@@ -1,17 +1,17 @@
 "use client";
-import { getMenuItemsByRole } from "./menuItems";
+import { getMenuItemsByRole } from "./menu-items";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from "@/components/ui/tooltip";
-import { ROUTE } from "@/constants/route";
-import { cn } from "@/lib/utils";
+} from "@/shared/ui/tooltip";
+import { ROUTE } from "@/shared/constants/route";
+import { cn } from "@/shared/lib/utils";
 import { Package2, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppContext } from "@/context/app-provider";
+import { useAppContext } from "@/shared/providers/app-provider";
 
 export default function NavLinks() {
   const pathname = usePathname();

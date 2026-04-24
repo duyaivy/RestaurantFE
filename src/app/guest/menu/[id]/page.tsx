@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useCart } from '@/context/CartContext'
+import { useCart } from '@/features/cart/context/cart-context'
 
 import { ShoppingCart, Check, ChevronLeft, Minus, Plus } from 'lucide-react'
 import Image from 'next/image'
-import { useGetDishQuery } from '@/hooks/queries/useDish';
+import { useGetDishQuery } from '@/features/dishes/hooks/use-dish';
 
 export default function ProductDetailPage() {
   const params = useParams();

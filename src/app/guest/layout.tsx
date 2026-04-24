@@ -1,16 +1,16 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useUser } from "@/context/UserContext";
-import { MikiAssistant } from "@/components/MikiAssistant";
-import { useOrder } from "@/context/OrderContext";
-import { useCart } from "@/context/CartContext";
+import { useUser } from "@/features/auth/context/user-context";
+import { MikiAssistant } from "@/features/messages/components/MikiAssistant";
+import { useOrder } from "@/features/orders/context/order-context";
+import { useCart } from "@/features/cart/context/cart-context";
 import Link from "next/link";
 import { UtensilsCrossed, ShoppingCart, ClipboardList } from "lucide-react";
-import { UserProvider } from "@/context/UserContext";
-import { CartProvider } from "@/context/CartContext";
-import { OrderProvider } from "@/context/OrderContext";
-import { ROUTE } from "@/constants/route";
+import { UserProvider } from "@/features/auth/context/user-context";
+import { CartProvider } from "@/features/cart/context/cart-context";
+import { OrderProvider } from "@/features/orders/context/order-context";
+import { ROUTE } from "@/shared/constants/route";
 
 function StoreLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
