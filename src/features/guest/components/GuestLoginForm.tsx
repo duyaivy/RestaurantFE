@@ -13,8 +13,11 @@ import { useGuestLoginMutation } from "@/features/guest/hooks/use-guest";
 import { Button } from "@/shared/ui/button";
 import { toast } from "@/shared/ui/use-toast";
 import { ROUTE } from "@/shared/constants/route";
+import { useTranslations } from "next-intl";
 
 export default function GuestLoginForm() {
+    const t = useTranslations("auth");
+    const landingT = useTranslations("landing");
     const router = useRouter();
     const params = useParams<{ number: string }>();
     const searchParams = useSearchParams();
@@ -40,13 +43,13 @@ export default function GuestLoginForm() {
             localStorage.setItem("table_number_id", data.tableNumber.toString());
 
             toast({
-                title: "Đăng nhập thành công",
+                title: t("loginSuccessTitle"),
                 description: result.payload.message,
             });
             router.push(ROUTE.GUEST.MENU);
         } catch (error: any) {
             toast({
-                title: "Đăng nhập thất bại",
+                title: t("loginErrorTitle"),
                 description: error.message,
                 variant: "destructive",
             });
@@ -72,9 +75,7 @@ export default function GuestLoginForm() {
                     <div className="w-1 h-1 rounded-full bg-amber-500" />
                     <div className="w-5 h-px bg-amber-500/60" />
                 </div>
-                <p className="text-[10px] text-white/40 tracking-[0.3em] uppercase">
-                    Phục vụ tận tâm
-                </p>
+                {landingT("servingWithCare")}
             </div>
 
             <div className="relative z-10 w-full max-w-81.75 mx-auto bg-[rgba(12,8,3,0.1)] backdrop-blur-sm border border-amber-500/20 rounded-3xl px-6 py-7">
@@ -92,11 +93,11 @@ export default function GuestLoginForm() {
                             render={({ field }) => (
                                 <FormItem>
                                     <label className="block text-[10px] text-white/30 tracking-[0.25em] uppercase mb-2">
-                                        Vui lòng nhập tên của quý khách
+                                        {t("guestLoginLabel")}
                                     </label>
                                     <input
                                         {...field}
-                                        placeholder="Tên của bạn..."
+                                        placeholder={t("guestLoginPlaceholder")}
                                         autoFocus
                                         className="w-full bg-white/6 border border-white/10 rounded-xl px-4 py-3.5 text-[15px] text-[#f2ece0] placeholder:text-white/20 outline-none focus:border-amber-500/50 focus:bg-white/9 transition-all"
                                     />
@@ -110,7 +111,7 @@ export default function GuestLoginForm() {
                             isLoading={isGuestLoginPending}
                             className="text-white w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] transition-all duration-150 rounded-xl py-3.75 text-[15px] font-bold tracking-wide shadow-[0_4px_22px_rgba(201,160,48,0.32)]"
                         >
-                            Vào cửa hàng →
+                            {t("enterStore")} →
                         </Button>
                     </form>
                 </Form>

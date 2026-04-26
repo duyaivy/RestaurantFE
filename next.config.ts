@@ -1,5 +1,7 @@
-
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   images: {
@@ -21,8 +23,9 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    qualities: [25, 50, 75, 100],
   },
   trailingSlash: true,
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

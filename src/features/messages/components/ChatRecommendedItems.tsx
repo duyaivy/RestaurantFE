@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChatbotRecommendedItem } from "@/features/messages/types/chatbot.types";
 import { ROUTE } from "@/shared/constants/route";
+import { LocalizedText } from "@/shared/ui/localized-text";
 
 interface ChatRecommendedItemsProps {
   items: ChatbotRecommendedItem[];
@@ -28,7 +29,9 @@ export function ChatRecommendedItems({ items }: ChatRecommendedItemsProps) {
             />
           </div>
           <div>
-            <p className="text-xs font-medium text-white">{item.name}</p>
+            <p className="text-xs font-medium text-white">
+              <LocalizedText text={item.name as any} />
+            </p>
             <p className="text-[11px] text-white/55">Xem món</p>
           </div>
         </Link>

@@ -1,0 +1,37 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "subtotal": "Subtotal",
+        "description": "Description",
+        "note": "Note",
+        "notePlaceholder": "Example: less spicy, less salt...",
+        "quantity": "Quantity"
+    },
+    "auth": {
+        "guestLoginLabel": "Please enter your name",
+        "guestLoginPlaceholder": "Your name...",
+        "enterStore": "Enter store",
+        "loginSuccessTitle": "Login successful",
+        "loginErrorTitle": "Login failed"
+    },
+    "menu": {
+        "title": "Menu",
+        "categories": "Categories"
+    },
+    "orders": {
+        "title": "Orders",
+        "addedToCart": "Added to cart",
+        "addToCart": "Add to cart"
+    },
+    "dishes": {
+        "dishesSuffix": "dishes",
+        "noDishFound": "No dishes found",
+        "searchPlaceholder": "Search dishes...",
+        "productNotFound": "Product not found"
+    },
+    "landing": {
+        "appTitle": "VietFood",
+        "fineDining": "Fine Dining",
+        "servingWithCare": "Serving with care"
+    }
+}

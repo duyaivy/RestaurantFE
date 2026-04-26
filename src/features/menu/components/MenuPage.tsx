@@ -15,8 +15,10 @@ import Categories from "@/features/menu/components/category-list/categories";
 import DishListGuest from "@/features/menu/components/dish-list/dish-list";
 import { useDishQueryConfig } from "@/features/dishes/hooks/use-dish-query-config";
 import { DishListConfig } from "@/features/dishes/types/dish-list-config.types";
+import { useTranslations } from "next-intl";
 
 export default function MenusPage() {
+  const t = useTranslations("dishes");
   const { category_id, page, limit, search } = useDishQueryConfig();
   const router = useRouter();
   const pathname = usePathname();
@@ -55,9 +57,8 @@ export default function MenusPage() {
       <Header />
       <div className="z-20 px-5 py-3 bg-neutral-950/90 backdrop-blur-md border-b border-yellow-900/20">
         <div
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/3 border transition-colors duration-300 ${
-            searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
-          }`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-white/3 border transition-colors duration-300 ${searchFocused ? "border-yellow-600/70" : "border-yellow-900/30"
+            }`}
         >
           <Search
             size={14}
@@ -67,7 +68,6 @@ export default function MenusPage() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Tìm kiếm món ăn..."
             key={search || ""}
             defaultValue={search}
             onKeyDown={(e) => {
@@ -78,6 +78,7 @@ export default function MenusPage() {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             className="bg-transparent outline-none w-full text-white text-sm tracking-wide placeholder:text-neutral-600 placeholder:text-xs placeholder:tracking-widest placeholder:uppercase"
+            placeholder={t("searchPlaceholder")}
           />
           {search && (
             <button

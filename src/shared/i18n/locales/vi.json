@@ -1,0 +1,37 @@
+{
+    "common": {
+        "loading": "Đang tải...",
+        "subtotal": "Tạm tính",
+        "description": "Mô tả",
+        "note": "Ghi chú",
+        "notePlaceholder": "Ví dụ: không cay, ít muối...",
+        "quantity": "Số lượng"
+    },
+    "auth": {
+        "guestLoginLabel": "Vui lòng nhập tên của quý khách",
+        "guestLoginPlaceholder": "Tên của bạn...",
+        "enterStore": "Vào cửa hàng",
+        "loginSuccessTitle": "Đăng nhập thành công",
+        "loginErrorTitle": "Đăng nhập thất bại"
+    },
+    "menu": {
+        "title": "Menu",
+        "categories": "Danh mục"
+    },
+    "orders": {
+        "title": "Đơn hàng",
+        "addedToCart": "Đã thêm vào giỏ",
+        "addToCart": "Thêm vào giỏ hàng"
+    },
+    "dishes": {
+        "dishesSuffix": "món",
+        "noDishFound": "Không tìm thấy món ăn nào",
+        "searchPlaceholder": "Tìm kiếm món ăn...",
+        "productNotFound": "Không tìm thấy sản phẩm"
+    },
+    "landing": {
+        "appTitle": "VietFood",
+        "fineDining": "Fine Dining",
+        "servingWithCare": "Phục vụ tận tâm"
+    }
+}

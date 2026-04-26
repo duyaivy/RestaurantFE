@@ -2,7 +2,7 @@
 import { ROUTE } from "@/shared/constants/route";
 import { getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 const menuItems = [
     {
         title: "Menu",
@@ -26,7 +26,11 @@ const menuItems = [
 ];
 
 export default function NavItems({ className }: { className?: string }) {
-    const [isAuth] = useState<boolean>(Boolean(getAccessTokenFromLocalStorage()));
+    const [isAuth, setIsAuth] = useState<boolean>(false);
+
+    useEffect(() => {
+        setIsAuth(Boolean(getAccessTokenFromLocalStorage()));
+    }, []);
 
     return menuItems.map((item) => {
         if (

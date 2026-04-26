@@ -4,6 +4,7 @@ import { DishListResType } from "@/features/dishes/schemas/dish.schema";
 import Image from "next/image";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { FEATURES } from "@/shared/constants/banner";
+import { LocalizedText } from "@/shared/ui/localized-text";
 
 export default async function LandingPage() {
     let dishList: DishListResType = [];
@@ -53,7 +54,7 @@ export default async function LandingPage() {
 
                     <p className="text-white/60 text-sm sm:text-base leading-relaxed max-w-md pt-2">
                         Dù bạn đến để thưởng thức bữa trưa nhẹ nhàng, bữa tối lãng mạn hay
-                        một buổi tiệc đặc biệt — Big Boy luôn mang đến trải nghiệm ẩm thực
+                        một buổi tiệc đặc biệt — VietFood luôn mang đến trải nghiệm ẩm thực
                         đáng nhớ.
                     </p>
 
@@ -122,11 +123,11 @@ export default async function LandingPage() {
 
                                     <div className="p-5 space-y-2">
                                         <h3 className="text-base font-semibold text-white group-hover:text-yellow-400 transition-colors duration-300 leading-snug">
-                                            {dish.name.vi}
+                                            <LocalizedText text={dish.name} />
                                         </h3>
 
                                         <p className="text-xs text-neutral-500 leading-relaxed line-clamp-2">
-                                            {dish.description.vi}
+                                            <LocalizedText text={dish.description} />
                                         </p>
 
                                         <div className="pt-2 flex items-center gap-2">
@@ -161,14 +162,14 @@ export default async function LandingPage() {
                     <div className="text-6xl text-yellow-500/30 font-serif leading-none"></div>
 
                     <p className="text-xl sm:text-2xl font-light text-white/80 leading-relaxed italic">
-                        Mỗi bữa ăn là một hành trình. Hãy để Big Boy đưa bạn đến những cảm
+                        Mỗi bữa ăn là một hành trình. Hãy để VietFood đưa bạn đến những cảm
                         xúc ẩm thực chưa từng có.
                     </p>
 
                     <div className="flex items-center justify-center gap-3">
                         <div className="w-8 h-px bg-yellow-500/50" />
                         <span className="text-xs tracking-[0.4em] uppercase text-yellow-500/60">
-                            Big Boy Restaurant
+                            VietFood
                         </span>
                         <div className="w-8 h-px bg-yellow-500/50" />
                     </div>
@@ -180,7 +181,7 @@ export default async function LandingPage() {
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 max-w-7xl mx-auto">
                     <div>
                         <h4 className="text-lg font-bold text-white">
-                            Big <span className="font-extralight text-yellow-400">Boy</span>
+                            Viet<span className="font-extralight text-yellow-400">Food</span>
                         </h4>
                         <p className="text-xs text-neutral-600 mt-1 tracking-widest uppercase">
                             Vị ngon · Trọn khoảnh khắc
@@ -188,7 +189,7 @@ export default async function LandingPage() {
                     </div>
 
                     <p className="text-xs text-neutral-700">
-                        © 2024 Nhà hàng Big Boy. All rights reserved.
+                        © 2024 Nhà hàng VietFood. All rights reserved.
                     </p>
                 </div>
             </footer>
