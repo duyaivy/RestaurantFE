@@ -23,6 +23,7 @@ import { toast } from "@/shared/ui/use-toast";
 import { useTableChat } from "@/features/messages/hooks/use-table-chat";
 import { useSocket } from "@/shared/hooks/use-socket";
 import { ROUTE } from "@/shared/constants/route";
+import { LocalizedText } from "@/shared/ui/localized-text";
 
 export default function CartView() {
   const {
@@ -175,7 +176,7 @@ export default function CartView() {
 
               <div className="flex-1 min-w-0 pt-0.5">
                 <p className="text-[14px] font-semibold text-white leading-snug truncate">
-                  {item.name}
+                  <LocalizedText text={item.name as any} />
                 </p>
                 <p className="text-[11px] text-white/35 mt-1">
                   {item.price.toLocaleString("vi-VN")}₫ / món

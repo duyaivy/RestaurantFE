@@ -15,8 +15,10 @@ import Categories from "@/features/menu/components/category-list/categories";
 import DishListGuest from "@/features/menu/components/dish-list/dish-list";
 import { useDishQueryConfig } from "@/features/dishes/hooks/use-dish-query-config";
 import { DishListConfig } from "@/features/dishes/types/dish-list-config.types";
+import { useTranslations } from "next-intl";
 
 export default function MenusPage() {
+  const t = useTranslations("dishes");
   const { category_id, page, limit, search } = useDishQueryConfig();
   const router = useRouter();
   const pathname = usePathname();
@@ -67,7 +69,6 @@ export default function MenusPage() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Tìm kiếm món ăn..."
             key={search || ""}
             defaultValue={search}
             onKeyDown={(e) => {
@@ -78,6 +79,7 @@ export default function MenusPage() {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             className="bg-transparent outline-none w-full text-white text-sm tracking-wide placeholder:text-neutral-600 placeholder:text-xs placeholder:tracking-widest placeholder:uppercase"
+            placeholder={t("searchPlaceholder")}
           />
           {search && (
             <button
@@ -102,7 +104,7 @@ export default function MenusPage() {
       <Footer />
       {selectedChatbot && (
         <ChatbotWidget
-          question={selectedChatbot}
+          questionKey={selectedChatbot}
           onClose={() => setSelectedChatbot(null)}
         />
       )}

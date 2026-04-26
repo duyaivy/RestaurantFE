@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useCart } from "@/features/cart/context/cart-context";
 import { Plus, Minus } from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
+import { PriceDisplay } from "@/shared/ui/price-display";
 
 interface DishCardProps {
   id: number;
   name: string;
   price: number;
+  price_usd?: number;
   image: string;
   description?: string;
 }
@@ -17,9 +20,11 @@ export function DishCard({
   id,
   name,
   price,
+  price_usd,
   image,
   description,
 }: DishCardProps) {
+  const locale = useLocale() as "vi" | "en";
   const { items, addItem, updateQuantity } = useCart();
 
   const cartItem = items.find((item) => item.id === id);
@@ -87,12 +92,13 @@ export function DishCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.75">
               <div className="w-2 h-[1.5px] rounded-full bg-[#c9a030] shrink-0" />
-              <p className="text-[15px] font-bold text-[#c9a030] tracking-wide">
-                {price.toLocaleString("vi-VN")}
-                <span className="text-[11px] font-normal text-[#5c5040] ml-0.5">
-                  ₫
-                </span>
-              </p>
+              <PriceDisplay
+                price={price}
+                priceUsd={price_usd}
+                locale={locale}
+                vndClassName="text-md font-bold text-amber-400 tracking-wide"
+                usdClassName="text-sm"
+              />
             </div>
 
             {/* Cart control */}

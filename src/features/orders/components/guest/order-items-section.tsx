@@ -1,6 +1,7 @@
 import NextImage from "next/image";
 import { ORDER_ITEM_STATUS_LABEL } from "@/features/orders/constants/order-status-ui";
 import { NormalizedOrderItem } from "@/features/orders/types/order-confirmation.types";
+import { LocalizedText } from "@/shared/ui/localized-text";
 
 type OrderItemsSectionProps = {
   items: NormalizedOrderItem[];
@@ -27,7 +28,7 @@ export function OrderItemsSection({ items }: OrderItemsSectionProps) {
 
             <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
               <p className="text-[15px] font-semibold text-white leading-snug truncate">
-                {item.name}
+                <LocalizedText text={item.name as any} />
               </p>
               <p className="text-[12px] text-white/80 mt-0.5">
                 {item.price.toLocaleString("vi-VN")} ₫ × {item.quantity}

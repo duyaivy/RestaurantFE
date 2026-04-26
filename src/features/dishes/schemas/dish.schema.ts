@@ -1,5 +1,5 @@
-import { DishStatusValues, LanguageSchema } from '@/shared/constants/type'
-import z from 'zod'
+import { DishStatusValues, LanguageSchema } from "@/shared/constants/type";
+import z from "zod";
 
 export const CreateDishBody = z.object({
   name: z.string().min(1).max(256),
@@ -7,11 +7,10 @@ export const CreateDishBody = z.object({
   description: z.string().max(10000),
   image: z.string().url(),
   status: z.enum(DishStatusValues).optional(),
-  category_id: z.number()
-})
+  category_id: z.number(),
+});
 
-
-export type CreateDishBodyType = z.TypeOf<typeof CreateDishBody>
+export type CreateDishBodyType = z.TypeOf<typeof CreateDishBody>;
 
 export const DishSchema = z.object({
   id: z.number(),
@@ -22,20 +21,21 @@ export const DishSchema = z.object({
   status: z.enum(DishStatusValues),
   created_at: z.date(),
   updated_at: z.date(),
-  category_id: z.number()
-})
+  category_id: z.number(),
+  price_usd: z.number().optional(),
+});
 
-export const DishRes = DishSchema
+export const DishRes = DishSchema;
 
-export type DishResType = z.TypeOf<typeof DishRes>
+export type DishResType = z.TypeOf<typeof DishRes>;
 
-export const DishListRes = z.array(DishSchema)
+export const DishListRes = z.array(DishSchema);
 
-export type DishListResType = z.TypeOf<typeof DishListRes>
+export type DishListResType = z.TypeOf<typeof DishListRes>;
 
-export const UpdateDishBody = CreateDishBody
-export type UpdateDishBodyType = CreateDishBodyType
+export const UpdateDishBody = CreateDishBody;
+export type UpdateDishBodyType = CreateDishBodyType;
 export const DishParams = z.object({
-  id: z.coerce.number()
-})
-export type DishParamsType = z.TypeOf<typeof DishParams>
+  id: z.coerce.number(),
+});
+export type DishParamsType = z.TypeOf<typeof DishParams>;

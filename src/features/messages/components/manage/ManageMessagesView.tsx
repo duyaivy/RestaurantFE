@@ -9,10 +9,10 @@ import { useManageChatMessageView } from "@/features/messages/hooks/use-manage-c
 import { useSocket } from "@/shared/hooks/use-socket";
 import { useAppContext } from "@/shared/providers/app-provider";
 import { Role } from "@/shared/constants/type";
-import MessagesSidebar from "@/features/messages/components/manage/messages-sidebar";
-import ConversationHeader from "@/features/messages/components/manage/conversation-header";
-import MessageThread from "@/features/messages/components/manage/message-thread";
-import MessageComposer from "@/features/messages/components/manage/message-composer";
+import MessagesSidebar from "@/features/messages/components/manage/MessagesSidebar";
+import ConversationHeader from "@/features/messages/components/manage/ConversationHeader";
+import MessageThread from "@/features/messages/components/manage/MessageThread";
+import MessageComposer from "@/features/messages/components/manage/MessageComposer";
 import { MessageRoomItem } from "@/features/messages/types/manage.types";
 
 export default function ManageMessagesView() {

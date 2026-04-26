@@ -1,12 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ConnectionStatus } from "@/features/messages/components/connection-status";
-import { MessageList } from "@/features/messages/components/message-list";
-import { ChatInput } from "@/features/messages/components/chat-input";
+import { ConnectionStatus } from "@/features/messages/components/ConnectionStatus";
+import { MessageList } from "@/features/messages/components/MessageList";
+import { ChatInput } from "@/features/messages/components/ChatInput";
 import { useSocket } from "@/shared/hooks/use-socket";
 import { useTableChat } from "@/features/messages/hooks/use-table-chat";
 import { useChatStore } from "@/features/messages/store/use-chat-store";
-import { decodeToken, getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
+import {
+  decodeToken,
+  getAccessTokenFromLocalStorage,
+} from "@/shared/lib/utils";
 import { Role } from "@/shared/constants/type";
 // ─── Staff-only table selector ────────────────────────────────────────────────
 interface TableSelectorProps {
