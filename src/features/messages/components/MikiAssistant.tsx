@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import {
-  X,
-  Send,
-  MessageCircle,
-  ChevronDown,
-  WifiOff,
-  Loader2,
-} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { X, MessageCircle, ChevronDown } from "lucide-react";
 import { useChatStore } from "@/features/messages/store/use-chat-store";
-import { useTableChat } from "@/features/messages/hooks/use-table-chat";
 import { useGuestChatMessageView } from "@/features/messages/hooks/use-guest-chat-message-view";
-import { useSocket } from "@/shared/hooks/use-socket";
-import { Role } from "@/shared/constants/type";
+import { useMikiChat } from "@/features/messages/hooks/use-miki-chat";
+import { useStaffChat } from "@/features/messages/hooks/use-staff-chat";
+import { useChatMode } from "@/features/messages/hooks/use-chat-mode";
+import { ChatModeSwitcher } from "@/features/messages/components/ChatModeSwitcher";
+import {
+  AssistantRenderMessage,
+  ChatMessagesList,
+} from "@/features/messages/components/ChatMessagesList";
+import { ChatInputBar } from "@/features/messages/components/ChatInputBar";
+import { ChatSuggestions } from "@/features/messages/components/ChatSuggestions";
+import { ChatMode } from "@/features/messages/types/chatbot.types";
 
 const chatSuggestions = [
   "Các hạng mục món ăn?",
@@ -28,66 +29,105 @@ interface MikiAssistantProps {
 
 export function MikiAssistant({ userName }: MikiAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [staffModeError, setStaffModeError] = useState<string | null>(null);
 
-  const { messages, addMessage } = useChatStore();
-  const { sendMessage } = useTableChat();
+  const mikiChat = useMikiChat({ userName });
+  const staffChat = useStaffChat();
+  const { mode, setMode, canUseStaffMode } = useChatMode({
+    defaultMode: "ai",
+    canUseStaffMode: staffChat.canUseStaffMode,
+  });
+
+  const { messages: staffSocketMessages } = useChatStore();
   const { isOwnMessage, getSenderLabel } = useGuestChatMessageView();
-  const { isConnected, isConnecting, lastError } = useSocket();
 
-  // Initialize welcome message if store empty
-  useEffect(() => {
-    if (messages.length === 0) {
-      addMessage({
-        message: `Xin chào${userName ? " " + userName : ""}! Tôi là trợ lý cửa hàng. Bạn cần hỗ trợ gì?`,
-        sender: "Trợ lý",
-        role: Role.Admin,
-        table_number: 0,
-        timestamp: new Date().toISOString(),
-      });
+  const aiRenderMessages = useMemo<AssistantRenderMessage[]>(
+    () =>
+      mikiChat.messages.map((message) => ({
+        id: message.id,
+        text: message.message,
+        timestamp: message.timestamp,
+        isOwn: message.sender === "user",
+        senderLabel: message.sender === "user" ? "You" : "Miki AI",
+        roleLabel: message.sender === "user" ? "GUEST" : "AI",
+        status: message.status,
+        isMarkdown:
+          message.sender === "assistant" && message.status !== "pending",
+        thinkingSeconds:
+          message.id === mikiChat.pendingMessageId
+            ? mikiChat.thinkingSeconds
+            : undefined,
+        citations: message.citations,
+        items: message.items,
+      })),
+    [mikiChat.messages, mikiChat.pendingMessageId, mikiChat.thinkingSeconds],
+  );
+
+  const staffRenderMessages = useMemo<AssistantRenderMessage[]>(
+    () =>
+      staffSocketMessages.map((message, index) => {
+        const isOwn = isOwnMessage(message);
+
+        return {
+          id: `${message.timestamp}-${index}`,
+          text: message.message,
+          timestamp: message.timestamp,
+          isOwn,
+          senderLabel: isOwn ? "You" : getSenderLabel(message),
+          roleLabel: message.role,
+        };
+      }),
+    [staffSocketMessages, isOwnMessage, getSenderLabel],
+  );
+
+  const activeMessages = mode === "ai" ? aiRenderMessages : staffRenderMessages;
+  const showSuggestions = mode === "ai" && aiRenderMessages.length <= 1;
+
+  const isInputDisabled = mode === "staff" && !staffChat.canUseStaffMode;
+  const inputPlaceholder =
+    mode === "ai"
+      ? "Hỏi Miki về món ăn, quy trình đặt món..."
+      : isInputDisabled
+        ? "Staff đang mất kết nối..."
+        : "Nhập tin nhắn cho Staff...";
+
+  const handleSendMessage = async (message: string) => {
+    setStaffModeError(null);
+
+    if (mode === "ai") {
+      await mikiChat.sendMessage(message);
+      return;
     }
-  }, [messages.length, userName, addMessage]);
 
-  useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, isOpen]);
-
-  const handleSuggestionClick = (suggestion: string) => {
-    // Optimistic user message handled by sendMessage
-    sendMessage(suggestion);
-
-    const responses: Record<string, string> = {
-      "Các hạng mục món ăn?":
-        "Chúng tôi có các hạng mục: Cơm, Mì & Bún, Thịt, Hải sản, Chay, Đồ uống, Tráng miệng và Bánh. Bạn muốn xem hạng mục nào?",
-      "Cách đặt hàng?":
-        "Rất đơn giản! 1. Chọn món từ Menu → 2. Thêm vào giỏ hàng → 3. Vào Giỏ hàng kiểm tra → 4. Bấm Đặt món. Xong!",
-      "Thời gian giao hàng?":
-        "Đơn hàng sẽ được phục vụ trong vòng 15–30 phút. Bạn có thể gọi nhân viên nếu cần hỗ trợ thêm.",
-      "Có giao hàng không?":
-        "Hiện tại chúng tôi phục vụ tại bàn. Bạn có thể gọi nhân viên từ mục Giỏ hàng để được hỗ trợ.",
-    };
-
-    // Fake bot reply to store locally (so we don't hit the server for FAQs)
-    setTimeout(() => {
-      addMessage({
-        message:
-          responses[suggestion] || "Cảm ơn bạn đã hỏi! Hệ thống đã ghi nhận.",
-        sender: "assistant",
-        role: Role.Admin,
-        table_number: 0,
-        timestamp: new Date().toISOString(),
-      });
-    }, 300);
+    staffChat.sendStaffMessage(message);
   };
 
-  const handleSendMessage = () => {
-    if (!input.trim() || !isConnected) return;
-    sendMessage(input);
-    setInput("");
+  const handleSuggestionClick = async (suggestion: string) => {
+    setStaffModeError(null);
+    await mikiChat.sendMessage(suggestion);
   };
+
+  const handleModeChange = (nextMode: ChatMode) => {
+    const didChange = setMode(nextMode);
+
+    if (!didChange && nextMode === "staff") {
+      setStaffModeError(
+        staffChat.lastError ||
+          (staffChat.isConnecting
+            ? "Đang kết nối Staff. Vui lòng thử lại sau vài giây."
+            : "Staff đang offline. Bạn vẫn có thể tiếp tục với Miki AI."),
+      );
+      return;
+    }
+
+    setStaffModeError(null);
+  };
+
+  useEffect(() => {
+    if (staffChat.canUseStaffMode) {
+      setStaffModeError(null);
+    }
+  }, [staffChat.canUseStaffMode]);
 
   return (
     <>
@@ -124,16 +164,16 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
                   Trợ lý cửa hàng
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
-                  {!isConnected ? (
-                    <p className="text-sm text-red-400/80">● Mất kết nối</p>
-                  ) : isConnecting ? (
+                  {mode === "ai" ? (
+                    <p className="text-sm text-green-400/80">● Miki AI</p>
+                  ) : !staffChat.isConnected ? (
+                    <p className="text-sm text-red-400/80">● Staff offline</p>
+                  ) : staffChat.isConnecting ? (
                     <p className="text-sm text-amber-400/80">
                       ● Đang kết nối...
                     </p>
                   ) : (
-                    <p className="text-sm text-green-400/80">
-                      ● Đang hoạt động
-                    </p>
+                    <p className="text-sm text-green-400/80">● Staff online</p>
                   )}
                 </div>
               </div>
@@ -146,90 +186,54 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
             </button>
           </div>
 
-          {/* Connection Error Banner */}
-          {lastError && !isConnected && (
-            <div className="bg-red-500/10 border-b border-red-500/20 px-3 py-2 flex items-center gap-2">
-              <WifiOff className="w-3.5 h-3.5 text-red-400" />
-              <p className="text-xs text-red-400 font-medium">
-                Kết nối tới máy chủ bị lỗi. Đang thử lại...
-              </p>
-            </div>
-          )}
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-            {messages.map((msg, idx) => {
-              const isMine = isOwnMessage(msg);
-              const senderLabel = getSenderLabel(msg);
-
-              return (
-                <div
-                  key={idx}
-                  className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-4/5 px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                      isMine
-                        ? "bg-amber-500 text-black font-medium rounded-tr-sm"
-                        : "bg-white/10 text-white/80 rounded-tl-sm"
-                    }`}
-                  >
-                    <p className="mb-1 text-xs leading-none opacity-70">
-                      {isMine
-                        ? `You · ${msg.role}`
-                        : `${senderLabel} · ${msg.role}`}
-                    </p>
-                    {msg.message}
-                  </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
+          <div className="px-3 pt-2 pb-2 border-b border-white/6">
+            <ChatModeSwitcher
+              mode={mode}
+              onModeChange={handleModeChange}
+              canUseStaffMode={canUseStaffMode}
+              staffModeError={staffModeError}
+            />
           </div>
 
-          {/* Suggestions */}
-          {messages.length <= 1 && (
-            <div className="px-3 pb-2 flex flex-col gap-1.5">
-              {chatSuggestions.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  disabled={!isConnected}
-                  className="w-full text-left px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/6 text-white/60 text-xs transition-colors disabled:opacity-50"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          )}
+          <ChatMessagesList messages={activeMessages} />
 
-          {/* Input */}
-          {(messages.length > 1 || !isConnected) && (
-            <div className="px-3 pb-3 pt-2 border-t border-white/6 flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder={
-                  isConnected ? "Nhập tin nhắn..." : "Đang kết nối..."
-                }
-                disabled={!isConnected}
-                className="flex-1 bg-white/6 border border-white/8 rounded-xl px-3 py-2 text-xs text-white placeholder:text-white/25 outline-none focus:border-amber-500/30 transition-colors disabled:opacity-50"
-              />
+          {/* Suggestions */}
+          {showSuggestions ? (
+            <ChatSuggestions
+              suggestions={chatSuggestions}
+              onSuggestionClick={(suggestion) =>
+                void handleSuggestionClick(suggestion)
+              }
+              disabled={mikiChat.isSending}
+            />
+          ) : null}
+
+          {mikiChat.errorMessage && mode === "ai" ? (
+            <div className="px-3 pb-2">
+              <p className="text-[11px] text-red-300/90">
+                {mikiChat.errorMessage}
+              </p>
+            </div>
+          ) : null}
+
+          <ChatInputBar
+            onSend={handleSendMessage}
+            disabled={isInputDisabled}
+            isSending={mode === "ai" ? mikiChat.isSending : false}
+            placeholder={inputPlaceholder}
+          />
+
+          {mode === "staff" && isInputDisabled ? (
+            <div className="px-3 pb-3">
               <button
-                onClick={handleSendMessage}
-                disabled={!input.trim() || !isConnected}
-                className="w-8 h-8 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-30 flex items-center justify-center transition-colors shrink-0 self-end"
+                type="button"
+                onClick={() => setMode("ai")}
+                className="w-full rounded-xl border border-amber-500/40 text-amber-300 text-xs py-2 hover:bg-amber-500/10 transition-colors"
               >
-                {isConnecting ? (
-                  <Loader2 className="w-3.5 h-3.5 text-black animate-spin" />
-                ) : (
-                  <Send className="w-3.5 h-3.5 text-black" strokeWidth={2} />
-                )}
+                Chuyển sang Miki AI
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </>
