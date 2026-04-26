@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from 'react'
-import { useParams } from 'next/navigation'
-import { useCart } from '@/features/cart/context/cart-context'
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useCart } from "@/features/cart/context/cart-context";
 
-import { ShoppingCart, Check, Minus, Plus } from 'lucide-react'
-import Image from 'next/image'
-import { useGetDishQuery } from '@/features/dishes/hooks/use-dish';
-import { useLocale, useTranslations } from 'next-intl';
-import { resolveLocaleText } from '@/shared/lib/resolve-locale-text';
+import { ShoppingCart, Check, Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import { useGetDishQuery } from "@/features/dishes/hooks/use-dish";
+import { useLocale, useTranslations } from "next-intl";
+import { resolveLocaleText } from "@/shared/lib/resolve-locale-text";
+import { PriceDisplay } from "@/shared/ui/price-display";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -27,8 +28,10 @@ export default function ProductDetailPage() {
 
   const product = data?.payload.data;
   const productName = resolveLocaleText(product?.name, locale as "vi" | "en");
-  const productDescription = resolveLocaleText(product?.description, locale as "vi" | "en");
-  const numberLocale = locale === "en" ? "en-US" : "vi-VN";
+  const productDescription = resolveLocaleText(
+    product?.description,
+    locale as "vi" | "en",
+  );
 
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState("");
@@ -39,7 +42,9 @@ export default function ProductDetailPage() {
       <div className="min-h-screen flex items-center justify-center bg-[#0a0908]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
-          <p className="text-amber-400/60 text-[10px] tracking-widest uppercase">{commonT("loading")}</p>
+          <p className="text-amber-400/60 text-[10px] tracking-widest uppercase">
+            {commonT("loading")}
+          </p>
         </div>
       </div>
     );
@@ -48,7 +53,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0908]">
-        <p className="text-white/30 text-sm tracking-widest uppercase">{dishesT("productNotFound")}</p>
+        <p className="text-white/30 text-sm tracking-widest uppercase">
+          {dishesT("productNotFound")}
+        </p>
       </div>
     );
   }
@@ -63,20 +70,21 @@ export default function ProductDetailPage() {
         note: note || undefined,
       });
     }
-    setIsAdded(true)
-    setTimeout(() => setIsAdded(false), 2000)
-  }
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0908] pb-40">
-
       {/* ── HERO ── */}
       <div className="relative px-4 pt-12">
-
         {/* Hero card */}
         <div
           className="relative h-55 rounded-[24px] overflow-hidden"
-          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)' }}
+          style={{
+            boxShadow:
+              "0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+          }}
         >
           {/* Blur background — nhẹ, vẫn thấy màu sắc */}
           <Image
@@ -93,14 +101,19 @@ export default function ProductDetailPage() {
           {/* Circle image nổi chính giữa */}
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Glow */}
-            <div className="absolute w-50 h-50 rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)' }}
+            <div
+              className="absolute w-50 h-50 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)",
+              }}
             />
             {/* Ảnh tròn */}
             <div
               className="relative w-38.75 h-38.75 rounded-full overflow-hidden"
               style={{
-                boxShadow: '0 0 0 3px rgba(255,255,255,0.12), 0 0 0 6px rgba(255,255,255,0.04), 0 16px 40px rgba(0,0,0,0.6)',
+                boxShadow:
+                  "0 0 0 3px rgba(255,255,255,0.12), 0 0 0 6px rgba(255,255,255,0.04), 0 16px 40px rgba(0,0,0,0.6)",
               }}
             >
               <Image
@@ -117,16 +130,19 @@ export default function ProductDetailPage() {
 
       {/* Content */}
       <div className="max-w-sm mx-auto px-5 mt-6 space-y-4">
-
         {/* Name & Price */}
         <div className="text-center">
           <h1 className="text-[24px] font-bold text-white leading-snug tracking-[-0.02em]">
             {productName}
           </h1>
-          <p className="text-[22px] font-extrabold text-amber-400 mt-1 tabular-nums">
-            {product.price.toLocaleString(numberLocale)}
-            <span className="text-sm font-normal text-white/30 ml-1">₫</span>
-          </p>
+          <PriceDisplay
+            price={product.price}
+            priceUsd={product.price_usd}
+            locale={locale as "vi" | "en"}
+            className="mt-1 items-center"
+            vndClassName="text-[22px] font-extrabold text-amber-400 tabular-nums"
+            usdClassName="text-xs text-white/45"
+          />
           <div className="mt-3 flex items-center justify-center gap-2">
             <div className="h-px w-16 bg-linear-to-r from-transparent to-amber-500/30" />
             <div className="w-1 h-1 rounded-full bg-amber-500/60" />
@@ -136,7 +152,9 @@ export default function ProductDetailPage() {
 
         {/* Description */}
         <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-white/25 mb-2">{commonT("description")}</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase text-white/25 mb-2">
+            {commonT("description")}
+          </p>
           <p className="text-white/65 text-[13px] leading-relaxed">
             {productDescription}
           </p>
@@ -158,7 +176,9 @@ export default function ProductDetailPage() {
 
         {/* Quantity + Subtotal */}
         <div className="bg-[#161412] rounded-2xl p-4 border border-white/6">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-white/25 mb-3">{commonT("quantity")}</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase text-white/25 mb-3">
+            {commonT("quantity")}
+          </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -173,18 +193,28 @@ export default function ProductDetailPage() {
               <button
                 onClick={() => setQuantity(quantity + 1)}
                 className="w-10 h-10 rounded-xl bg-amber-500 hover:bg-amber-400 flex items-center justify-center text-black transition-colors"
-                style={{ boxShadow: '0 4px 16px rgba(245,158,11,0.35)' }}
+                style={{ boxShadow: "0 4px 16px rgba(245,158,11,0.35)" }}
               >
                 <Plus className="w-4 h-4" strokeWidth={2.5} />
               </button>
             </div>
 
             <div className="text-right">
-              <p className="text-[10px] text-white/25 uppercase tracking-wider mb-0.5">{commonT("subtotal")}</p>
-              <p className="text-[18px] font-bold text-amber-400 tabular-nums">
-                {(product.price * quantity).toLocaleString(numberLocale)}
-                <span className="text-[11px] font-normal text-white/25 ml-1">₫</span>
+              <p className="text-[10px] text-white/25 uppercase tracking-wider mb-0.5">
+                {commonT("subtotal")}
               </p>
+              <PriceDisplay
+                price={product.price * quantity}
+                priceUsd={
+                  typeof product.price_usd === "number"
+                    ? product.price_usd * quantity
+                    : undefined
+                }
+                locale={locale as "vi" | "en"}
+                className="items-end"
+                vndClassName="text-[18px] font-bold text-amber-400 tabular-nums"
+                usdClassName="text-[11px] text-white/40"
+              />
             </div>
           </div>
         </div>
@@ -195,11 +225,14 @@ export default function ProductDetailPage() {
         <div className="max-w-sm mx-auto">
           <button
             onClick={handleAddToCart}
-            className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 text-[15px] font-bold transition-all duration-300 active:scale-[0.98] ${isAdded
-              ? 'bg-green-500/15 border border-green-500/30 text-green-400'
-              : 'bg-amber-500 hover:bg-amber-400 text-black'
-              }`}
-            style={!isAdded ? { boxShadow: '0 4px_20px rgba(245,158,11,0.35)' } : {}}
+            className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2.5 text-[15px] font-bold transition-all duration-300 active:scale-[0.98] ${
+              isAdded
+                ? "bg-green-500/15 border border-green-500/30 text-green-400"
+                : "bg-amber-500 hover:bg-amber-400 text-black"
+            }`}
+            style={
+              !isAdded ? { boxShadow: "0 4px_20px rgba(245,158,11,0.35)" } : {}
+            }
           >
             {isAdded ? (
               <>

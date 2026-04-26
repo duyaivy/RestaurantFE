@@ -1,6 +1,7 @@
 "use client";
 
 import { ChatMode } from "@/features/messages/types/chatbot.types";
+import { useTranslations } from "next-intl";
 
 interface ChatModeSwitcherProps {
   mode: ChatMode;
@@ -15,6 +16,8 @@ export function ChatModeSwitcher({
   canUseStaffMode,
   staffModeError,
 }: ChatModeSwitcherProps) {
+  const t = useTranslations("chatbot");
+
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-white/5 p-1 border border-white/8">
@@ -27,7 +30,7 @@ export function ChatModeSwitcher({
               : "bg-transparent text-white/70 hover:text-white"
           }`}
         >
-          Miki AI
+          {t("mode.ai")}
         </button>
         <button
           type="button"
@@ -38,9 +41,11 @@ export function ChatModeSwitcher({
               : "bg-transparent text-white/70 hover:text-white"
           }`}
         >
-          Staff
+          {t("mode.staff")}
           {canUseStaffMode ? null : (
-            <span className="ml-1 text-[10px] text-red-300/90">offline</span>
+            <span className="ml-1 text-[10px] text-red-300/90">
+              {t("mode.offline")}
+            </span>
           )}
         </button>
       </div>

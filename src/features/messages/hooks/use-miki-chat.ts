@@ -7,7 +7,9 @@ import { useThinkingTimer } from "@/features/messages/hooks/use-thinking-timer";
 import {
   AiChatMessage,
   ChatbotResponse,
+  SendChatbotMessagePayload,
 } from "@/features/messages/types/chatbot.types";
+import { useLocale, useTranslations } from "next-intl";
 
 interface UseMikiChatOptions {
   userName?: string;
@@ -30,14 +32,19 @@ function createMessageId(prefix: "user" | "assistant") {
 export function useMikiChat({
   userName,
 }: UseMikiChatOptions): UseMikiChatReturn {
+  const locale = useLocale() as "vi" | "en";
+  const t = useTranslations("chatbot");
+
   const welcomeMessage = useMemo<AiChatMessage>(
     () => ({
       id: createMessageId("assistant"),
       sender: "assistant",
-      message: `Xin chào${userName ? ` ${userName}` : ""}! Tôi là Miki AI. Bạn muốn tìm món gì hôm nay?`,
+      message: userName
+        ? t("welcomeWithName", { name: userName })
+        : t("welcome"),
       timestamp: new Date().toISOString(),
     }),
-    [userName],
+    [t, userName],
   );
 
   const [messages, setMessages] = useState<AiChatMessage[]>([welcomeMessage]);
@@ -47,7 +54,7 @@ export function useMikiChat({
   const { elapsedSeconds, startTimer, stopTimer } = useThinkingTimer();
 
   const sendMutation = useMutation({
-    mutationFn: (payload: { message: string; conversation_id?: number }) =>
+    mutationFn: (payload: SendChatbotMessagePayload) =>
       chatbotApiRequest.sendChatbotMessage(payload),
   });
 
@@ -71,7 +78,7 @@ export function useMikiChat({
       const pendingAssistantMessage: AiChatMessage = {
         id: placeholderId,
         sender: "assistant",
-        message: "Miki đang suy nghĩ...",
+        message: t("messages.thinking", { seconds: 0 }),
         timestamp: new Date().toISOString(),
         status: "pending",
       };
@@ -84,6 +91,7 @@ export function useMikiChat({
         const response = await sendMutation.mutateAsync({
           message: content,
           ...(conversationId ? { conversation_id: conversationId } : {}),
+          locale,
         });
 
         const payload = response.payload as ChatbotResponse;
@@ -107,8 +115,7 @@ export function useMikiChat({
         stopTimer();
         setPendingMessageId(null);
       } catch {
-        const failedMessage =
-          "Xin lỗi, Miki đang gặp sự cố kết nối. Bạn thử lại sau ít phút nhé.";
+        const failedMessage = t("errors.connection");
 
         setErrorMessage(failedMessage);
         setMessages((prev) =>
@@ -128,7 +135,7 @@ export function useMikiChat({
         setPendingMessageId(null);
       }
     },
-    [conversationId, sendMutation, startTimer, stopTimer],
+    [conversationId, locale, sendMutation, startTimer, stopTimer, t],
   );
 
   return {

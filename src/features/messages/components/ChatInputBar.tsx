@@ -2,6 +2,7 @@
 
 import { KeyboardEvent, useState } from "react";
 import { Loader2, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ChatInputBarProps {
   onSend: (message: string) => Promise<void> | void;
@@ -14,9 +15,12 @@ export function ChatInputBar({
   onSend,
   disabled = false,
   isSending = false,
-  placeholder = "Nhập tin nhắn...",
+  placeholder,
 }: ChatInputBarProps) {
+  const t = useTranslations("chatbot");
   const [input, setInput] = useState("");
+
+  const resolvedPlaceholder = placeholder ?? t("input.defaultPlaceholder");
 
   const canSend = input.trim().length > 0 && !disabled && !isSending;
 
@@ -45,7 +49,7 @@ export function ChatInputBar({
         value={input}
         onChange={(event) => setInput(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         disabled={disabled}
         className="flex-1 bg-white/6 border border-white/8 rounded-xl px-3 py-2 text-xs text-white placeholder:text-white/25 outline-none focus:border-amber-500/30 transition-colors disabled:opacity-50"
       />

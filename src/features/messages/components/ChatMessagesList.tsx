@@ -24,9 +24,15 @@ export interface AssistantRenderMessage {
 
 interface ChatMessagesListProps {
   messages: AssistantRenderMessage[];
+  thinkingLabel: (seconds: number) => string;
+  recommendedItemsLabel: string;
 }
 
-export function ChatMessagesList({ messages }: ChatMessagesListProps) {
+export function ChatMessagesList({
+  messages,
+  thinkingLabel,
+  recommendedItemsLabel,
+}: ChatMessagesListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,7 +57,7 @@ export function ChatMessagesList({ messages }: ChatMessagesListProps) {
               {message.senderLabel} · {message.roleLabel}
             </p>
             {message.status === "pending" ? (
-              <p>Miki đang suy nghĩ... {message.thinkingSeconds ?? 0}s</p>
+              <p>{thinkingLabel(message.thinkingSeconds ?? 0)}</p>
             ) : message.isMarkdown ? (
               <ChatMarkdownContent content={message.text} />
             ) : (
@@ -60,7 +66,7 @@ export function ChatMessagesList({ messages }: ChatMessagesListProps) {
 
             {message.items && message.items.length > 0 ? (
               <>
-                <p className="">Tham khảo một số món ăn</p>
+                <p className="">{recommendedItemsLabel}</p>
                 <ChatRecommendedItems items={message.items} />
               </>
             ) : null}

@@ -15,21 +15,28 @@ import {
 import { ChatInputBar } from "@/features/messages/components/ChatInputBar";
 import { ChatSuggestions } from "@/features/messages/components/ChatSuggestions";
 import { ChatMode } from "@/features/messages/types/chatbot.types";
-
-const chatSuggestions = [
-  "Các hạng mục món ăn?",
-  "Cách đặt hàng?",
-  "Thời gian giao hàng?",
-  "Có giao hàng không?",
-];
+import { useTranslations } from "next-intl";
+import {
+  CHATBOT_QUESTION_KEYS,
+  getChatbotQuestionTranslationKey,
+} from "@/features/messages/constants/chatbot";
 
 interface MikiAssistantProps {
   userName?: string;
 }
 
 export function MikiAssistant({ userName }: MikiAssistantProps) {
+  const t = useTranslations("chatbot");
   const [isOpen, setIsOpen] = useState(false);
   const [staffModeError, setStaffModeError] = useState<string | null>(null);
+
+  const chatSuggestions = useMemo(
+    () =>
+      CHATBOT_QUESTION_KEYS.map((questionKey) =>
+        t(getChatbotQuestionTranslationKey(questionKey)),
+      ),
+    [t],
+  );
 
   const mikiChat = useMikiChat({ userName });
   const staffChat = useStaffChat();
@@ -48,8 +55,8 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
         text: message.message,
         timestamp: message.timestamp,
         isOwn: message.sender === "user",
-        senderLabel: message.sender === "user" ? "You" : "Miki AI",
-        roleLabel: message.sender === "user" ? "GUEST" : "AI",
+        senderLabel: message.sender === "user" ? t("you") : t("assistantName"),
+        roleLabel: message.sender === "user" ? t("guestRole") : t("aiRole"),
         status: message.status,
         isMarkdown:
           message.sender === "assistant" && message.status !== "pending",
@@ -60,7 +67,7 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
         citations: message.citations,
         items: message.items,
       })),
-    [mikiChat.messages, mikiChat.pendingMessageId, mikiChat.thinkingSeconds],
+    [mikiChat.messages, mikiChat.pendingMessageId, mikiChat.thinkingSeconds, t],
   );
 
   const staffRenderMessages = useMemo<AssistantRenderMessage[]>(
@@ -86,10 +93,10 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
   const isInputDisabled = mode === "staff" && !staffChat.canUseStaffMode;
   const inputPlaceholder =
     mode === "ai"
-      ? "Hỏi Miki về món ăn, quy trình đặt món..."
+      ? t("input.aiPlaceholder")
       : isInputDisabled
-        ? "Staff đang mất kết nối..."
-        : "Nhập tin nhắn cho Staff...";
+        ? t("input.staffDisconnected")
+        : t("input.staffPlaceholder");
 
   const handleSendMessage = async (message: string) => {
     setStaffModeError(null);
@@ -114,8 +121,8 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
       setStaffModeError(
         staffChat.lastError ||
           (staffChat.isConnecting
-            ? "Đang kết nối Staff. Vui lòng thử lại sau vài giây."
-            : "Staff đang offline. Bạn vẫn có thể tiếp tục với Miki AI."),
+            ? t("errors.staffConnecting")
+            : t("errors.staffOffline")),
       );
       return;
     }
@@ -135,7 +142,7 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
       <button
         onClick={() => setIsOpen((v) => !v)}
         className="fixed bottom-20 right-4 z-40 w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 active:scale-95 flex items-center justify-center transition-all shadow-[0_4px_16px_rgba(245,158,11,0.4)]"
-        title="Trợ lý cửa hàng"
+        title={t("fabTitle")}
       >
         {isOpen ? (
           <ChevronDown className="w-5 h-5 text-black" strokeWidth={2.5} />
@@ -161,19 +168,25 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
               </div>
               <div>
                 <p className="text-sm font-semibold text-white leading-none">
-                  Trợ lý cửa hàng
+                  {t("title")}
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
                   {mode === "ai" ? (
-                    <p className="text-sm text-green-400/80">● Miki AI</p>
+                    <p className="text-sm text-green-400/80">
+                      {t("headerStatus.ai")}
+                    </p>
                   ) : !staffChat.isConnected ? (
-                    <p className="text-sm text-red-400/80">● Staff offline</p>
+                    <p className="text-sm text-red-400/80">
+                      {t("headerStatus.staffOffline")}
+                    </p>
                   ) : staffChat.isConnecting ? (
                     <p className="text-sm text-amber-400/80">
-                      ● Đang kết nối...
+                      {t("headerStatus.staffConnecting")}
                     </p>
                   ) : (
-                    <p className="text-sm text-green-400/80">● Staff online</p>
+                    <p className="text-sm text-green-400/80">
+                      {t("headerStatus.staffOnline")}
+                    </p>
                   )}
                 </div>
               </div>
@@ -195,7 +208,11 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
             />
           </div>
 
-          <ChatMessagesList messages={activeMessages} />
+          <ChatMessagesList
+            messages={activeMessages}
+            thinkingLabel={(seconds) => t("messages.thinking", { seconds })}
+            recommendedItemsLabel={t("messages.recommendedItems")}
+          />
 
           {/* Suggestions */}
           {showSuggestions ? (
@@ -230,7 +247,7 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
                 onClick={() => setMode("ai")}
                 className="w-full rounded-xl border border-amber-500/40 text-amber-300 text-xs py-2 hover:bg-amber-500/10 transition-colors"
               >
-                Chuyển sang Miki AI
+                {t("mode.switchToAi")}
               </button>
             </div>
           ) : null}
