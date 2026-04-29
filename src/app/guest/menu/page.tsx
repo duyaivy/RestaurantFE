@@ -1,8 +1,8 @@
 "use client";
 
-import { useCategoryQuery } from "@/hooks/queries/useCategory";
-import MenusPage from "./Menupage";
-import useCategoryStore from "@/hooks/stores/useCategoryStore";
+import { useCategoryQuery } from "@/features/menu/hooks/use-category";
+import MenusPage from "@/features/menu/components/MenuPage";
+import useCategoryStore from "@/features/menu/store/use-category-store";
 import { useEffect } from "react";
 import { Suspense } from "react";
 

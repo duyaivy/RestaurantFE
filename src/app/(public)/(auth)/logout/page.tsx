@@ -2,12 +2,12 @@
 import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
-} from "@/lib/utils";
-import { useLogoutMutation } from "@/hooks/queries/useAuth";
+} from "@/shared/lib/utils";
+import { useLogoutMutation } from "@/features/auth/hooks/use-auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
-import { ROUTE } from "@/constants/route";
+import { ROUTE } from "@/shared/constants/route";
 
 function LogoutComponent() {
   const { mutateAsync } = useLogoutMutation();
@@ -28,7 +28,7 @@ function LogoutComponent() {
     }
     ref.current = mutateAsync;
     mutateAsync().then((res) => {
-      setTimeout(() => {}, 100);
+      setTimeout(() => { }, 100);
       route.push(ROUTE.AUTH.LOGIN);
     });
   }, [mutateAsync, route, refreshTokenFromUrl, accessTokenFromUrl]);
@@ -41,7 +41,7 @@ export default function LogoutPage() {
       fallback={
         <div>
           <Loader2Icon className="animate-spin size-5" />
-          Logout
+          Đăng xuất
         </div>
       }
     >

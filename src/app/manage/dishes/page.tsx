@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import DishTable from '@/app/manage/dishes/dish-table'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
+import DishTable from '@/features/dishes/components/dish-table'
 import { Suspense } from 'react'
 
 export default function DishesPage() {

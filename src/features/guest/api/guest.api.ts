@@ -1,0 +1,75 @@
+import http from "@/shared/api/http";
+import { SuccessResponse } from "@/shared/constants/type";
+import {
+  LogoutBodyType,
+  RefreshTokenBodyType,
+  RefreshTokenResType,
+} from "@/features/auth/schemas/auth.schema";
+import {
+  GuestLoginBodyType,
+  GuestLoginResType,
+} from "@/features/guest/schemas/guest.schema";
+
+const GUEST_URL = "/guests";
+const guestApiRequest = {
+  requestTokenRequest: null as Promise<{
+    status: number;
+    payload: SuccessResponse<RefreshTokenResType>;
+  }> | null,
+
+  sLogin: (body: GuestLoginBodyType) =>
+    http.post<SuccessResponse<GuestLoginResType>>(`${GUEST_URL}/login/`, body),
+
+  login: (body: GuestLoginBodyType) =>
+    http.post<SuccessResponse<GuestLoginResType>>(
+      "/api/guest/auth/login",
+      body,
+      {
+        baseUrl: "",
+      },
+    ),
+
+  sLogout: (
+    body: LogoutBodyType & {
+      accessToken: string;
+    },
+  ) =>
+    http.post(
+      `${GUEST_URL}/logout/`,
+      {
+        refreshToken: body.refreshToken,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${body.accessToken}`,
+        },
+      },
+    ),
+  logout: () => http.post("/api/guest/logout", null, { baseUrl: "" }),
+
+  sRefreshToken: (body: RefreshTokenBodyType) =>
+    http.post<SuccessResponse<RefreshTokenResType>>(
+      `${GUEST_URL}/refresh-token/`,
+      body,
+    ),
+  async refreshToken() {
+    if (this.requestTokenRequest) {
+      return this.requestTokenRequest;
+    }
+    this.requestTokenRequest = http.post<SuccessResponse<RefreshTokenResType>>(
+      "/api/guest/refresh-token",
+      null,
+      { baseUrl: "" },
+    );
+    const result = await this.requestTokenRequest;
+    this.requestTokenRequest = null;
+    return result;
+  },
+  messageEmployee: (message: string) => {
+    return http.post<SuccessResponse<null>>(`${GUEST_URL}/message/`, {
+      message,
+    });
+  },
+};
+
+export default guestApiRequest;

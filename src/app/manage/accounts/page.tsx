@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 
-import AccountTable from '@/app/manage/accounts/account-table'
+import AccountTable from '@/features/accounts/components/account-table'
 import { Suspense } from 'react'
 
 export default function Dashboard() {
