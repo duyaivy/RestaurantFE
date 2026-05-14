@@ -1,6 +1,8 @@
 import authApiRequest from "@/features/auth/api/auth.api";
 import jwt from "jsonwebtoken";
 import { TokenPayload } from "@/shared/types/jwt.types";
+import guestApiRequest from "@/features/guest/api/guest.api";
+import { Role } from "../constants/type";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -51,7 +53,8 @@ export const checkAndRefreshToken = async (param?: {
     (decodeAccessToken.exp - decodeAccessToken.iat) / 3
   ) {
     try {
-      const res = await authApiRequest.refreshToken();
+      const role = decodeRefreshToken.role;
+      const res = role=== Role.Guest? (await guestApiRequest.refreshToken()):(await authApiRequest.refreshToken() );
       setAccessTokenToLoacalStorage(res.payload.data.accessToken);
       setRefreshTokenToLoacalStorage(res.payload.data.refreshToken);
       if (param?.onSuccess) {

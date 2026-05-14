@@ -57,7 +57,7 @@ const guestApiRequest = {
       return this.requestTokenRequest;
     }
     this.requestTokenRequest = http.post<SuccessResponse<RefreshTokenResType>>(
-      "/api/guest/refresh-token",
+      "/api/guest/auth/refresh-token",
       null,
       { baseUrl: "" },
     );

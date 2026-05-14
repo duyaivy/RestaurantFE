@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ROUTE } from "@/shared/constants/route";
-import { decodeToken } from "./token";
-import { Role } from "../constants/type";
+import { decodeToken } from "./shared/auth/token";
+import { Role } from "./shared/constants/type";
+
 // route bắt buoc phải đăng nhập mới vào được
 const managePaths = [ROUTE.MANAGE.ROOT];
 const guestPaths = [ROUTE.GUEST.ROOT];
@@ -19,7 +20,7 @@ export function proxy(request: NextRequest) {
   if (privatePaths.some((path) => pathname.startsWith(path)) && !refreshToken) {
     return NextResponse.redirect(new URL(ROUTE.AUTH.LOGIN, request.url));
   }
-  // 2. CHUA DANG NHAP
+  // 2.  DANG NHAP
   if(refreshToken){
     // 2.1 co tinh vao login
     if (unAuthPaths.some((path) => pathname.startsWith(path)) && refreshToken) {
@@ -30,7 +31,7 @@ export function proxy(request: NextRequest) {
     privatePaths.some((path) => pathname.startsWith(path)) &&
     !accessToken 
   ) {
-    const url = new URL(ROUTE.AUTH.REFRESH_TOKEN, request.url);
+    const url = new URL('/refresh-token', request.url);
     url.searchParams.set("refreshToken", refreshToken);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
@@ -52,6 +53,8 @@ export function proxy(request: NextRequest) {
 
   }
 }
+ 
+  
 export const config = {
   matcher: ["/manage/:path*","/guest/:path*", "/login"],
 };

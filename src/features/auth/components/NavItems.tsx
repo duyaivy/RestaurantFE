@@ -1,6 +1,7 @@
 "use client";
 import { ROUTE } from "@/shared/constants/route";
 import { getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
+import { useAppContext } from "@/shared/providers/app-provider";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 const menuItems = [
@@ -27,6 +28,7 @@ const menuItems = [
 
 export default function NavItems({ className }: { className?: string }) {
     const [isAuth, setIsAuth] = useState<boolean>(false);
+    const role = useAppContext().role;
 
     useEffect(() => {
         setIsAuth(Boolean(getAccessTokenFromLocalStorage()));

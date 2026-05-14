@@ -40,11 +40,6 @@ const adminMenuItems: ManageMenuItem[] = [
     href: ROUTE.MANAGE.DISHES,
   },
   {
-    title: "Phân tích",
-    Icon: LineChart,
-    href: ROUTE.MANAGE.ANALYTICS,
-  },
-  {
     title: "Nhân viên",
     Icon: Users2,
     href: ROUTE.MANAGE.ACCOUNTS,

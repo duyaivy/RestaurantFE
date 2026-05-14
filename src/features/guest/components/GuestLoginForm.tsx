@@ -14,13 +14,22 @@ import { Button } from "@/shared/ui/button";
 import { toast } from "@/shared/ui/use-toast";
 import { ROUTE } from "@/shared/constants/route";
 import { useTranslations } from "next-intl";
+import { useAppContext } from "@/shared/providers/app-provider";
+import { use } from "react";
+import { useEffect } from "react";
+import { table } from "console";
+import { set } from "lodash";
+import { handleErrorApi } from "@/shared/lib/utils";
 
 export default function GuestLoginForm() {
+  const {setRole} = useAppContext();
   const t = useTranslations("auth");
   const landingT = useTranslations("landing");
   const router = useRouter();
   const params = useParams<{ number: string }>();
   const searchParams = useSearchParams();
+  const tableNumber = Number(params.number);
+  const tableToken = searchParams.get("token");
   const { mutateAsync: guestLogin, isPending: isGuestLoginPending } =
     useGuestLoginMutation();
 
@@ -28,14 +37,22 @@ export default function GuestLoginForm() {
     resolver: zodResolver(GuestLoginBody),
     defaultValues: {
       name: "",
-      tableToken: searchParams.get("token") || "",
+      tableToken: tableToken ?? "",
       tableNumber: Number(params.number),
     },
   });
+  useEffect(() => {
+
+    if(!tableToken){
+      router.push(ROUTE.HOME);
+    }
+  }, [setRole]);
 
   const onSubmit = async (data: GuestLoginBodyType) => {
+    if (isGuestLoginPending) return;
     try {
       const result = await guestLogin(data);
+      setRole(result.payload.data.guest.role);
 
       // save
       localStorage.setItem("accessToken", result.payload.data.accessToken);
@@ -48,6 +65,10 @@ export default function GuestLoginForm() {
       });
       router.push(ROUTE.GUEST.MENU);
     } catch (error: any) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
       toast({
         title: t("loginErrorTitle"),
         description: error.message,

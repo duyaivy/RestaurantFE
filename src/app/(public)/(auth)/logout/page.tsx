@@ -8,10 +8,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
 import { ROUTE } from "@/shared/constants/route";
+import { useAppContext } from "@/shared/providers/app-provider";
 
 function LogoutComponent() {
   const { mutateAsync } = useLogoutMutation();
   const route = useRouter();
+  const { setRole } = useAppContext();
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get("refreshToken");
   const accessTokenFromUrl = searchParams.get("accessToken");
@@ -29,9 +31,10 @@ function LogoutComponent() {
     ref.current = mutateAsync;
     mutateAsync().then((res) => {
       setTimeout(() => { }, 100);
+      setRole();
       route.push(ROUTE.AUTH.LOGIN);
     });
-  }, [mutateAsync, route, refreshTokenFromUrl, accessTokenFromUrl]);
+  }, [mutateAsync, route, refreshTokenFromUrl, accessTokenFromUrl, setRole]);
   return <div>LogoutPage</div>;
 }
 
