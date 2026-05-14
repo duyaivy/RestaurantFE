@@ -4,9 +4,10 @@ import { ROUTE } from "@/shared/constants/route";
 import { decodeToken } from "./shared/auth/token";
 import { Role } from "./shared/constants/type";
 
-// route bắt buoc phải đăng nhập mới vào được
+// route bắt buộc phải đăng nhập mới vào được
 const managePaths = [ROUTE.MANAGE.ROOT];
-const guestPaths = [ROUTE.GUEST.ROOT];
+// Bổ sung cả /guest và /tables cho các route guest
+const guestPaths = [ROUTE.GUEST.ROOT, ROUTE.PUBLIC.TABLES];
 const privatePaths = [...managePaths, ...guestPaths];
 // route dành cho người chưa đăng nhập
 const unAuthPaths = [ROUTE.AUTH.LOGIN];
@@ -38,23 +39,21 @@ export function proxy(request: NextRequest) {
   }
   // 2.3 vao khong dung role -> home
   const role = decodeToken(refreshToken)?.role;
-  // guest co vao owner
+  // guest cố vào owner
   const isGuestGoToManagePaths = role === Role.Guest && managePaths.some((path) => pathname.startsWith(path));
-  //  vao guest
-  const isOwnerGoToGuestPaths = role !== Role.Guest && guestPaths.some((path) => pathname.startsWith(path));
-  
-  if(isOwnerGoToGuestPaths){
+  // owner cố vào guest (bao gồm cả /guest và /tables)
+  const isOwnerGoToGuestPaths = role !== Role.Guest && (guestPaths.some((path) => pathname.startsWith(path)) || /^\/tables\//.test(pathname));
+
+  if (isOwnerGoToGuestPaths) {
     return NextResponse.redirect(new URL(ROUTE.HOME, request.url));
   }
-  if(isGuestGoToManagePaths){
+  if (isGuestGoToManagePaths) {
     return NextResponse.redirect(new URL(ROUTE.GUEST.MENU, request.url));
   }
   return NextResponse.next();
-
   }
 }
- 
-  
+
 export const config = {
-  matcher: ["/manage/:path*","/guest/:path*", "/login"],
+  matcher: ["/manage/:path*", "/guest/:path*", "/tables/:number*", "/login"],
 };
