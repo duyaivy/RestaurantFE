@@ -6,6 +6,8 @@ import { toast } from "@/shared/ui/use-toast";
 import { DishStatus, OrderStatus, Role, TableStatus } from "@/shared/constants/type";
 import { ROUTE } from "@/shared/constants/route";
 import envConfig from "@/shared/config/env";
+import { format } from 'date-fns'
+import { BookX, CookingPot, HandCoins, Loader, Truck } from 'lucide-react'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -83,7 +85,50 @@ export const getTableLink = ({
 }) => {
   return `${envConfig.NEXT_PUBLIC_URL}${ROUTE.PUBLIC.TABLE_BY_NUMBER(tableNumber)}?token=${token}`;
 };
+export function removeAccents(str: string) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+}
+export const getVietnameseOrderStatus = (status: (typeof OrderStatus)[keyof typeof OrderStatus]) => {
+  switch (status) {
+    case OrderStatus.Pending:
+      return "Chờ xử lý";
 
+    case OrderStatus.Preparing:
+      return "Đang nấu";
+
+    case OrderStatus.Served:
+      return "Đã phục vụ";
+
+    case OrderStatus.Completed:
+      return "Hoàn thành";
+
+    case OrderStatus.Cancelled:
+      return "Đã hủy";
+  }
+}
+export const formatDateTimeToLocaleString = (date: string | Date) => {
+  return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss dd/MM/yyyy')
+}
+
+export const formatDateTimeToTimeString = (date: string | Date) => {
+  return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss')
+}
+export const OrderStatusIcon = {
+  [OrderStatus.Pending]: Loader,
+  [OrderStatus.Preparing]: CookingPot,
+  [OrderStatus.Served]: BookX,
+  [OrderStatus.Completed]: Truck,
+  [OrderStatus.Cancelled]: HandCoins
+}
+
+
+export const simpleMatchText = (fullText: string, matchText: string) => {
+  return removeAccents(fullText.toLowerCase()).includes(removeAccents(matchText.trim().toLowerCase()))
+}
 // Re-export token helpers for backward compatibility
 export {
   getAccessTokenFromLocalStorage,

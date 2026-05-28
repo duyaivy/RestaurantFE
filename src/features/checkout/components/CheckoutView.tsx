@@ -53,7 +53,7 @@ export default function CheckoutView() {
           payment_method: paymentMethod || PAYMENT_METHOD.CASH,
         },
       });
-      const paymentUrl = payload.data.url;
+      const paymentUrl = payload.data?.url;
       if (paymentUrl) {
         window.open(paymentUrl, "_blank");
       }

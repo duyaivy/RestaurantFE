@@ -170,7 +170,7 @@ export default function OrderConfirmationView() {
         },
       });
 
-      const paymentUrl = payload.data.url;
+      const paymentUrl = payload.data?.url;
       if (paymentUrl) {
         window.open(paymentUrl, "_blank");
       }

@@ -78,6 +78,7 @@ export const GetOrdersQueryParams = z.object({
 export type GetOrdersQueryParamsType = z.TypeOf<typeof GetOrdersQueryParams>;
 
 export const GetOrdersRes = z.array(OrderSchema);
+export type GetOrdersResType = z.TypeOf<typeof GetOrdersRes>
 
 export const GetOrderDetailRes = OrderSchema.extend({
   table: TableSchema,
@@ -91,9 +92,11 @@ export const PayGuestOrdersBody = z.object({
 
 export type PayGuestOrdersBodyType = z.TypeOf<typeof PayGuestOrdersBody>;
 
-export const PayGuestOrdersRes = z.object({
-  url: z.string().optional(),
-});
+export const PayGuestOrdersRes = z
+  .object({
+    url: z.string().nullable().optional(),
+  })
+  .nullable();
 
 export type PayGuestOrdersResType = z.TypeOf<typeof PayGuestOrdersRes>;
 export const OrderItemSchema = z.object({
