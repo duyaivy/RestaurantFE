@@ -52,6 +52,7 @@ import { DishListResType } from "@/features/dishes/schemas/dish.schema";
 import EditDish from "@/features/dishes/components/edit-dish";
 import AddDish from "@/features/dishes/components/add-dish";
 import { useDishListQuery } from "@/features/dishes/hooks/use-dish";
+import DishTableSkeleton from "@/features/dishes/components/dish-table-skeleton";
 
 type DishItem = DishListResType[0];
 
@@ -266,7 +267,9 @@ export default function DishTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {dishListQuery.isLoading ? (
+                <DishTableSkeleton rows={PAGE_SIZE} />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}

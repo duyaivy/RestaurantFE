@@ -60,7 +60,7 @@ import {
 import { handleErrorApi } from "@/shared/lib/utils";
 import { toast } from "@/shared/ui/use-toast";
 import { ROUTE } from "@/shared/constants/route";
-import { Skeleton } from "@/shared/ui/skeleton";
+import AccountTableSkeleton from "@/features/accounts/components/account-table-skeleton";
 type AccountItem = AccountListResType[0];
 
 const AccountTableContext = createContext<{
@@ -315,14 +315,7 @@ export default function AccountTable() {
             </TableHeader>
             <TableBody>
               {employeeListQuery.isPending ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <Skeleton className="h-6 w-full" />
-                  </TableCell>
-                </TableRow>
+                <AccountTableSkeleton rows={PAGE_SIZE} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>

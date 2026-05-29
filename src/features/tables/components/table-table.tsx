@@ -14,6 +14,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/shared/ui/button";
+import TableSkeleton from "@/features/tables/components/table-skeleton";
+
+
 
 import {
   DropdownMenu,
@@ -43,7 +46,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/ui/alert-dialog";
-import { getTableLink, getVietnameseTableStatus } from "@/shared/lib/utils";
+import { getVietnameseTableStatus } from "@/shared/lib/utils";
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/shared/ui/auto-pagination";
 import { TableListResType } from "@/features/tables/schemas/table.schema";
@@ -52,6 +55,7 @@ import AddTable from "@/features/tables/components/add-table";
 import { useTableListQuery } from "@/features/tables/hooks/use-table";
 import QRCodeTable from "@/features/tables/components/qrcode-table";
 import { ROUTE } from "@/shared/constants/route";
+
 
 type TableItem = TableListResType[0];
 
@@ -265,7 +269,9 @@ export default function TableTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {tableListQuery.isLoading ? (
+                <TableSkeleton rows={PAGE_SIZE} />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
