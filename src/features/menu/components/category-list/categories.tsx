@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { CategoryGridSkeleton } from "./category-skeleton";
 import { useLocale, useTranslations } from 'next-intl';
 import { resolveLocaleText } from "@/shared/lib/resolve-locale-text";
+import { useTextToSpeech } from "@/shared/hooks/use-text-to-speech";
 
 interface Props {
   onChangeQueryParam: <K extends keyof DishListConfig>(
@@ -22,8 +23,22 @@ const Categories = ({ onChangeQueryParam }: Props) => {
   const t = useTranslations("menu");
   const { category_id } = useDishQueryConfig();
   const { categories, isLoading } = useCategoryStore();
+  const { speak } = useTextToSpeech();
+  const [prevCategory, setPrevCategory] = useState<number | null>(null);
 
   const activeCategory = Number(category_id);
+
+  useEffect(() => {
+    if (!categories?.length || !activeCategory) return;
+    if (prevCategory !== null && prevCategory !== activeCategory) {
+      const cat = categories.find((c) => c.id === activeCategory);
+      if (cat) {
+        const categoryName = resolveLocaleText(cat.name, locale as "vi" | "en");
+        speak(categoryName);
+      }
+    }
+    setPrevCategory(activeCategory);
+  }, [activeCategory, categories, locale, speak, prevCategory]);
 
   const handleActiveCategory = (id: number) => {
     onChangeQueryParam("category_id", id);

@@ -6,7 +6,9 @@
     "note": "Ghi chú",
     "notePlaceholder": "Ví dụ: không cay, ít muối...",
     "quantity": "Số lượng",
-    "cart": "Giỏ hàng"
+    "cart": "Giỏ hàng",
+    "enableAudioTooltip": "Bật âm thanh để nghe hướng dẫn",
+    "voiceWelcome": "Xin chào mừng quý khách đến với VietFood! Tôi là trợ lý giọng nói. Quý khách có thể bật hoặc tắt hướng dẫn bằng nút loa ở góc phải màn hình."
   },
   "auth": {
     "guestLoginLabel": "Vui lòng nhập tên của quý khách",
