@@ -6,7 +6,9 @@
     "note": "Note",
     "notePlaceholder": "Example: less spicy, less salt...",
     "quantity": "Quantity",
-    "cart": "Cart"
+    "cart": "Cart",
+    "enableAudioTooltip": "Click to enable voice guide",
+    "voiceWelcome": "Welcome to VietFood! I am your voice guide. You can toggle this audio assistance at any time using the speaker button in the top right."
   },
   "auth": {
     "guestLoginLabel": "Please enter your name",

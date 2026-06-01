@@ -14,6 +14,9 @@ import { ROUTE } from "@/shared/constants/route";
 import { LanguageSwitcher } from "@/shared/ui/LanguageSwitcher";
 import { GuestBackButton } from "@/features/guest/components/GuestBackButton";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { SpeakerToggle } from "@/shared/ui/SpeakerToggle";
+import { useTextToSpeech } from "@/shared/hooks/use-text-to-speech";
 
 function StoreLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -22,6 +25,15 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
   const commonT = useTranslations("common");
   const menuT = useTranslations("menu");
   const { guestName, isGuest } = useUser();
+  const { speak } = useTextToSpeech();
+
+  useEffect(() => {
+    const hasPlayed = sessionStorage.getItem("welcome-played");
+    if (!hasPlayed) {
+      sessionStorage.setItem("welcome-played", "true");
+      speak(commonT("voiceWelcome"));
+    }
+  }, [speak, commonT]);
   const { itemCount: orderItemCount, status, orderId } = useOrder();
   const { itemCount: cartItemCount } = useCart();
 
@@ -62,7 +74,10 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
               {landingT("appTitle")}
             </h1>
           </Link>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-2 justify-end">
+            <SpeakerToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
       <main className="h-full mx-auto ">{children}</main>

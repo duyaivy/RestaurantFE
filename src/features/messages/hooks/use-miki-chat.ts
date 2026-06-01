@@ -10,6 +10,7 @@ import {
   SendChatbotMessagePayload,
 } from "@/features/messages/types/chatbot.types";
 import { useLocale, useTranslations } from "next-intl";
+import { useTextToSpeech } from "@/shared/hooks/use-text-to-speech";
 
 interface UseMikiChatOptions {
   userName?: string;
@@ -34,6 +35,7 @@ export function useMikiChat({
 }: UseMikiChatOptions): UseMikiChatReturn {
   const locale = useLocale() as "vi" | "en";
   const t = useTranslations("chatbot");
+  const { speak } = useTextToSpeech();
 
   const welcomeMessage = useMemo<AiChatMessage>(
     () => ({
@@ -114,6 +116,7 @@ export function useMikiChat({
         );
         stopTimer();
         setPendingMessageId(null);
+        speak(payload.answer);
       } catch {
         const failedMessage = t("errors.connection");
 
@@ -135,7 +138,7 @@ export function useMikiChat({
         setPendingMessageId(null);
       }
     },
-    [conversationId, locale, sendMutation, startTimer, stopTimer, t],
+    [conversationId, locale, sendMutation, startTimer, stopTimer, t, speak],
   );
 
   return {
