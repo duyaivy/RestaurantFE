@@ -9,6 +9,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher'
+import { SpeakerToggle } from '@/shared/ui/SpeakerToggle'
 export default async function Layout({
   children
 }: Readonly<{
@@ -49,6 +50,7 @@ export default async function Layout({
             </SheetContent>
           </Sheet>
           <div className='ml-auto flex items-center gap-2'>
+            <SpeakerToggle />
             <LanguageSwitcher />
             <DarkModeToggle />
           </div>

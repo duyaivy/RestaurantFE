@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "@/features/cart/context/cart-context";
 
@@ -10,6 +10,7 @@ import { useGetDishQuery } from "@/features/dishes/hooks/use-dish";
 import { useLocale, useTranslations } from "next-intl";
 import { resolveLocaleText } from "@/shared/lib/resolve-locale-text";
 import { PriceDisplay } from "@/shared/ui/price-display";
+import { useTextToSpeech } from "@/shared/hooks/use-text-to-speech";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -32,6 +33,14 @@ export default function ProductDetailPage() {
     product?.description,
     locale as "vi" | "en",
   );
+
+  const { speak } = useTextToSpeech();
+
+  useEffect(() => {
+    if (productName && productDescription) {
+      speak(`${productName}. ${productDescription}`);
+    }
+  }, [productName, productDescription, speak]);
 
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState("");
