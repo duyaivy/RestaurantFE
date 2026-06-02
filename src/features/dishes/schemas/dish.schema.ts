@@ -1,28 +1,40 @@
 import { DishStatusValues, LanguageSchema } from "@/shared/constants/type";
 import z from "zod";
 
-export const CreateDishBody = z.object({
+const BaseDishMutationBody = z.object({
   name: z.string().min(1).max(256),
   price: z.coerce.number().positive(),
   description: z.string().max(10000),
   image: z.string().url(),
-  status: z.enum(DishStatusValues).optional(),
-  category_id: z.number(),
+  category_id: z.coerce.number().int().positive(),
 });
+
+export const CreateDishBody = BaseDishMutationBody;
 
 export type CreateDishBodyType = z.TypeOf<typeof CreateDishBody>;
 
+export const UpdateDishBody = BaseDishMutationBody.extend({
+  status: z.enum(DishStatusValues),
+});
+
+export type UpdateDishBodyType = z.TypeOf<typeof UpdateDishBody>;
+
+export const DishCategorySchema = z.object({
+  id: z.number(),
+  name: LanguageSchema,
+});
+
 export const DishSchema = z.object({
   id: z.number(),
+  category: DishCategorySchema,
   name: LanguageSchema,
   price: z.coerce.number(),
   description: LanguageSchema,
   image: z.string(),
   status: z.enum(DishStatusValues),
-  created_at: z.date(),
-  updated_at: z.date(),
-  category_id: z.number(),
-  price_usd: z.number().optional(),
+  updated_at: z.string(),
+  created_at: z.string(),
+  price_usd: z.coerce.number().optional(),
 });
 
 export const DishRes = DishSchema;
@@ -33,8 +45,6 @@ export const DishListRes = z.array(DishSchema);
 
 export type DishListResType = z.TypeOf<typeof DishListRes>;
 
-export const UpdateDishBody = CreateDishBody;
-export type UpdateDishBodyType = CreateDishBodyType;
 export const DishParams = z.object({
   id: z.coerce.number(),
 });

@@ -5,11 +5,20 @@ import {
 } from "@/features/orders/api/order.api";
 import {
   GetOrdersQueryParamsType,
+  ManageOrdersQueryParamsType,
   OrderItemType,
   PayGuestOrdersBodyType,
+  StaffCreateOrderBodyType,
   UpdateOrderBodyType,
+  UpdateOrderInfoBodyType,
+  UpdateOrderItemsBodyType,
 } from "@/features/orders/schemas/order.schema";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export const getGuestOrderListQueryKey = ({
   guestId,
@@ -92,6 +101,57 @@ export const useCreateOrderMutation = () => {
         table_number_id: Number(table_number_id),
         items,
       });
+    },
+  });
+};
+
+// ── Manage-side hooks ─────────────────────────────────────────────────────────
+
+export const useGetManageOrderListQuery = (
+  queryParams: ManageOrdersQueryParamsType,
+) => {
+  return useQuery({
+    queryFn: () => orderApiRequest.getManageOrderList(queryParams),
+    queryKey: ["manage-orders", queryParams],
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useStaffCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: StaffCreateOrderBodyType) =>
+      orderApiRequest.staffCreateOrder(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
+    },
+  });
+};
+
+export const useUpdateOrderInfoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      ...body
+    }: UpdateOrderInfoBodyType & { orderId: number }) =>
+      orderApiRequest.updateOrderInfo(orderId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
+    },
+  });
+};
+
+export const useUpdateOrderItemsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      ...body
+    }: UpdateOrderItemsBodyType & { orderId: number }) =>
+      orderApiRequest.updateOrderItems(orderId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
     },
   });
 };

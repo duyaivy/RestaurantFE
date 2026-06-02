@@ -56,16 +56,16 @@ export const OrderStatusValues = [
 ] as const;
 
 export const OrderItemStatus = {
-  Ordered: "ORDERED",
+  Pending: "PENDING",
   Cooking: "COOKING",
-  Served: "SERVED",
+  Done: "DONE",
   Cancelled: "CANCELLED",
 } as const;
 
 export const OrderItemStatusValues = [
-  OrderItemStatus.Ordered,
+  OrderItemStatus.Pending,
   OrderItemStatus.Cooking,
-  OrderItemStatus.Served,
+  OrderItemStatus.Done,
   OrderItemStatus.Cancelled,
 ] as const;
 

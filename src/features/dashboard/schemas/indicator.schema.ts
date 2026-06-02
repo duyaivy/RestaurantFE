@@ -1,32 +1,37 @@
-import { DishSchema } from '@/features/dishes/schemas/dish.schema'
 import z from 'zod'
 
 export const DashboardIndicatorQueryParams = z.object({
-  fromDate: z.coerce.date(),
-  toDate: z.coerce.date()
+  from: z.string(),
+  to: z.string()
 })
 
 export type DashboardIndicatorQueryParamsType = z.TypeOf<typeof DashboardIndicatorQueryParams>
 
 export const DashboardIndicatorRes = z.object({
+  success: z.boolean(),
+  message: z.string(),
   data: z.object({
-    revenue: z.number(),
-    guestCount: z.number(),
-    orderCount: z.number(),
-    servingTableCount: z.number(),
-    dishIndicator: z.array(
-      DishSchema.extend({
-        successOrders: z.number()
+    stats: z.object({
+      revenue: z.number(),
+      guest: z.number(),
+      tables_reserving: z.number(),
+      total_tables: z.number(),
+      orders: z.number()
+    }),
+    top_dishes: z.array(
+      z.object({
+        dish_id: z.number(),
+        dish_name: z.string(),
+        total_quantity: z.number()
       })
     ),
-    revenueByDate: z.array(
+    revenue_chart: z.array(
       z.object({
         date: z.string(),
         revenue: z.number()
       })
     )
-  }),
-  message: z.string()
+  })
 })
 
 export type DashboardIndicatorResType = z.TypeOf<typeof DashboardIndicatorRes>

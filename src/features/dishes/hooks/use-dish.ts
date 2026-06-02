@@ -6,9 +6,28 @@ import { DishListConfig } from "@/features/dishes/types/dish-list-config.types";
 
 export const useDishListQuery = (queryConfig: QueryDishConfig) => {
   return useQuery({
-    queryKey: ["dishes", queryConfig],
+    queryKey: [
+      "dishes",
+      queryConfig.page,
+      queryConfig.limit,
+      queryConfig.category_id,
+      queryConfig.search,
+      queryConfig.min_price,
+      queryConfig.max_price,
+    ],
     queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
     staleTime: 1000 * 60 * 60,
+    placeholderData: (previousData) => previousData,
+  });
+};
+
+/** Flat dish list for dropdowns — fetches up to 200 dishes, cached 5 min */
+export const useAllDishesQuery = () => {
+  return useQuery({
+    queryKey: ["dishes", "all"],
+    queryFn: () => dishApiRequest.list({ limit: 200, page: 1 } as DishListConfig),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   });
 };
 
@@ -48,7 +67,6 @@ export const useUpdateDishMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["dishes"],
-        exact: true,
       });
     },
   });
