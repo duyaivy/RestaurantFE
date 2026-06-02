@@ -20,6 +20,7 @@ import {
   CHATBOT_QUESTION_KEYS,
   getChatbotQuestionTranslationKey,
 } from "@/features/messages/constants/chatbot";
+import useChatbotStore from "@/features/messages/store/use-chatbot-store";
 
 interface MikiAssistantProps {
   userName?: string;
@@ -29,6 +30,7 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
   const t = useTranslations("chatbot");
   const [isOpen, setIsOpen] = useState(false);
   const [staffModeError, setStaffModeError] = useState<string | null>(null);
+  const { pendingQuestion, setPendingQuestion } = useChatbotStore();
 
   const chatSuggestions = useMemo(
     () =>
@@ -47,6 +49,18 @@ export function MikiAssistant({ userName }: MikiAssistantProps) {
 
   const { messages: staffSocketMessages } = useChatStore();
   const { isOwnMessage, getSenderLabel } = useGuestChatMessageView();
+
+  // Handle pending question from quick reply clicks
+  useEffect(() => {
+    if (pendingQuestion) {
+      setIsOpen(true);
+      // Small delay to ensure chat is open before sending
+      setTimeout(() => {
+        void mikiChat.sendMessage(pendingQuestion);
+        setPendingQuestion(null);
+      }, 100);
+    }
+  }, [pendingQuestion, mikiChat, setPendingQuestion]);
 
   const aiRenderMessages = useMemo<AssistantRenderMessage[]>(
     () =>

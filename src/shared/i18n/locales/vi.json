@@ -104,17 +104,10 @@
       "recommendedItems": "Tham khảo một số món ăn"
     },
     "quickReplies": {
-      "categories": "Thực đơn có gì đặc sắc?",
-      "howToOrder": "Cách đặt món tại bàn?",
-      "deliveryTime": "Mất bao lâu để có món?",
-      "deliveryAvailable": "Nhà hàng có giao hàng không?"
-    },
-    "answers": {
-      "categories": "VietFood tự hào phục vụ các món ăn thuần Việt: Phở truyền thống, Bún chả Hà Nội, Gỏi cuốn tươi và các set cơm gia đình đậm đà. Bạn có thể xem chi tiết trong mục 'Thực đơn'.",
-      "howToOrder": "Rất đơn giản: \n1) Quét mã QR tại bàn\n2) Chọn món ăn và đồ uống yêu thích\n3) Nhấn 'Đặt món' để gửi đơn xuống bếp\n4) Nhân viên sẽ phục vụ bạn ngay sau ít phút.",
-      "deliveryTime": "Thời gian chế biến trung bình từ 10-15 phút để đảm bảo món ăn luôn nóng hổi và chuẩn vị khi đến bàn bạn.",
-      "deliveryAvailable": "Chúng tôi có phục vụ giao hàng tận nơi qua website hoặc ứng dụng. Bạn cũng có thể đặt 'Mang về' trực tiếp trên hệ thống này.",
-      "fallback": "Cảm ơn bạn đã quan tâm! Để được hỗ trợ nhanh nhất, bạn vui lòng nhấn nút 'Gọi nhân viên' tại bàn nhé."
+      "categories": "Món nào đang hot nhất?",
+      "howToOrder": "Làm sao để đặt món?",
+      "deliveryTime": "Món ăn bao lâu mới lên?",
+      "deliveryAvailable": "Có giao hàng tận nơi không?"
     },
     "errors": {
       "staffConnecting": "Đang kết nối Staff. Vui lòng thử lại sau vài giây.",

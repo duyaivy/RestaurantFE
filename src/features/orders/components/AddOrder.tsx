@@ -8,11 +8,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Minus, Plus, PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
   Form,
@@ -28,10 +35,15 @@ import {
   StaffCreateOrderBodyType,
 } from "@/features/orders/schemas/order.schema";
 import { useStaffCreateOrderMutation } from "@/features/orders/hooks/use-order";
+import { useGetGuestListQuery } from "@/features/accounts/hooks/use-account";
 import { toast } from "@/shared/ui/use-toast";
 
 export default function AddOrder() {
   const [open, setOpen] = useState(false);
+
+  // Fetch guest list
+  const { data: guestListData } = useGetGuestListQuery();
+  const guests = useMemo(() => guestListData?.payload?.data ?? [], [guestListData]);
 
   const form = useForm<StaffCreateOrderBodyType>({
     resolver: zodResolver(StaffCreateOrderBody) as any,
@@ -92,7 +104,7 @@ export default function AddOrder() {
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="ID bàn"
+                          placeholder="Nhập số bàn"
                           {...field}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
@@ -111,18 +123,25 @@ export default function AddOrder() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <FormLabel>ID khách</FormLabel>
+                    <FormLabel>Khách hàng</FormLabel>
                     <div className="col-span-3 space-y-1">
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="ID khách hàng"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
+                      <Select
+                        value={field.value?.toString() ?? ""}
+                        onValueChange={(val) => field.onChange(Number(val))}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn khách hàng" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {guests.map((guest) => (
+                            <SelectItem key={guest.id} value={guest.id.toString()}>
+                              {guest.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </div>
                   </div>

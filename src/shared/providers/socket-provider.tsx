@@ -41,11 +41,58 @@ export function SocketProvider({
   useEffect(() => {
     onTokenExpiredRef.current = onTokenExpired;
   }, [onTokenExpired]);
+  // Track current token to detect changes
+  const [currentToken, setCurrentToken] = useState<string | null>(() =>
+    getAccessTokenFromLocalStorage()
+  );
+
+  // Effect to monitor token changes in localStorage
   useEffect(() => {
-    const token = getAccessTokenFromLocalStorage();
-    // Do not attempt a connection when there is no token (unauthenticated users)
-    if (!token) return;
-    const newSocket = getSocketClient(token);
+    const checkToken = () => {
+      const token = getAccessTokenFromLocalStorage();
+      setCurrentToken(token);
+    };
+
+    // Check immediately
+    checkToken();
+
+    // Listen for storage events (cross-tab changes)
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "accessToken" || event.key === null) {
+        checkToken();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Poll for same-tab token changes (after login)
+    const pollInterval = setInterval(checkToken, 500);
+
+    // Stop polling after 10 seconds (enough time for any login flow)
+    const stopPolling = setTimeout(() => clearInterval(pollInterval), 10000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(pollInterval);
+      clearTimeout(stopPolling);
+    };
+  }, []);
+
+  // Effect to manage socket connection based on token
+  useEffect(() => {
+    // No token = no connection
+    if (!currentToken) {
+      if (socket) {
+        destroySocketClient();
+        setSocket(null);
+        setIsConnected(false);
+        setIsConnecting(false);
+      }
+      return;
+    }
+
+    // Token exists = establish connection
+    const newSocket = getSocketClient(currentToken);
     setSocket(newSocket);
     setIsConnecting(true);
     newSocket.connect();
@@ -59,7 +106,6 @@ export function SocketProvider({
     const handleDisconnect = (reason: string) => {
       setIsConnected(false);
       setIsConnecting(false);
-      // Socket was disconnected intentionally (e.g. server-side); not an error
       if (reason === "io server disconnect") {
         setLastError("Server closed the connection");
       }
@@ -84,20 +130,20 @@ export function SocketProvider({
       setIsConnecting(false);
       setLastError(null);
     };
+
     newSocket.on(SOCKET_EVENTS.CONNECT, handleConnect);
     newSocket.on(SOCKET_EVENTS.DISCONNECT, handleDisconnect);
     newSocket.on(SOCKET_EVENTS.CONNECT_ERROR, handleConnectError);
     newSocket.on(SOCKET_EVENTS.RECONNECT, handleReconnect);
+
     return () => {
-      // Remove only the listeners registered in this effect; never call
-      // socket.removeAllListeners() because other hooks add their own.
       newSocket.off(SOCKET_EVENTS.CONNECT, handleConnect);
       newSocket.off(SOCKET_EVENTS.DISCONNECT, handleDisconnect);
       newSocket.off(SOCKET_EVENTS.CONNECT_ERROR, handleConnectError);
       newSocket.off(SOCKET_EVENTS.RECONNECT, handleReconnect);
       destroySocketClient();
     };
-  }, []); // intentionally empty: socket lifecycle is tied to the provider mount
+  }, [currentToken])
   return (
     <SocketContext.Provider
       value={{ socket, isConnected, isConnecting, lastError }}

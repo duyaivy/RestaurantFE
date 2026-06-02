@@ -2,16 +2,20 @@
 import { getMenuItemsByRole } from "./menu-items";
 import { Button } from "@/shared/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
+import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/utils";
 import { Package2, PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppContext } from "@/shared/providers/app-provider";
+import { useMessageNotificationStore } from "@/features/messages/store/use-message-notification-store";
+import { ROUTE } from "@/shared/constants/route";
 
 export default function MobileNavLinks() {
   const pathname = usePathname();
   const { role } = useAppContext();
   const menuItems = getMenuItemsByRole(role);
+  const { totalUnread } = useMessageNotificationStore();
 
   const isActivePath = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -34,20 +38,38 @@ export default function MobileNavLinks() {
           </Link>
           {menuItems.map((Item) => {
             const isActive = isActivePath(Item.href);
+            const isMessagesPage = Item.href === ROUTE.MANAGE.MESSAGES;
+            const hasUnread = isMessagesPage && totalUnread > 0;
+            
             return (
               <Link
                 key={`${Item.href}-${Item.title}`}
                 href={Item.href}
                 className={cn(
-                  "flex items-center gap-4 px-2.5  hover:text-foreground",
+                  "flex items-center gap-4 px-2.5 hover:text-foreground",
                   {
                     "text-foreground": isActive,
                     "text-muted-foreground": !isActive,
                   },
                 )}
               >
-                <Item.Icon className="h-5 w-5" />
-                {Item.title}
+                <div className="relative">
+                  <Item.Icon className="h-5 w-5" />
+                  {hasUnread && (
+                    <span className="absolute -right-1 -top-1 flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
+                    </span>
+                  )}
+                </div>
+                <span className="flex items-center gap-2">
+                  {Item.title}
+                  {hasUnread && (
+                    <Badge variant="destructive" className="h-5 min-w-5 px-1.5 text-xs">
+                      {totalUnread}
+                    </Badge>
+                  )}
+                </span>
               </Link>
             );
           })}

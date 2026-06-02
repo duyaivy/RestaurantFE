@@ -12,11 +12,13 @@ import { Package2, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppContext } from "@/shared/providers/app-provider";
+import { useMessageNotificationStore } from "@/features/messages/store/use-message-notification-store";
 
 export default function NavLinks() {
   const pathname = usePathname();
   const { role } = useAppContext();
   const menuItems = getMenuItemsByRole(role);
+  const { totalUnread } = useMessageNotificationStore();
 
   const isActivePath = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -35,13 +37,16 @@ export default function NavLinks() {
 
           {menuItems.map((Item) => {
             const isActive = isActivePath(Item.href);
+            const isMessagesPage = Item.href === ROUTE.MANAGE.MESSAGES;
+            const hasUnread = isMessagesPage && totalUnread > 0;
+            
             return (
               <Tooltip key={`${Item.href}-${Item.title}`}>
                 <TooltipTrigger asChild>
                   <Link
                     href={Item.href}
                     className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8",
+                      "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8",
                       {
                         "bg-accent text-accent-foreground": isActive,
                         "text-muted-foreground": !isActive,
@@ -49,10 +54,19 @@ export default function NavLinks() {
                     )}
                   >
                     <Item.Icon className="h-5 w-5" />
+                    {hasUnread && (
+                      <span className="absolute right-0 top-0 flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
+                      </span>
+                    )}
                     <span className="sr-only">{Item.title}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{Item.title}</TooltipContent>
+                <TooltipContent side="right">
+                  {Item.title}
+                  {hasUnread && ` (${totalUnread})`}
+                </TooltipContent>
               </Tooltip>
             );
           })}

@@ -44,6 +44,7 @@ const STATUS_VARIANT: Record<
   string,
   "default" | "secondary" | "destructive" | "outline"
 > = {
+  ORDERED: "secondary",
   PENDING: "secondary",
   PREPARING: "default",
   COMPLETED: "outline",
@@ -52,6 +53,7 @@ const STATUS_VARIANT: Record<
 };
 
 const STATUS_LABEL: Record<string, string> = {
+  ORDERED: "Đã đặt món",
   PENDING: "Chờ xử lý",
   PREPARING: "Đang chuẩn bị",
   COMPLETED: "Hoàn thành",

@@ -40,6 +40,7 @@ export const TableStatusValues = [
 ] as const;
 
 export const OrderStatus = {
+  Ordered: "ORDERED",
   Pending: "PENDING",
   Preparing: "PREPARING",
   Served: "SERVED",
@@ -48,6 +49,7 @@ export const OrderStatus = {
 } as const;
 
 export const OrderStatusValues = [
+  OrderStatus.Ordered,
   OrderStatus.Pending,
   OrderStatus.Preparing,
   OrderStatus.Served,
@@ -56,6 +58,7 @@ export const OrderStatusValues = [
 ] as const;
 
 export const OrderItemStatus = {
+  Ordered: "ORDERED",
   Pending: "PENDING",
   Cooking: "COOKING",
   Done: "DONE",
@@ -63,6 +66,7 @@ export const OrderItemStatus = {
 } as const;
 
 export const OrderItemStatusValues = [
+  OrderItemStatus.Ordered,
   OrderItemStatus.Pending,
   OrderItemStatus.Cooking,
   OrderItemStatus.Done,

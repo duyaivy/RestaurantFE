@@ -62,6 +62,7 @@ import { getOrderItemsFromRaw } from "@/features/orders/lib/order-normalize";
 // ── Label maps ───────────────────────────────────────────────────────────────
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
+  ORDERED: "Đã đặt món",
   PENDING: "Chờ xử lý",
   PREPARING: "Đang chuẩn bị",
   COMPLETED: "Hoàn thành",
@@ -75,6 +76,7 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 };
 
 const ITEM_STATUS_LABELS: Record<string, string> = {
+  ORDERED: "Đã gọi",
   PENDING: "Chờ",
   COOKING: "Đang nấu",
   DONE: "Xong",
@@ -85,6 +87,7 @@ const ITEM_STATUS_VARIANT: Record<
   string,
   "default" | "secondary" | "destructive" | "outline"
 > = {
+  ORDERED: "secondary",
   PENDING: "secondary",
   COOKING: "default",
   DONE: "outline",
