@@ -45,7 +45,7 @@ const guestApiRequest = {
         },
       },
     ),
-  logout: () => http.post("/api/guest/logout", null, { baseUrl: "" }),
+  logout: () => http.post("/api/guest/auth/logout", null, { baseUrl: "" }),
 
   sRefreshToken: (body: RefreshTokenBodyType) =>
     http.post<SuccessResponse<RefreshTokenResType>>(
@@ -57,7 +57,7 @@ const guestApiRequest = {
       return this.requestTokenRequest;
     }
     this.requestTokenRequest = http.post<SuccessResponse<RefreshTokenResType>>(
-      "/api/guest/refresh-token",
+      "/api/guest/auth/refresh-token",
       null,
       { baseUrl: "" },
     );

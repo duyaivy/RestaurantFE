@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import {
   CHATBOT_QUESTION_KEYS,
+  type ChatbotQuestionKey,
   getChatbotQuestionTranslationKey,
 } from "@/features/messages/constants/chatbot";
 
@@ -11,7 +12,7 @@ const ChatbotSection = () => {
   const t = useTranslations("chatbot");
   const { setPendingQuestion } = useChatbotStore();
 
-  const handleQuestionClick = (questionKey: string) => {
+  const handleQuestionClick = (questionKey: ChatbotQuestionKey) => {
     const questionText = t(getChatbotQuestionTranslationKey(questionKey));
     setPendingQuestion(questionText);
   };

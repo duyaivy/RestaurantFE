@@ -90,6 +90,7 @@ export {
   getRefreshTokenFromLocalStorage,
   setAccessTokenToLoacalStorage,
   setRefreshTokenToLoacalStorage,
+  setTokensToLocalStorage,
   removeTokensFromLocalStorage,
   checkAndRefreshToken,
   decodeToken,

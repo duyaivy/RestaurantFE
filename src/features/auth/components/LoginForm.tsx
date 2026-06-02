@@ -15,7 +15,7 @@ import { LoginBody, LoginBodyType } from "@/features/auth/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMutation } from "@/features/auth/hooks/use-auth";
 import { toast } from "@/shared/ui/use-toast";
-import { handleErrorApi } from "@/shared/lib/utils";
+import { handleErrorApi, setTokensToLocalStorage } from "@/shared/lib/utils";
 import { useRouter } from "next/navigation";
 import { ROUTE } from "@/shared/constants/route";
 
@@ -37,8 +37,7 @@ export default function LoginForm() {
             console.log({ result });
 
             // Lưu tokens vào localStorage để các component khác có thể sử dụng ngay
-            localStorage.setItem("accessToken", result.payload.data.accessToken);
-            localStorage.setItem("refreshToken", result.payload.data.refreshToken);
+            setTokensToLocalStorage(result.payload.data);
 
             toast({
                 description: result.payload.message,

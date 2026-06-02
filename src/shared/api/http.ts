@@ -4,6 +4,7 @@ import { ROUTE } from "@/shared/constants/route";
 import { normalizePath } from "@/shared/lib/utils";
 import { LoginResType } from "@/features/auth/schemas/auth.schema";
 import { redirect } from "next/navigation";
+import { dispatchAuthTokenChanged } from "@/shared/auth/token-events";
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
 };
@@ -161,6 +162,7 @@ const request = async <Response>(
           } finally {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
+            dispatchAuthTokenChanged();
             clientLogoutRequest = null;
             // Redirect về trang login có thể dẫn đến loop vô hạn
             // Nếu không không được xử lý đúng cách
@@ -198,12 +200,14 @@ const request = async <Response>(
       ).data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      dispatchAuthTokenChanged();
     } else if (
       normalizeUrl === "api/auth/logout" ||
-      normalizeUrl === "api/guest/logout"
+      normalizeUrl === "api/guest/auth/logout"
     ) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      dispatchAuthTokenChanged();
     }
   }
   return data;
