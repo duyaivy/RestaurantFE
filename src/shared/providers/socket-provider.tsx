@@ -1,7 +1,6 @@
 "use client";
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -11,7 +10,7 @@ import { Socket } from "socket.io-client";
 import { destroySocketClient, getSocketClient } from "@/shared/sockets/socket-client";
 import { SOCKET_EVENTS } from "@/shared/sockets/socket-events";
 import { getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
-import { toast } from "@/shared/ui/use-toast";
+import { subscribeAuthTokenChanged } from "@/shared/auth/token-events";
 
 export interface SocketContextType {
   socket: Socket | null;
@@ -46,56 +45,28 @@ export function SocketProvider({
     getAccessTokenFromLocalStorage()
   );
 
-  // Effect to monitor token changes in localStorage
+  // Effect to monitor token changes in this tab and across tabs.
   useEffect(() => {
-    const checkToken = () => {
-      const token = getAccessTokenFromLocalStorage();
-      setCurrentToken(token);
-    };
+    setCurrentToken(getAccessTokenFromLocalStorage());
 
-    // Check immediately
-    checkToken();
-
-    // Listen for storage events (cross-tab changes)
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "accessToken" || event.key === null) {
-        checkToken();
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Poll for same-tab token changes (after login)
-    const pollInterval = setInterval(checkToken, 500);
-
-    // Stop polling after 10 seconds (enough time for any login flow)
-    const stopPolling = setTimeout(() => clearInterval(pollInterval), 10000);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      clearInterval(pollInterval);
-      clearTimeout(stopPolling);
-    };
+    return subscribeAuthTokenChanged(({ accessToken }) => {
+      setCurrentToken(accessToken);
+    });
   }, []);
 
   // Effect to manage socket connection based on token
   useEffect(() => {
     // No token = no connection
     if (!currentToken) {
-      if (socket) {
-        destroySocketClient();
-        setSocket(null);
-        setIsConnected(false);
-        setIsConnecting(false);
-      }
+      destroySocketClient();
+      setSocket(null);
+      setIsConnected(false);
+      setIsConnecting(false);
       return;
     }
 
     // Token exists = establish connection
     const newSocket = getSocketClient(currentToken);
-    setSocket(newSocket);
-    setIsConnecting(true);
-    newSocket.connect();
 
     const handleConnect = () => {
       setIsConnected(true);
@@ -135,6 +106,14 @@ export function SocketProvider({
     newSocket.on(SOCKET_EVENTS.DISCONNECT, handleDisconnect);
     newSocket.on(SOCKET_EVENTS.CONNECT_ERROR, handleConnectError);
     newSocket.on(SOCKET_EVENTS.RECONNECT, handleReconnect);
+
+    setSocket(newSocket);
+    if (newSocket.connected) {
+      handleConnect();
+    } else {
+      setIsConnecting(true);
+      newSocket.connect();
+    }
 
     return () => {
       newSocket.off(SOCKET_EVENTS.CONNECT, handleConnect);

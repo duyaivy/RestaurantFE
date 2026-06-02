@@ -11,6 +11,7 @@ import React, {
 import { Role } from "@/shared/constants/type";
 import { RoleType } from "@/shared/types/jwt.types";
 import { decodeToken, getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
+import { subscribeAuthTokenChanged } from "@/shared/auth/token-events";
 
 export interface UserContextType {
   guestName: string;
@@ -57,16 +58,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     refreshAuthState();
 
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === "accessToken" || event.key === null) {
-        refreshAuthState();
-      }
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-    };
+    return subscribeAuthTokenChanged(() => {
+      refreshAuthState();
+    });
   }, [refreshAuthState]);
 
   const isLoggedIn = role !== null;

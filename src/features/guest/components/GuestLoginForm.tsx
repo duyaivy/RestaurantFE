@@ -14,6 +14,7 @@ import { Button } from "@/shared/ui/button";
 import { toast } from "@/shared/ui/use-toast";
 import { ROUTE } from "@/shared/constants/route";
 import { useTranslations } from "next-intl";
+import { setTokensToLocalStorage } from "@/shared/lib/utils";
 
 export default function GuestLoginForm() {
   const t = useTranslations("auth");
@@ -38,7 +39,7 @@ export default function GuestLoginForm() {
       const result = await guestLogin(data);
 
       // save
-      localStorage.setItem("accessToken", result.payload.data.accessToken);
+      setTokensToLocalStorage(result.payload.data);
       localStorage.setItem("guestName", data.name);
       localStorage.setItem("table_number_id", data.tableNumber.toString());
 

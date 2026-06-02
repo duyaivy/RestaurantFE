@@ -10,6 +10,7 @@ import {
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { createContext } from "react";
 import { RoleType } from "@/shared/types/jwt.types";
+import { subscribeAuthTokenChanged } from "@/shared/auth/token-events";
 
 type AppContextType = {
   role: RoleType | null;
@@ -76,16 +77,9 @@ export default function AppProvider({
   useEffect(() => {
     refreshRoleFromToken();
 
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === "accessToken" || event.key === null) {
-        refreshRoleFromToken();
-      }
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-    };
+    return subscribeAuthTokenChanged(() => {
+      refreshRoleFromToken();
+    });
   }, [refreshRoleFromToken]);
 
   const appContextValue = useMemo(

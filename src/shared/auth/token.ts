@@ -1,4 +1,5 @@
 import authApiRequest from "@/features/auth/api/auth.api";
+import { dispatchAuthTokenChanged } from "@/shared/auth/token-events";
 import jwt from "jsonwebtoken";
 import { TokenPayload } from "@/shared/types/jwt.types";
 
@@ -15,22 +16,39 @@ export const getRefreshTokenFromLocalStorage = () => {
 export const setAccessTokenToLoacalStorage = (value: string) => {
   if (isBrowser) {
     localStorage.setItem("accessToken", value);
+    dispatchAuthTokenChanged();
   }
 };
 
 export const setRefreshTokenToLoacalStorage = (value: string) => {
   if (isBrowser) {
     localStorage.setItem("refreshToken", value);
+    dispatchAuthTokenChanged();
   }
 };
 
+export const setTokensToLocalStorage = ({
+  accessToken,
+  refreshToken,
+}: {
+  accessToken: string;
+  refreshToken?: string | null;
+}) => {
+  if (!isBrowser) return;
+
+  localStorage.setItem("accessToken", accessToken);
+  if (refreshToken) {
+    localStorage.setItem("refreshToken", refreshToken);
+  }
+  dispatchAuthTokenChanged();
+};
+
 export const removeTokensFromLocalStorage = () => {
-  if (isBrowser) {
-    localStorage.removeItem("accessToken");
-  }
-  if (isBrowser) {
-    localStorage.removeItem("refreshToken");
-  }
+  if (!isBrowser) return;
+
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  dispatchAuthTokenChanged();
 };
 
 export const checkAndRefreshToken = async (param?: {
@@ -52,8 +70,7 @@ export const checkAndRefreshToken = async (param?: {
   ) {
     try {
       const res = await authApiRequest.refreshToken();
-      setAccessTokenToLoacalStorage(res.payload.data.accessToken);
-      setRefreshTokenToLoacalStorage(res.payload.data.refreshToken);
+      setTokensToLocalStorage(res.payload.data);
       if (param?.onSuccess) {
         param.onSuccess();
       }
