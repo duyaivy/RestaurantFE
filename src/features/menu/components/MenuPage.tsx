@@ -1,10 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { ChatbotWidget } from "@/features/messages/components/ChatbotWidget";
 import { useDishListQuery } from "@/features/dishes/hooks/use-dish";
 import { Search, X } from "lucide-react";
-import useChatbotStore from "@/features/messages/store/use-chatbot-store";
 import ChatbotSection from "@/features/menu/components/chatbot";
 import Footer from "@/features/menu/components/footer";
 import LabelFood from "@/features/menu/components/label-food";
@@ -34,7 +32,6 @@ export default function MenusPage() {
 
   const dishes = dishData?.payload.data.results || [];
 
-  const { selectedChatbot, setSelectedChatbot } = useChatbotStore();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const createSearchUrl = useCallback(
@@ -102,12 +99,6 @@ export default function MenusPage() {
       <DishListGuest dishes={dishes} isLoading={isLoading} />
       <ChatbotSection />
       <Footer />
-      {selectedChatbot && (
-        <ChatbotWidget
-          questionKey={selectedChatbot}
-          onClose={() => setSelectedChatbot(null)}
-        />
-      )}
     </div>
   );
 }

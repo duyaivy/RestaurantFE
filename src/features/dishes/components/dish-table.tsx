@@ -9,31 +9,23 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/shared/ui/button";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { Input } from "@/shared/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+
+import AddDish from "@/features/dishes/components/add-dish";
+import EditDish from "@/features/dishes/components/edit-dish";
+import { useDishQueryConfig } from "@/features/dishes/hooks/use-dish-query-config";
+import {
+  useDeleteDishMutation,
+  useDishListQuery,
+} from "@/features/dishes/hooks/use-dish";
+import { DishListResType } from "@/features/dishes/schemas/dish.schema";
+import { ROUTE } from "@/shared/constants/route";
+import { DishStatus, type PaginationResponse } from "@/shared/constants/type";
+import { formatCurrency, getVietnameseDishStatus, handleErrorApi } from "@/shared/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,30 +36,53 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/ui/alert-dialog";
-import { formatCurrency, getVietnameseDishStatus } from "@/shared/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
+import { Input } from "@/shared/ui/input";
 import AutoPagination from "@/shared/ui/auto-pagination";
-import { ROUTE } from "@/shared/constants/route";
-import { useDishQueryConfig } from "@/features/dishes/hooks/use-dish-query-config";
-import { DishListResType } from "@/features/dishes/schemas/dish.schema";
-import EditDish from "@/features/dishes/components/edit-dish";
-import AddDish from "@/features/dishes/components/add-dish";
-import { useDishListQuery } from "@/features/dishes/hooks/use-dish";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import { toast } from "@/shared/ui/use-toast";
 
 type DishItem = DishListResType[0];
+type DishPaginationData = PaginationResponse<DishItem> | undefined;
+
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
+const DISH_STATUS_VARIANT: Record<string, BadgeVariant> = {
+  [DishStatus.Available]: "default",
+  [DishStatus.Hidden]: "secondary",
+  [DishStatus.Unavailable]: "outline",
+};
 
 const DishTableContext = createContext<{
-  setDishIdEdit: (value: number) => void;
+  setDishIdEdit: (value: number | undefined) => void;
   dishIdEdit: number | undefined;
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }>({
-  setDishIdEdit: (value: number | undefined) => {},
+  setDishIdEdit: () => {},
   dishIdEdit: undefined,
   dishDelete: null,
-  setDishDelete: (value: DishItem | null) => {},
+  setDishDelete: () => {},
 });
 
-export const columns: ColumnDef<DishItem>[] = [
+const columns: ColumnDef<DishItem>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -76,70 +91,81 @@ export const columns: ColumnDef<DishItem>[] = [
     accessorKey: "image",
     header: "Ảnh",
     cell: ({ row }) => (
-      <div>
-        <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
-          <AvatarImage src={row.getValue("image")} />
-          <AvatarFallback className="rounded-none">
-            {row.original.name.vi}
-          </AvatarFallback>
-        </Avatar>
-      </div>
+      <Avatar className="aspect-square h-[100px] w-[100px] rounded-md object-cover">
+        <AvatarImage src={row.original.image} alt={row.original.name.vi} />
+        <AvatarFallback className="rounded-none">
+          {row.original.name.vi}
+        </AvatarFallback>
+      </Avatar>
     ),
   },
   {
-    accessorKey: "name",
+    id: "name",
+    accessorFn: (dish) => dish.name.vi,
     header: "Tên",
-    cell: ({ row }) => <div className="capitalize">{row.original.name.vi}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.original.name.vi}</div>,
+  },
+  {
+    id: "category",
+    accessorFn: (dish) => dish.category.name.vi,
+    header: "Danh mục",
+    cell: ({ row }) => <div>{row.original.category.name.vi}</div>,
   },
   {
     accessorKey: "price",
     header: "Giá cả",
     cell: ({ row }) => (
-      <div className="capitalize">{formatCurrency(row.getValue("price"))}</div>
+      <div className="whitespace-nowrap">
+        {formatCurrency(Number(row.original.price))}
+      </div>
     ),
   },
   {
-    accessorKey: "description",
+    id: "description",
+    accessorFn: (dish) => dish.description.vi,
     header: "Mô tả",
     cell: ({ row }) => (
-      <div
-        dangerouslySetInnerHTML={{ __html: row.original.description.vi }}
-        className="whitespace-pre-line"
-      />
+      <div className="max-w-sm whitespace-pre-line text-sm text-muted-foreground">
+        {row.original.description.vi}
+      </div>
     ),
   },
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }) => (
-      <div>{getVietnameseDishStatus(row.getValue("status"))}</div>
-    ),
+    cell: ({ row }) => {
+      const status = row.original.status;
+
+      return (
+        <Badge variant={DISH_STATUS_VARIANT[status] ?? "secondary"}>
+          {getVietnameseDishStatus(status)}
+        </Badge>
+      );
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: function Actions({ row }) {
       const { setDishIdEdit, setDishDelete } = useContext(DishTableContext);
-      const openEditDish = () => {
-        setDishIdEdit(row.original.id);
-      };
 
-      const openDeleteDish = () => {
-        setDishDelete(row.original);
-      };
       return (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Hành động</span>
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openEditDish}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={openDeleteDish}>Xóa</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDishIdEdit(row.original.id)}>
+              Sửa
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDishDelete(row.original)}>
+              Xóa
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -147,13 +173,56 @@ export const columns: ColumnDef<DishItem>[] = [
   },
 ];
 
+function buildManageDishesUrl(page: number, limit: number) {
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return `${ROUTE.MANAGE.DISHES}?${searchParams.toString()}`;
+}
+
+function getPaginationTotalPages(data: DishPaginationData) {
+  const totalPages =
+    data?.total_pages ?? data?.totalPages ?? data?.count ?? 1;
+
+  return Math.max(1, totalPages);
+}
+
 function AlertDialogDeleteDish({
   dishDelete,
   setDishDelete,
+  currentPage,
+  pageSize,
+  currentPageRowCount,
 }: {
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
+  currentPage: number;
+  pageSize: number;
+  currentPageRowCount: number;
 }) {
+  const router = useRouter();
+  const deleteDishMutation = useDeleteDishMutation();
+
+  const handleDeleteDish = async () => {
+    if (!dishDelete) return;
+
+    try {
+      const result = await deleteDishMutation.mutateAsync(dishDelete.id);
+      toast({
+        description: result.payload.message,
+      });
+      setDishDelete(null);
+
+      if (currentPage > 1 && currentPageRowCount === 1) {
+        router.push(buildManageDishesUrl(currentPage - 1, pageSize));
+      }
+    } catch (error) {
+      handleErrorApi({ error });
+    }
+  };
+
   return (
     <AlertDialog
       open={Boolean(dishDelete)}
@@ -171,25 +240,41 @@ function AlertDialogDeleteDish({
             <span className="bg-foreground text-primary-foreground rounded px-1">
               {dishDelete?.name?.vi}
             </span>{" "}
-            sẽ bị xóa vĩnh viễn
+            sẽ bị xóa vĩnh viễn.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel disabled={deleteDishMutation.isPending}>
+            Hủy
+          </AlertDialogCancel>
+          <AlertDialogAction
+            disabled={deleteDishMutation.isPending}
+            variant="destructive"
+            onClick={(event) => {
+              event.preventDefault();
+              void handleDeleteDish();
+            }}
+          >
+            {deleteDishMutation.isPending ? "Đang xóa..." : "Xóa"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
+
 export default function DishTable() {
+  const router = useRouter();
   const queryConfig = useDishQueryConfig();
-  const PAGE_SIZE = Number(queryConfig.limit) || 10;
-  const page = Number(queryConfig.page) || 1;
-  const pageIndex = page - 1;
+  const pageSize = queryConfig.limit || 10;
+  const page = queryConfig.page || 1;
 
   const dishListQuery = useDishListQuery(queryConfig);
-  const data = dishListQuery.data?.payload.data.results || [];
+  const paginationData = dishListQuery.data?.payload.data;
+  const dishes = paginationData?.results ?? [];
+  const currentPage = page;
+  const totalPages = getPaginationTotalPages(paginationData);
+  const pageIndex = currentPage - 1;
 
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
@@ -199,16 +284,17 @@ export default function DishTable() {
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data,
+    data: dishes,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: totalPages,
     autoResetPageIndex: false,
     state: {
       sorting,
@@ -217,10 +303,18 @@ export default function DishTable() {
       rowSelection,
       pagination: {
         pageIndex,
-        pageSize: PAGE_SIZE,
+        pageSize,
       },
     },
   });
+
+  useEffect(() => {
+    if (!dishListQuery.isSuccess || page <= totalPages) return;
+
+    router.replace(buildManageDishesUrl(totalPages, pageSize));
+  }, [dishListQuery.isSuccess, page, pageSize, router, totalPages]);
+
+  const rows = table.getRowModel().rows;
 
   return (
     <DishTableContext.Provider
@@ -231,6 +325,9 @@ export default function DishTable() {
         <AlertDialogDeleteDish
           dishDelete={dishDelete}
           setDishDelete={setDishDelete}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          currentPageRowCount={dishes.length}
         />
         <div className="flex items-center py-4">
           <Input
@@ -250,24 +347,40 @@ export default function DishTable() {
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+              {dishListQuery.isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    Đang tải...
+                  </TableCell>
+                </TableRow>
+              ) : dishListQuery.isError ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-destructive"
+                  >
+                    Có lỗi xảy ra khi tải danh sách món ăn.
+                  </TableCell>
+                </TableRow>
+              ) : rows.length ? (
+                rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -288,7 +401,7 @@ export default function DishTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    Không có món ăn nào.
                   </TableCell>
                 </TableRow>
               )}
@@ -296,18 +409,15 @@ export default function DishTable() {
           </Table>
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-xs text-muted-foreground py-4 flex-1 ">
-            Hiển thị{" "}
-            <strong>{table.getPaginationRowModel().rows.length}</strong> trong{" "}
-            <strong>{data.length}</strong> kết quả
+          <div className="min-w-fit shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+            Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>{" "}
+            · Hiển thị <strong>{rows.length}</strong> món ăn
           </div>
-          <div>
-            <AutoPagination
-              page={table.getState().pagination.pageIndex + 1}
-              pageSize={table.getPageCount()}
-              pathname={ROUTE.MANAGE.DISHES}
-            />
-          </div>
+          <AutoPagination
+            page={currentPage}
+            pageSize={totalPages}
+            pathname={ROUTE.MANAGE.DISHES}
+          />
         </div>
       </div>
     </DishTableContext.Provider>

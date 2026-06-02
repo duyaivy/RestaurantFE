@@ -5,6 +5,7 @@ import { useTableListQuery } from "@/features/tables/hooks/use-table";
 import { useTableChat } from "@/features/messages/hooks/use-table-chat";
 import { useChatStore } from "@/features/messages/store/use-chat-store";
 import { useOrderNotificationStore } from "@/features/orders/store/use-order-notification-store";
+import { useMessageNotificationStore } from "@/features/messages/store/use-message-notification-store";
 import { useManageChatMessageView } from "@/features/messages/hooks/use-manage-chat-message-view";
 import { useSocket } from "@/shared/hooks/use-socket";
 import { useAppContext } from "@/shared/providers/app-provider";
@@ -21,6 +22,7 @@ export default function ManageMessagesView() {
   const { sendMessage } = useTableChat();
   const { messages, errors } = useChatStore();
   const { createdOrders } = useOrderNotificationStore();
+  const { clearUnread, getUnreadForTable } = useMessageNotificationStore();
   const { isOwnMessage, getSenderLabel } = useManageChatMessageView();
   const { isConnected, isConnecting, lastError } = useSocket();
 
@@ -64,21 +66,29 @@ export default function ManageMessagesView() {
       const lastMessage = roomMessages[roomMessages.length - 1];
       const activeGuestName =
         guestNameByTable.get(table.number) ?? "Chưa có khách";
+      const unreadCount = getUnreadForTable(table.number);
 
       return {
         tableNumber: table.number,
         tableStatus: table.status,
         activeGuestName,
         lastMessage,
+        unreadCount,
       };
     });
-  }, [tables, messages, guestNameByTable]);
+  }, [tables, messages, guestNameByTable, getUnreadForTable]);
 
   const currentRoomMessages = useMemo(() => {
     if (!selectedTableNumber) return [];
 
     return messages.filter((msg) => msg.table_number === selectedTableNumber);
   }, [messages, selectedTableNumber]);
+
+  // Clear unread count when selecting a table
+  const handleSelectTable = (tableNumber: number) => {
+    setSelectedTableNumber(tableNumber);
+    clearUnread(tableNumber);
+  };
 
   const canSend =
     Boolean(draft.trim()) && Boolean(selectedTableNumber) && isConnected;
@@ -113,7 +123,7 @@ export default function ManageMessagesView() {
           createdOrdersCount={createdOrders.length}
           selectedTableNumber={selectedTableNumber}
           roomList={roomList}
-          onSelectTable={setSelectedTableNumber}
+          onSelectTable={handleSelectTable}
         />
 
         <section className="flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-card">

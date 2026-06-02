@@ -11,8 +11,13 @@ export const PAGE_STYLE: React.CSSProperties = {
 };
 
 export const ORDER_STATUS_UI: Record<string, StatusUI> = {
+  ORDERED: {
+    label: "Đã đặt món",
+    className: "bg-slate-500/15 text-slate-300 border border-slate-500/20",
+    dotClassName: "bg-slate-300",
+  },
   PENDING: {
-    label: "Đang chờ",
+    label: "Chờ xử lý",
     className: "bg-slate-500/15 text-slate-300 border border-slate-500/20",
     dotClassName: "bg-slate-300",
   },

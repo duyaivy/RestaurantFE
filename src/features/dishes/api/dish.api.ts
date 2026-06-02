@@ -12,7 +12,7 @@ import queryString from "query-string";
 const dishApiRequest = {
   list: (queryParams: DishListConfig) =>
     http.get<SuccessResponse<PaginationResponse<DishResType>>>(
-      "dishes?" +
+      "dishes/?" +
         queryString.stringify({
           ...queryParams,
         }),
@@ -23,7 +23,7 @@ const dishApiRequest = {
   getDish: (id: number) =>
     http.get<SuccessResponse<DishResType>>(`dishes/${id}/`),
   updateDish: (id: number, body: UpdateDishBodyType) =>
-    http.put<SuccessResponse<DishResType>>(`dishes/${id}/`, body),
+    http.patch<SuccessResponse<DishResType>>(`dishes/${id}/`, body),
   deleteDish: (id: number) =>
     http.delete<SuccessResponse<DishResType>>(`dishes/${id}/`),
 };

@@ -9,7 +9,12 @@ import {
 
 const ChatbotSection = () => {
   const t = useTranslations("chatbot");
-  const { setSelectedChatbot } = useChatbotStore();
+  const { setPendingQuestion } = useChatbotStore();
+
+  const handleQuestionClick = (questionKey: string) => {
+    const questionText = t(getChatbotQuestionTranslationKey(questionKey));
+    setPendingQuestion(questionText);
+  };
 
   return (
     <div className="px-4 mt-10">
@@ -47,7 +52,7 @@ const ChatbotSection = () => {
         {CHATBOT_QUESTION_KEYS.map((questionKey, i) => (
           <button
             key={questionKey}
-            onClick={() => setSelectedChatbot(questionKey)}
+            onClick={() => handleQuestionClick(questionKey)}
             className="group w-full text-left px-4 py-3 bg-white/2 hover:bg-yellow-900/10 hover:pl-5 transition-all duration-300 flex items-center justify-between"
           >
             <div className="flex items-center gap-3">

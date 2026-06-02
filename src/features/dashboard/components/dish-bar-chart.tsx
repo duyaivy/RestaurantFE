@@ -4,29 +4,39 @@ import { Bar, BarChart, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card'
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shared/ui/chart'
 
-const chartConfig = {
-  visitors: { label: 'Bún bò Huế' },
-  chrome:  { label: 'Cơm tấm sương',  color: '#e07832' },
-  safari:  { label: 'Phở bò',  color: '#f59342' },
-  firefox: { label: 'Mì Quảng', color: '#c45e1a' },
-  edge:    { label: 'Bánh mì',    color: '#fbb06e' },
-  other:   { label: 'Other',   color: '#fdd4a8' }
-} satisfies ChartConfig
+const colors = ['#e07832', '#f59342', '#c45e1a', '#fbb06e', '#fdd4a8']
+const labels = {
+  title: 'X\u1ebfp h\u1ea1ng m\u00f3n \u0103n',
+  description: '\u0110\u01b0\u1ee3c g\u1ecdi nhi\u1ec1u nh\u1ea5t',
+  paidOrders: '\u0110\u01a1n thanh to\u00e1n'
+}
 
-const chartData = [
-  { name: 'chrome',  successOrders: 275, fill: '#e07832' },
-  { name: 'safari',  successOrders: 200, fill: '#f59342' },
-  { name: 'firefox', successOrders: 187, fill: '#c45e1a' },
-  { name: 'edge',    successOrders: 173, fill: '#fbb06e' },
-  { name: 'other',   successOrders: 90,  fill: '#fdd4a8' }
-]
+type DishBarChartProps = {
+  data: {
+    name: string
+    totalQuantity: number
+  }[]
+}
 
-export function DishBarChart() {
+export function DishBarChart({ data }: DishBarChartProps) {
+  const chartData = data.map((dish, index) => ({
+    ...dish,
+    fill: colors[index % colors.length]
+  }))
+
+  const chartConfig = chartData.reduce<ChartConfig>((config, dish) => {
+    config[dish.name] = {
+      label: dish.name,
+      color: dish.fill
+    }
+    return config
+  }, {})
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Xếp hạng món ăn</CardTitle>
-        <CardDescription>Được gọi nhiều nhất</CardDescription>
+        <CardTitle>{labels.title}</CardTitle>
+        <CardDescription>{labels.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -43,13 +53,11 @@ export function DishBarChart() {
               tickMargin={10}
               axisLine={false}
               width={60}
-              tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label ?? value
-              }
+              tickFormatter={(value) => value}
             />
-            <XAxis dataKey='successOrders' type='number' hide />
+            <XAxis dataKey='totalQuantity' type='number' hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='successOrders' name='Đơn thanh toán' layout='vertical' radius={6} />
+            <Bar dataKey='totalQuantity' name={labels.paidOrders} layout='vertical' radius={6} />
           </BarChart>
         </ChartContainer>
       </CardContent>
