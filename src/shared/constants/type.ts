@@ -84,8 +84,13 @@ export type FailureResponse = {
 };
 
 export type PaginationResponse<T> = {
-  count: number;
-  current: number;
+  count?: number;
+  total?: number;
+  total_count?: number;
+  totalCount?: number;
+  current?: number;
+  total_pages?: number;
+  totalPages?: number;
   results: T[];
 };
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { PlusCircle, Upload } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -10,6 +10,10 @@ import {
   CreateDishBodyType,
 } from "@/features/dishes/schemas/dish.schema";
 import { useAddDishMutation } from "@/features/dishes/hooks/use-dish";
+import { useCategoryQuery } from "@/features/menu/hooks/use-category";
+import { useUploadMediaMutation } from "@/shared/hooks/use-media";
+import { handleErrorApi } from "@/shared/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -21,15 +25,21 @@ import {
 } from "@/shared/ui/dialog";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormMessage,
 } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { handleErrorApi } from "@/shared/lib/utils";
 import { toast } from "@/shared/ui/use-toast";
 
 const DEFAULT_FORM_VALUES: CreateDishBodyType = {
@@ -37,26 +47,52 @@ const DEFAULT_FORM_VALUES: CreateDishBodyType = {
   description: "",
   price: 0,
   image: "",
-  category_id: 1,
+  category_id: 0,
 };
 
 export default function AddDish() {
+  const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
   const addDishMutation = useAddDishMutation();
+  const uploadMediaMutation = useUploadMediaMutation();
+  const categoryQuery = useCategoryQuery();
+
   const form = useForm<CreateDishBodyType>({
     resolver: zodResolver(CreateDishBody) as any,
     defaultValues: DEFAULT_FORM_VALUES,
   });
   const image = form.watch("image");
   const name = form.watch("name");
+  const previewImage = useMemo(() => {
+    if (file) {
+      return URL.createObjectURL(file);
+    }
+    return image;
+  }, [file, image]);
 
   const reset = () => {
     form.reset(DEFAULT_FORM_VALUES);
+    setFile(null);
   };
 
-  const onSubmit = async (data: CreateDishBodyType) => {
+  const onSubmit = async (values: CreateDishBodyType) => {
+    if (addDishMutation.isPending || uploadMediaMutation.isPending) return;
+
     try {
-      const result = await addDishMutation.mutateAsync(data);
+      let body = values;
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const uploadRes = await uploadMediaMutation.mutateAsync(formData);
+        body = {
+          ...values,
+          image: uploadRes.payload.data,
+        };
+      }
+
+      const result = await addDishMutation.mutateAsync(body);
       toast({
         description: result.payload.message,
       });
@@ -102,24 +138,38 @@ export default function AddDish() {
                 name="image"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="grid grid-cols-4 items-start justify-items-start gap-4">
-                      <Label htmlFor="image">Ảnh</Label>
-                      <div className="col-span-3 w-full space-y-3">
-                        <Avatar className="aspect-square h-[100px] w-[100px] rounded-md object-cover">
-                          <AvatarImage src={image} />
-                          <AvatarFallback className="rounded-none">
-                            {name || "Dish"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Input
-                          id="image"
-                          className="w-full"
-                          placeholder="https://example.com/dish.jpg"
-                          {...field}
-                        />
-                        <FormMessage />
-                      </div>
+                    <div className="flex gap-2 items-start justify-start">
+                      <Avatar className="aspect-square size-25 rounded-md object-cover">
+                        <AvatarImage src={previewImage} />
+                        <AvatarFallback className="rounded-none">
+                          {name || "Dish"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={imageInputRef}
+                        onChange={(event) => {
+                          const selectedFile = event.target.files?.[0];
+                          if (selectedFile) {
+                            setFile(selectedFile);
+                            field.onChange(
+                              "http://localhost:3000/" + selectedFile.name,
+                            );
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <button
+                        className="flex aspect-square w-25 items-center justify-center rounded-md border border-dashed"
+                        type="button"
+                        onClick={() => imageInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4 text-muted-foreground" />
+                        <span className="sr-only">Upload</span>
+                      </button>
                     </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -144,15 +194,31 @@ export default function AddDish() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="category_id">Category ID</Label>
+                      <Label htmlFor="category_id">Danh mục</Label>
                       <div className="col-span-3 w-full space-y-2">
-                        <Input
-                          id="category_id"
-                          className="w-full"
-                          type="number"
-                          min={1}
-                          {...field}
-                        />
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value ? String(field.value) : undefined}
+                          disabled={categoryQuery.isLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Chọn danh mục" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {(categoryQuery.data?.payload.data ?? []).map(
+                              (category) => (
+                                <SelectItem
+                                  key={category.id}
+                                  value={String(category.id)}
+                                >
+                                  {category.name.vi}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </div>
                     </div>
@@ -204,7 +270,7 @@ export default function AddDish() {
         </Form>
         <DialogFooter>
           <Button
-            isLoading={addDishMutation.isPending}
+            isLoading={addDishMutation.isPending || uploadMediaMutation.isPending}
             type="submit"
             form="add-dish-form"
           >

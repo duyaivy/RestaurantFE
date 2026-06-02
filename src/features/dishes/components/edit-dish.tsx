@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { Upload } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -12,7 +13,9 @@ import {
   useGetDishQuery,
   useUpdateDishMutation,
 } from "@/features/dishes/hooks/use-dish";
+import { useCategoryQuery } from "@/features/menu/hooks/use-category";
 import { DishStatus } from "@/shared/constants/type";
+import { useUploadMediaMutation } from "@/shared/hooks/use-media";
 import { getVietnameseDishStatus, handleErrorApi } from "@/shared/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
@@ -48,7 +51,7 @@ const DEFAULT_FORM_VALUES: UpdateDishBodyType = {
   description: "",
   price: 0,
   image: "",
-  category_id: 1,
+  category_id: 0,
   status: DishStatus.Available,
 };
 
@@ -63,7 +66,12 @@ export default function EditDish({
   setId: (value: number | undefined) => void;
   onSubmitSuccess?: () => void;
 }) {
+  const [file, setFile] = useState<File | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
   const updateDishMutation = useUpdateDishMutation();
+  const uploadMediaMutation = useUploadMediaMutation();
+  const categoryQuery = useCategoryQuery();
+
   const form = useForm<UpdateDishBodyType>({
     resolver: zodResolver(UpdateDishBody) as any,
     defaultValues: DEFAULT_FORM_VALUES,
@@ -75,6 +83,12 @@ export default function EditDish({
   });
   const image = form.watch("image");
   const name = form.watch("name");
+  const previewImage = useMemo(() => {
+    if (file) {
+      return URL.createObjectURL(file);
+    }
+    return image;
+  }, [file, image]);
 
   useEffect(() => {
     const dish = dishDetailQuery.data?.payload.data;
@@ -88,20 +102,36 @@ export default function EditDish({
       category_id: dish.category.id,
       status: dish.status,
     });
+    setFile(null);
   }, [dishDetailQuery.data, form]);
 
   const reset = () => {
     form.reset(DEFAULT_FORM_VALUES);
+    setFile(null);
     setId(undefined);
   };
 
   const onSubmit = async (values: UpdateDishBodyType) => {
-    if (!id) return;
+    if (!id || updateDishMutation.isPending || uploadMediaMutation.isPending) {
+      return;
+    }
 
     try {
+      let body = values;
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const uploadRes = await uploadMediaMutation.mutateAsync(formData);
+        body = {
+          ...values,
+          image: uploadRes.payload.data,
+        };
+      }
+
       const result = await updateDishMutation.mutateAsync({
         id,
-        ...values,
+        ...body,
       });
       toast({
         description: result.payload.message,
@@ -145,24 +175,38 @@ export default function EditDish({
                 name="image"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="grid grid-cols-4 items-start justify-items-start gap-4">
-                      <Label htmlFor="image">Ảnh</Label>
-                      <div className="col-span-3 w-full space-y-3">
-                        <Avatar className="aspect-square h-[100px] w-[100px] rounded-md object-cover">
-                          <AvatarImage src={image} />
-                          <AvatarFallback className="rounded-none">
-                            {name || "Dish"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Input
-                          id="image"
-                          className="w-full"
-                          placeholder="https://example.com/dish.jpg"
-                          {...field}
-                        />
-                        <FormMessage />
-                      </div>
+                    <div className="flex gap-2 items-start justify-start">
+                      <Avatar className="aspect-square size-25 rounded-md object-cover">
+                        <AvatarImage src={previewImage} />
+                        <AvatarFallback className="rounded-none">
+                          {name || "Dish"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={imageInputRef}
+                        onChange={(event) => {
+                          const selectedFile = event.target.files?.[0];
+                          if (selectedFile) {
+                            setFile(selectedFile);
+                            field.onChange(
+                              "http://localhost:3000/" + selectedFile.name,
+                            );
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <button
+                        className="flex aspect-square w-25 items-center justify-center rounded-md border border-dashed"
+                        type="button"
+                        onClick={() => imageInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4 text-muted-foreground" />
+                        <span className="sr-only">Upload</span>
+                      </button>
                     </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -187,15 +231,31 @@ export default function EditDish({
                 render={({ field }) => (
                   <FormItem>
                     <div className="grid grid-cols-4 items-center justify-items-start gap-4">
-                      <Label htmlFor="category_id">Category ID</Label>
+                      <Label htmlFor="category_id">Danh mục</Label>
                       <div className="col-span-3 w-full space-y-2">
-                        <Input
-                          id="category_id"
-                          className="w-full"
-                          type="number"
-                          min={1}
-                          {...field}
-                        />
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))}
+                          value={field.value ? String(field.value) : undefined}
+                          disabled={categoryQuery.isLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Chọn danh mục" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {(categoryQuery.data?.payload.data ?? []).map(
+                              (category) => (
+                                <SelectItem
+                                  key={category.id}
+                                  value={String(category.id)}
+                                >
+                                  {category.name.vi}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </div>
                     </div>
@@ -255,7 +315,7 @@ export default function EditDish({
                           value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Chọn trạng thái" />
                             </SelectTrigger>
                           </FormControl>
@@ -279,7 +339,9 @@ export default function EditDish({
         <DialogFooter>
           <Button
             isLoading={
-              dishDetailQuery.isFetching || updateDishMutation.isPending
+              dishDetailQuery.isFetching ||
+              updateDishMutation.isPending ||
+              uploadMediaMutation.isPending
             }
             type="submit"
             form="edit-dish-form"

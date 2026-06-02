@@ -112,7 +112,7 @@ export const useGetManageOrderListQuery = (
 ) => {
   return useQuery({
     queryFn: () => orderApiRequest.getManageOrderList(queryParams),
-    queryKey: ["manage-orders", queryParams],
+    queryKey: ["orders", queryParams.page ?? 1, queryParams.limit ?? 10],
     placeholderData: keepPreviousData,
   });
 };
@@ -123,7 +123,7 @@ export const useStaffCreateOrderMutation = () => {
     mutationFn: (body: StaffCreateOrderBodyType) =>
       orderApiRequest.staffCreateOrder(body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
 };
@@ -136,8 +136,9 @@ export const useUpdateOrderInfoMutation = () => {
       ...body
     }: UpdateOrderInfoBodyType & { orderId: number }) =>
       orderApiRequest.updateOrderInfo(orderId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.orderId] });
     },
   });
 };
@@ -150,8 +151,20 @@ export const useUpdateOrderItemsMutation = () => {
       ...body
     }: UpdateOrderItemsBodyType & { orderId: number }) =>
       orderApiRequest.updateOrderItems(orderId, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["manage-orders"] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.orderId] });
     },
   });
 };
+
+/** Fetch order detail for editing */
+export const useGetOrderDetailForEditQuery = (orderId: number | null) => {
+  return useQuery({
+    queryFn: () => orderApiRequest.getOrderDetail(orderId!),
+    queryKey: ["order-detail", orderId],
+    enabled: orderId != null,
+    staleTime: 0, // Always fetch fresh data when opening edit modal
+  });
+};
+

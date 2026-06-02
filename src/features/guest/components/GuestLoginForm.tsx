@@ -66,7 +66,7 @@ export default function GuestLoginForm() {
       />
       <div className="absolute inset-0 bg-[rgba(6,4,2,0.62)]" />
 
-      <div className="absolute top-16 left-0 right-0 flex flex-col items-center gap-2 z-10">
+      <div className="absolute top-16 left-0 right-0 flex flex-col text-white items-center gap-2 z-10">
         <h1 className="text-[26px] font-extralight text-white tracking-[0.3em] uppercase">
           Fine Dining
         </h1>

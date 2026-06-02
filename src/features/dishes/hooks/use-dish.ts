@@ -5,17 +5,27 @@ import { QueryDishConfig } from "@/features/dishes/hooks/use-dish-query-config";
 import { DishListConfig } from "@/features/dishes/types/dish-list-config.types";
 
 export const useDishListQuery = (queryConfig: QueryDishConfig) => {
+  const { page, limit, category_id, search, min_price, max_price } = queryConfig;
+
   return useQuery({
     queryKey: [
       "dishes",
-      queryConfig.page,
-      queryConfig.limit,
-      queryConfig.category_id,
-      queryConfig.search,
-      queryConfig.min_price,
-      queryConfig.max_price,
+      page,
+      limit,
+      category_id,
+      search,
+      min_price,
+      max_price,
     ],
-    queryFn: () => dishApiRequest.list(queryConfig as DishListConfig),
+    queryFn: () =>
+      dishApiRequest.list({
+        page,
+        limit,
+        category_id,
+        search,
+        min_price,
+        max_price,
+      } as DishListConfig),
     staleTime: 1000 * 60 * 60,
     placeholderData: (previousData) => previousData,
   });

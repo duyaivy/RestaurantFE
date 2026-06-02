@@ -5,7 +5,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/shared/ui/button";
@@ -89,7 +88,7 @@ const columns: ColumnDef<OrderMiniResType>[] = [
   {
     accessorKey: "guest_id",
     header: "Khách hàng",
-    cell: ({ row }) => {
+    cell: function GuestCell({ row }) {
       const { guestMap } = useContext(OrderTableContext);
       const id: number | null = row.getValue("guest_id");
       if (id == null) return <span className="text-muted-foreground">—</span>;
@@ -107,7 +106,7 @@ const columns: ColumnDef<OrderMiniResType>[] = [
   {
     accessorKey: "order_handler_id",
     header: "Nhân viên xử lý",
-    cell: ({ row }) => {
+    cell: function StaffCell({ row }) {
       const { staffMap } = useContext(OrderTableContext);
       const id: number | null = row.getValue("order_handler_id");
       if (id == null)
@@ -182,13 +181,15 @@ const columns: ColumnDef<OrderMiniResType>[] = [
 export default function OrderTable() {
   const queryConfig = useOrderQueryConfig();
   const page = queryConfig.page;
-  const pageSize = queryConfig.limit;
+  const limit = queryConfig.limit;
   const pageIndex = page - 1;
 
   const { data, isLoading, isError } = useGetManageOrderListQuery(queryConfig);
   const orders = data?.payload?.data?.results ?? [];
-  const totalCount = data?.payload?.data?.count ?? 0;
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+  
+  // Use API response for pagination
+  const totalPages = Math.max(1, data?.payload?.data?.count ?? 1);
+  const currentPage = page;
 
   // ── Lookup data ──────────────────────────────────────────────────────────
   const { data: accountListData } = useGetAccountList();
@@ -213,12 +214,15 @@ export default function OrderTable() {
     data: orders,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    pageCount: totalPages,
     autoResetPageIndex: false,
     state: {
-      pagination: { pageIndex, pageSize },
+      pagination: { pageIndex, pageSize: limit },
     },
   });
+
+  const rows = table.getRowModel().rows;
 
   return (
     <OrderTableContext.Provider value={{ setEditOrder, guestMap, staffMap }}>
@@ -274,8 +278,8 @@ export default function OrderTable() {
                     Có lỗi xảy ra khi tải danh sách đơn hàng.
                   </TableCell>
                 </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+              ) : rows.length ? (
+                rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -306,11 +310,12 @@ export default function OrderTable() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-xs text-muted-foreground flex-1">
-            Tổng <strong>{totalCount}</strong> đơn hàng
+          <div className="min-w-fit shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+            Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>{" "}
+            · Hiển thị <strong>{orders.length}</strong> đơn hàng
           </div>
           <AutoPagination
-            page={page}
+            page={currentPage}
             pageSize={totalPages}
             pathname={ROUTE.MANAGE.ORDERS}
           />

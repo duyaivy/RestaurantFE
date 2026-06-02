@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Pagination,
   PaginationContent,
@@ -8,6 +10,7 @@ import {
   PaginationPrevious
 } from '@/shared/ui/pagination'
 import { cn } from '@/shared/lib/utils'
+import { useSearchParams } from 'next/navigation'
 interface Props {
   page: number
   pageSize: number
@@ -37,6 +40,22 @@ Với range = 2 áp dụng cho khoảng cách đầu, cuối và xung quanh curr
 
 const RANGE = 2
 export default function AutoPagination({ page, pageSize, pathname }: Props) {
+  const searchParams = useSearchParams()
+  const pageCount = Math.max(1, pageSize)
+  const activePage = Math.min(Math.max(page, 1), pageCount)
+
+  const createPageHref = (pageNumber: number) => {
+    const nextSearchParams = new URLSearchParams(searchParams.toString())
+    const nextPage = Math.min(Math.max(pageNumber, 1), pageCount)
+
+    nextSearchParams.set('page', String(nextPage))
+
+    return {
+      pathname,
+      query: Object.fromEntries(nextSearchParams.entries())
+    }
+  }
+
   const renderPagination = () => {
     let dotAfter = false
     let dotBefore = false
@@ -44,7 +63,7 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
       if (!dotBefore) {
         dotBefore = true
         return (
-          <PaginationItem>
+          <PaginationItem key={`ellipsis-before-${index}`}>
             <PaginationEllipsis />
           </PaginationItem>
         )
@@ -55,40 +74,35 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
       if (!dotAfter) {
         dotAfter = true
         return (
-          <PaginationItem>
+          <PaginationItem key={`ellipsis-after-${index}`}>
             <PaginationEllipsis />
           </PaginationItem>
         )
       }
       return null
     }
-    return Array(pageSize)
+    return Array(pageCount)
       .fill(0)
       .map((_, index) => {
         const pageNumber = index + 1
 
         // Điều kiện để return về ...
-        if (page <= RANGE * 2 + 1 && pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) {
+        if (activePage <= RANGE * 2 + 1 && pageNumber > activePage + RANGE && pageNumber < pageCount - RANGE + 1) {
           return renderDotAfter(index)
-        } else if (page > RANGE * 2 + 1 && page < pageSize - RANGE * 2) {
-          if (pageNumber < page - RANGE && pageNumber > RANGE) {
+        } else if (activePage > RANGE * 2 + 1 && activePage < pageCount - RANGE * 2) {
+          if (pageNumber < activePage - RANGE && pageNumber > RANGE) {
             return renderDotBefore(index)
-          } else if (pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) {
+          } else if (pageNumber > activePage + RANGE && pageNumber < pageCount - RANGE + 1) {
             return renderDotAfter(index)
           }
-        } else if (page >= pageSize - RANGE * 2 && pageNumber > RANGE && pageNumber < page - RANGE) {
+        } else if (activePage >= pageCount - RANGE * 2 && pageNumber > RANGE && pageNumber < activePage - RANGE) {
           return renderDotBefore(index)
         }
         return (
           <PaginationItem key={index}>
             <PaginationLink
-              href={{
-                pathname,
-                query: {
-                  page: pageNumber
-                }
-              }}
-              isActive={pageNumber === page}
+              href={createPageHref(pageNumber)}
+              isActive={pageNumber === activePage}
             >
               {pageNumber}
             </PaginationLink>
@@ -101,17 +115,12 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href={{
-              pathname,
-              query: {
-                page: page - 1
-              }
-            }}
+            href={createPageHref(activePage - 1)}
             className={cn({
-              'cursor-not-allowed': page === 1
+              'cursor-not-allowed': activePage === 1
             })}
             onClick={(e) => {
-              if (page === 1) {
+              if (activePage === 1) {
                 e.preventDefault()
               }
             }}
@@ -121,17 +130,12 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
 
         <PaginationItem>
           <PaginationNext
-            href={{
-              pathname,
-              query: {
-                page: page + 1
-              }
-            }}
+            href={createPageHref(activePage + 1)}
             className={cn({
-              'cursor-not-allowed': page === pageSize
+              'cursor-not-allowed': activePage === pageCount
             })}
             onClick={(e) => {
-              if (page === pageSize) {
+              if (activePage === pageCount) {
                 e.preventDefault()
               }
             }}
