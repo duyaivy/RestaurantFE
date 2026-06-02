@@ -5,11 +5,20 @@ import {
 } from "@/features/orders/api/order.api";
 import {
   GetOrdersQueryParamsType,
+  ManageOrdersQueryParamsType,
   OrderItemType,
   PayGuestOrdersBodyType,
+  StaffCreateOrderBodyType,
   UpdateOrderBodyType,
+  UpdateOrderInfoBodyType,
+  UpdateOrderItemsBodyType,
 } from "@/features/orders/schemas/order.schema";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export const getGuestOrderListQueryKey = ({
   guestId,
@@ -95,3 +104,67 @@ export const useCreateOrderMutation = () => {
     },
   });
 };
+
+// ── Manage-side hooks ─────────────────────────────────────────────────────────
+
+export const useGetManageOrderListQuery = (
+  queryParams: ManageOrdersQueryParamsType,
+) => {
+  return useQuery({
+    queryFn: () => orderApiRequest.getManageOrderList(queryParams),
+    queryKey: ["orders", queryParams.page ?? 1, queryParams.limit ?? 10],
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useStaffCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: StaffCreateOrderBodyType) =>
+      orderApiRequest.staffCreateOrder(body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+export const useUpdateOrderInfoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      ...body
+    }: UpdateOrderInfoBodyType & { orderId: number }) =>
+      orderApiRequest.updateOrderInfo(orderId, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.orderId] });
+    },
+  });
+};
+
+export const useUpdateOrderItemsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      orderId,
+      ...body
+    }: UpdateOrderItemsBodyType & { orderId: number }) =>
+      orderApiRequest.updateOrderItems(orderId, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-detail", variables.orderId] });
+    },
+  });
+};
+
+/** Fetch order detail for editing */
+export const useGetOrderDetailForEditQuery = (orderId: number | null) => {
+  return useQuery({
+    queryFn: () => orderApiRequest.getOrderDetail(orderId!),
+    queryKey: ["order-detail", orderId],
+    enabled: orderId != null,
+    staleTime: 0, // Always fetch fresh data when opening edit modal
+  });
+};
+

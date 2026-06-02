@@ -42,15 +42,14 @@ export default function MessageThread({
                       : "rounded-tl-md bg-muted"
                   }`}
                 >
-                  {!isMine && (
-                    <p className="mb-1 text-xs font-semibold text-muted-foreground">
-                      {senderLabel} · {msg.role}
-                    </p>
-                  )}
+                  <p className="mb-1 text-xs font-semibold">
+                    {senderLabel}
+                    {!isMine && <span className="text-muted-foreground"> · {msg.role}</span>}
+                  </p>
                   <p className="whitespace-pre-wrap wrap-break-word">
                     {msg.message}
                   </p>
-                  <p className="mt-1 text-right text-sm opacity-70">
+                  <p className="mt-1 text-right text-[11px] opacity-70">
                     {formatTime(msg.timestamp)}
                   </p>
                 </div>

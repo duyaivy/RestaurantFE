@@ -36,6 +36,10 @@ export default function LoginForm() {
             const result = await LoginMutation.mutateAsync(data);
             console.log({ result });
 
+            // Lưu tokens vào localStorage để các component khác có thể sử dụng ngay
+            localStorage.setItem("accessToken", result.payload.data.accessToken);
+            localStorage.setItem("refreshToken", result.payload.data.refreshToken);
+
             toast({
                 description: result.payload.message,
             });

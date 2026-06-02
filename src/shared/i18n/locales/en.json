@@ -104,17 +104,10 @@
       "recommendedItems": "You may also like"
     },
     "quickReplies": {
-      "categories": "What's on the menu?",
-      "howToOrder": "How do I place an order?",
-      "deliveryTime": "How long does it take?",
-      "deliveryAvailable": "Do you offer delivery?"
-    },
-    "answers": {
-      "categories": "VietFood proudly serves authentic Vietnamese dishes: Traditional Pho, Hanoi Bun Cha, Fresh Spring Rolls, and savory Family Rice Sets. Check out our 'Menu' for details.",
-      "howToOrder": "It's easy: \n1) Scan the QR code at your table\n2) Select your favorite food and drinks\n3) Click 'Place Order' to notify our kitchen\n4) Our staff will serve you shortly.",
-      "deliveryTime": "Preparation typically takes 10-15 minutes to ensure your meal is served fresh, hot, and full of flavor.",
-      "deliveryAvailable": "Yes! We offer home delivery via our website. You can also select the 'Takeaway' option directly in this app.",
-      "fallback": "Thank you for reaching out! For immediate assistance, please press the 'Call Staff' button at your table."
+      "categories": "What's your signature dish?",
+      "howToOrder": "How do I order?",
+      "deliveryTime": "How long for my food?",
+      "deliveryAvailable": "Do you deliver?"
     },
     "errors": {
       "staffConnecting": "Connecting to Staff. Please try again in a few seconds.",

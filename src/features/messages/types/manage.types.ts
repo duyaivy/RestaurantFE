@@ -5,4 +5,5 @@ export interface MessageRoomItem {
   tableStatus: string;
   activeGuestName: string;
   lastMessage?: ChatMessagePayload;
+  unreadCount?: number;
 }

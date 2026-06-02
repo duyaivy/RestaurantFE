@@ -20,7 +20,7 @@ export type ManageMenuItem = {
 
 const adminMenuItems: ManageMenuItem[] = [
   {
-    title: "Dashboard",
+    title: "Tổng quan",
     Icon: LayoutDashboard,
     href: ROUTE.MANAGE.DASHBOARD,
   },
@@ -38,11 +38,6 @@ const adminMenuItems: ManageMenuItem[] = [
     title: "Món ăn",
     Icon: Salad,
     href: ROUTE.MANAGE.DISHES,
-  },
-  {
-    title: "Phân tích",
-    Icon: LineChart,
-    href: ROUTE.MANAGE.ANALYTICS,
   },
   {
     title: "Nhân viên",

@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSocket } from "@/shared/hooks/use-socket";
 import { useChatStore } from "@/features/messages/store/use-chat-store";
 import { useOrderNotificationStore } from "@/features/orders/store/use-order-notification-store";
+import { useMessageNotificationStore } from "@/features/messages/store/use-message-notification-store";
 import { toNullableNumber } from "@/features/messages/hooks/chat-identity";
 import { SOCKET_EVENTS } from "@/shared/sockets/socket-events";
+import { Role } from "@/shared/constants/type";
 import {
   ChatErrorPayload,
   ChatMessageEventPayload,
@@ -17,6 +19,43 @@ export default function SocketRealtimeBridge() {
   const { socket } = useSocket();
   const { addMessage, addError } = useChatStore();
   const { addCreatedOrder, addUpdatedOrder } = useOrderNotificationStore();
+  const { incrementUnread } = useMessageNotificationStore();
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Initialize Web Audio API context
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+  }, []);
+
+  // Play a simple notification beep using Web Audio API
+  const playNotificationSound = () => {
+    const audioContext = audioContextRef.current;
+    if (!audioContext) return;
+
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Set frequency for a pleasant notification sound (E6 note)
+      oscillator.frequency.value = 1318.51;
+      oscillator.type = "sine";
+
+      // Set volume (0.0 to 1.0)
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      // Play the sound for 0.3 seconds
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (err) {
+      console.warn("Failed to play notification sound:", err);
+    }
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -38,6 +77,12 @@ export default function SocketRealtimeBridge() {
       };
 
       addMessage(normalizedMessage);
+
+      // If message is from a guest (customer), increment unread count and play sound
+      if (payload.sender_role === Role.Guest) {
+        incrementUnread(payload.table_number);
+        playNotificationSound();
+      }
     };
 
     const handleChatError = (payload: ChatErrorPayload) => {

@@ -40,6 +40,7 @@ export const TableStatusValues = [
 ] as const;
 
 export const OrderStatus = {
+  Ordered: "ORDERED",
   Pending: "PENDING",
   Preparing: "PREPARING",
   Served: "SERVED",
@@ -48,6 +49,7 @@ export const OrderStatus = {
 } as const;
 
 export const OrderStatusValues = [
+  OrderStatus.Ordered,
   OrderStatus.Pending,
   OrderStatus.Preparing,
   OrderStatus.Served,
@@ -57,15 +59,17 @@ export const OrderStatusValues = [
 
 export const OrderItemStatus = {
   Ordered: "ORDERED",
+  Pending: "PENDING",
   Cooking: "COOKING",
-  Served: "SERVED",
+  Done: "DONE",
   Cancelled: "CANCELLED",
 } as const;
 
 export const OrderItemStatusValues = [
   OrderItemStatus.Ordered,
+  OrderItemStatus.Pending,
   OrderItemStatus.Cooking,
-  OrderItemStatus.Served,
+  OrderItemStatus.Done,
   OrderItemStatus.Cancelled,
 ] as const;
 
@@ -84,8 +88,13 @@ export type FailureResponse = {
 };
 
 export type PaginationResponse<T> = {
-  count: number;
-  current: number;
+  count?: number;
+  total?: number;
+  total_count?: number;
+  totalCount?: number;
+  current?: number;
+  total_pages?: number;
+  totalPages?: number;
   results: T[];
 };
 

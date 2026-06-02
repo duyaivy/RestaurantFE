@@ -1,5 +1,6 @@
 import {
   DishStatusValues,
+  OrderItemStatusValues,
   OrderStatusValues,
   PAYMENT_METHOD_VALUES,
 } from "@/shared/constants/type";
@@ -114,3 +115,60 @@ export type CreateOrdersBodyType = z.TypeOf<typeof CreateOrdersBody>;
 export type CreateOrdersResType = z.TypeOf<typeof OrderSchema>;
 
 export type OrderMiniResType = z.TypeOf<typeof OrderMiniSchema>;
+
+// ── Staff-side manage schemas ─────────────────────────────────────────────────
+
+/** POST /orders/staff-create/ */
+export const StaffCreateOrderBody = z.object({
+  table_number_id: z.number(),
+  guest_id: z.number(),
+  items: z.array(
+    z.object({
+      dish_id: z.number(),
+      quantity: z.number().int().positive(),
+      note: z.string().optional(),
+    }),
+  ),
+});
+export type StaffCreateOrderBodyType = z.TypeOf<typeof StaffCreateOrderBody>;
+
+/** Response for staff-create: matches OrderMiniSchema shape from the API */
+export const StaffCreateOrderRes = OrderMiniSchema;
+export type StaffCreateOrderResType = z.TypeOf<typeof StaffCreateOrderRes>;
+
+/** PATCH /orders/{id}/update/ */
+export const UpdateOrderInfoBody = z.object({
+  table_number: z.number().optional(),
+  order_handler_id: z.number().nullable().optional(),
+  status: z.enum(OrderStatusValues).optional(),
+  payment_method: z.enum(PAYMENT_METHOD_VALUES).optional(),
+});
+export type UpdateOrderInfoBodyType = z.TypeOf<typeof UpdateOrderInfoBody>;
+
+/** PATCH /orders/{id}/items/ */
+const AddItemSchema = z.object({
+  dish_id: z.number(),
+  quantity: z.number().int().positive(),
+  note: z.string().optional(),
+});
+const UpdateItemSchema = z.object({
+  order_item_id: z.number(),
+  quantity: z.number().int().positive(),
+  note: z.string().optional(),
+  item_status: z.enum(OrderItemStatusValues).optional(),
+});
+export const UpdateOrderItemsBody = z.object({
+  add_items: z.array(AddItemSchema).optional(),
+  cancel_item_ids: z.array(z.number()).optional(),
+  update_items: z.array(UpdateItemSchema).optional(),
+});
+export type UpdateOrderItemsBodyType = z.TypeOf<typeof UpdateOrderItemsBody>;
+export type AddItemType = z.TypeOf<typeof AddItemSchema>;
+export type UpdateItemType = z.TypeOf<typeof UpdateItemSchema>;
+
+/** Paginated orders list query params */
+export const ManageOrdersQueryParams = z.object({
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+});
+export type ManageOrdersQueryParamsType = z.TypeOf<typeof ManageOrdersQueryParams>;

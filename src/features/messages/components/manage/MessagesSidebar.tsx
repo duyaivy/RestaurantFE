@@ -47,20 +47,28 @@ export default function MessagesSidebar({
       <div className="flex-1 overflow-y-auto p-2">
         {roomList.map((room) => {
           const isActive = room.tableNumber === selectedTableNumber;
+          const hasUnread = (room.unreadCount ?? 0) > 0;
 
           return (
             <button
               key={room.tableNumber}
               type="button"
               onClick={() => onSelectTable(room.tableNumber)}
-              className={`mb-2 w-full rounded-xl border px-3 py-3 text-left transition-colors ${
+              className={`relative mb-2 w-full rounded-xl border px-3 py-3 text-left transition-colors ${
                 isActive
                   ? "border-primary bg-primary/10"
                   : "border-transparent hover:border-border hover:bg-muted/60"
               }`}
             >
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold">Bàn {room.tableNumber}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold">Bàn {room.tableNumber}</p>
+                  {hasUnread && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
+                      {room.unreadCount}
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs text-muted-foreground">
                   {room.lastMessage
                     ? formatTime(room.lastMessage.timestamp)

@@ -1,13 +1,19 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
 const eslintConfig = defineConfig([
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+
+  {
+    settings: {
+      react: {
+        version: "19.2.4",
+      },
+    },
+  },
 
   {
     plugins: {
@@ -33,7 +39,13 @@ const eslintConfig = defineConfig([
   },
 
   // Override default ignores of eslint-config-next.
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".history/**",
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
 ]);
 
 export default eslintConfig;

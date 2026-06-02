@@ -2,6 +2,15 @@ import { accountApiRequest } from "@/features/accounts/api/account.api"
 import { UpdateEmployeeAccountBodyType } from "@/features/accounts/schemas/account.schema"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useMutation } from "@tanstack/react-query"
+
+export const useGetGuestListQuery = () => {
+    return useQuery({
+        queryKey: ["guests"],
+        queryFn: accountApiRequest.guestList,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10,
+    })
+}
 export const useAccountMe = () => {
     return useQuery({
         queryKey: ['account-me'],
