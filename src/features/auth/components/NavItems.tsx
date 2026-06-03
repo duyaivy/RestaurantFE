@@ -1,47 +1,38 @@
 "use client";
-import { ROUTE } from "@/shared/constants/route";
-import { getAccessTokenFromLocalStorage } from "@/shared/lib/utils";
+
+import { useAppContext } from "@/shared/providers/app-provider";
+import { cn } from "@/shared/lib/utils";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-const menuItems = [
-    {
-        title: "Menu",
-        href: ROUTE.GUEST.MENU, // dang nhap hay chua deu cho hien thi
-    },
-    {
-        title: "Đơn hàng",
-        href: ROUTE.GUEST.ORDERS,
-        authRequired: true,
-    },
-    {
-        title: "Đăng nhập",
-        href: ROUTE.AUTH.LOGIN,
-        authRequired: false, // khi false nghia la chua dang nhap la se hien thi
-    },
-    {
-        title: "Quản lý",
-        href: ROUTE.MANAGE.DASHBOARD,
-        authRequired: true, // tru nghia la dang nhap roi moi hien thi
-    },
-];
+import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
+import { getPublicNavItems } from "./public-nav-items";
+
+const subscribeHydration = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export default function NavItems({ className }: { className?: string }) {
-    const [isAuth, setIsAuth] = useState<boolean>(false);
+  const pathname = usePathname();
+  const { role } = useAppContext();
+  const isHydrated = useSyncExternalStore(
+    subscribeHydration,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+  const navItems = getPublicNavItems(isHydrated ? role : null);
 
-    useEffect(() => {
-        setIsAuth(Boolean(getAccessTokenFromLocalStorage()));
-    }, []);
+  return navItems.map((item) => {
+    const isActive =
+      pathname === item.href || pathname.startsWith(`${item.href}/`);
 
-    return menuItems.map((item) => {
-        if (
-            (item.authRequired === false && isAuth) ||
-            (item.authRequired === true && !isAuth)
-        )
-            return null;
-        return (
-            <Link href={item.href} key={item.href} className={className}>
-                {item.title}
-            </Link>
-        );
-    });
+    return (
+      <Link
+        href={item.href}
+        key={item.href}
+        className={cn(className, isActive && "text-foreground")}
+      >
+        {item.title}
+      </Link>
+    );
+  });
 }

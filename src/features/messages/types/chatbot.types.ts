@@ -21,6 +21,7 @@ export interface SendChatbotMessagePayload {
   message: string;
   conversation_id?: number;
   locale?: "vi" | "en";
+  lang?: "en";
 }
 
 export interface AiChatMessage {
