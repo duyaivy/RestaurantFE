@@ -8,7 +8,10 @@ const CHATBOT_URL = "";
 
 const chatbotApiRequest = {
   sendChatbotMessage: (payload: SendChatbotMessagePayload) =>
-    http.post<ChatbotResponse>(`${CHATBOT_URL}/chat/`, payload),
+    http.post<ChatbotResponse>(
+      `${CHATBOT_URL}/chat/`,
+      payload.locale === "en" ? { ...payload, lang: "en" } : payload,
+    ),
   getConversations: () => http.get<unknown>(`${CHATBOT_URL}/conversations/`),
   getConversationMessages: (conversationId: number) =>
     http.get<unknown>(
